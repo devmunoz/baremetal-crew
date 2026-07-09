@@ -1,0 +1,5 @@
+.DS_Store
+source-inspirations
+.bmc-stuff/*.db
+.bmc-stuff/*.db-journal
+.bmc-stuff/*.db-wal

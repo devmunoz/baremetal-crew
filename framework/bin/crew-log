@@ -1,0 +1,143 @@
+#!/usr/bin/env python3
+import sys
+import os
+import sqlite3
+
+DB_PATH = os.path.join(".bmc-stuff", "crew.db")
+
+def init_db():
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS transitions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        slice_id TEXT NOT NULL,
+        from_phase TEXT NOT NULL,
+        to_phase TEXT NOT NULL,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        details TEXT
+    );
+    """)
+    
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS tasks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        slice_id TEXT NOT NULL,
+        task_id TEXT NOT NULL,
+        module TEXT NOT NULL,
+        description TEXT NOT NULL,
+        status TEXT NOT NULL,
+        assigned_to TEXT NOT NULL,
+        ping_pong_count INTEGER DEFAULT 0,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    """)
+    
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        slice_id TEXT NOT NULL,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        agent_role TEXT NOT NULL,
+        event_type TEXT NOT NULL,
+        message TEXT NOT NULL
+    );
+    """)
+    
+    conn.commit()
+    conn.close()
+
+def log_transition(slice_id, from_phase, to_phase, details):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO transitions (slice_id, from_phase, to_phase, details) VALUES (?, ?, ?, ?)",
+        (slice_id, from_phase, to_phase, details)
+    )
+    conn.commit()
+    conn.close()
+    print(f"[TRANSITION] {slice_id}: {from_phase} -> {to_phase} | {details}")
+
+def log_task(slice_id, task_id, status, ping_pong_count=0):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    # Check if task already exists
+    cursor.execute("SELECT id FROM tasks WHERE slice_id = ? AND task_id = ?", (slice_id, task_id))
+    row = cursor.fetchone()
+    
+    if row:
+        cursor.execute(
+            "UPDATE tasks SET status = ?, ping_pong_count = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+            (status, ping_pong_count, row[0])
+        )
+    else:
+        # Default empty values if inserting a new task
+        cursor.execute(
+            "INSERT INTO tasks (slice_id, task_id, module, description, status, assigned_to, ping_pong_count) VALUES (?, ?, 'TBD', 'TBD', ?, 'TBD', ?)",
+            (slice_id, task_id, status, ping_pong_count)
+        )
+    conn.commit()
+    conn.close()
+    print(f"[TASK] {slice_id} - {task_id}: {status} (Ping-Pong: {ping_pong_count})")
+
+def log_event(slice_id, agent_role, event_type, message):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO events (slice_id, agent_role, event_type, message) VALUES (?, ?, ?, ?)",
+        (slice_id, agent_role, event_type, message)
+    )
+    conn.commit()
+    conn.close()
+    print(f"[EVENT] {slice_id} | {agent_role} | {event_type} | {message}")
+
+def print_usage():
+    print("Usage:")
+    print("  crew-log transition <slice_id> <from_phase> <to_phase> <details>")
+    print("  crew-log task <slice_id> <task_id> <status> [ping_pong_count]")
+    print("  crew-log event <slice_id> <agent_role> <event_type> <message>")
+
+def main():
+    if len(sys.argv) < 2:
+        print_usage()
+        sys.exit(1)
+        
+    init_db()
+    action = sys.argv[1].lower()
+    
+    try:
+        if action == "transition":
+            if len(sys.argv) < 6:
+                print("Error: Missing arguments for transition log.")
+                print("Usage: crew-log transition <slice_id> <from_phase> <to_phase> <details>")
+                sys.exit(1)
+            log_transition(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+            
+        elif action == "task":
+            if len(sys.argv) < 5:
+                print("Error: Missing arguments for task log.")
+                print("Usage: crew-log task <slice_id> <task_id> <status> [ping_pong_count]")
+                sys.exit(1)
+            ping_pong = int(sys.argv[5]) if len(sys.argv) > 5 else 0
+            log_task(sys.argv[2], sys.argv[3], sys.argv[4], ping_pong)
+            
+        elif action == "event":
+            if len(sys.argv) < 6:
+                print("Error: Missing arguments for event log.")
+                print("Usage: crew-log event <slice_id> <agent_role> <event_type> <message>")
+                sys.exit(1)
+            log_event(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+            
+        else:
+            print(f"Unknown action: {action}")
+            print_usage()
+            sys.exit(1)
+    except Exception as e:
+        print(f"Database error: {e}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
