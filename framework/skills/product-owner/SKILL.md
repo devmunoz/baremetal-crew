@@ -25,7 +25,7 @@ Translate a raw high-level software idea into a crisp, trimmed, and minimal func
 5.  **Sign-off:** Wait for the CBO to explicitly sign the scope (`Status: Signed`).
 6.  **Logging:** Log Phase 1 completion and transition to Phase 2:
     ```bash
-    framework/bin/crew-log transition [SLICE-ID] "Phase 1: Grill" "Phase 2: Breakdown" ".bmc-stuff/SXX-SCOPE.md signed by CBO"
+    .bmc-stuff/crew-log transition [SLICE-ID] "Phase 1: Grill" "Phase 2: Breakdown" ".bmc-stuff/SXX-SCOPE.md signed by CBO"
     ```
 
 ## Output

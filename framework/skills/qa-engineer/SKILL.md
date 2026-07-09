@@ -17,7 +17,7 @@ Certify that the developer's implementation matches the functional requirements 
 1.  **Monitor Backlog:** Select the current task marked `Ready for QA` in `.bmc-stuff/SXX-BLUEPRINT.md`.
 2.  **Start Logging:** Log the start of QA testing:
     ```bash
-    framework/bin/crew-log event [SLICE-ID] QA START_QA "Started QA testing for task [TASK-ID]"
+    .bmc-stuff/crew-log event [SLICE-ID] QA START_QA "Started QA testing for task [TASK-ID]"
     ```
 3.  **Test Implementation:** Write and run automated E2E/integration tests matching the task's QA Criteria.
 4.  **Read Current Ping-Pong Count:** Read the current `Ping-Pong Count` value (e.g. `1 / 3`) for this task from `.bmc-stuff/SXX-BLUEPRINT.md`.
@@ -26,8 +26,8 @@ Certify that the developer's implementation matches the functional requirements 
         *   Update the task status in `.bmc-stuff/SXX-BLUEPRINT.md` to `QA Passed`.
         *   Log the pass event and status in SQLite, preserving the current ping-pong count:
             ```bash
-            framework/bin/crew-log task [SLICE-ID] [TASK-ID] "QA Passed" [CURRENT-PING-PONG]
-            framework/bin/crew-log event [SLICE-ID] QA PASS_QA "Task [TASK-ID] passed all tests"
+            .bmc-stuff/crew-log task [SLICE-ID] [TASK-ID] "QA Passed" [CURRENT-PING-PONG]
+            .bmc-stuff/crew-log event [SLICE-ID] QA PASS_QA "Task [TASK-ID] passed all tests"
             ```
         *   Notify the SA.
     *   **Reject (Bug Found):** If tests fail:
@@ -36,15 +36,15 @@ Certify that the developer's implementation matches the functional requirements 
         *   Set its status to `Pending Correction` in `.bmc-stuff/SXX-BLUEPRINT.md`.
         *   Log the reject and the new ping-pong count in SQLite:
             ```bash
-            framework/bin/crew-log task [SLICE-ID] [TASK-ID] "Pending Correction" [NEW-PING-PONG-COUNT]
-            framework/bin/crew-log event [SLICE-ID] QA REJECT_QA "Task [TASK-ID] failed tests: [BUG-SUMMARY]"
+            .bmc-stuff/crew-log task [SLICE-ID] [TASK-ID] "Pending Correction" [NEW-PING-PONG-COUNT]
+            .bmc-stuff/crew-log event [SLICE-ID] QA REJECT_QA "Task [TASK-ID] failed tests: [BUG-SUMMARY]"
             ```
 6.  **Ping-Pong Limit Guardrail:**
     *   If rejecting for the **third time** (new ping-pong count is 3):
         *   Mark the task `Blocked` in `.bmc-stuff/SXX-BLUEPRINT.md`.
         *   Log the block in SQLite:
             ```bash
-            framework/bin/crew-log task [SLICE-ID] [TASK-ID] "Blocked" 3
-            framework/bin/crew-log event [SLICE-ID] QA PING_PONG_EXCEEDED "Task [TASK-ID] blocked: Ping-pong limit exceeded"
+            .bmc-stuff/crew-log task [SLICE-ID] [TASK-ID] "Blocked" 3
+            .bmc-stuff/crew-log event [SLICE-ID] QA PING_PONG_EXCEEDED "Task [TASK-ID] blocked: Ping-pong limit exceeded"
             ```
         *   Escalate to the SA immediately.

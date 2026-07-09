@@ -28,11 +28,11 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
 6.  **Logging & Handoff:**
     *   Record the phase transition:
         ```bash
-        framework/bin/crew-log transition [SLICE-ID] "Phase 2: Breakdown" "Phase 3: Execution" ".bmc-stuff/SXX-BLUEPRINT.md generated, tasks published"
+        .bmc-stuff/crew-log transition [SLICE-ID] "Phase 2: Breakdown" "Phase 3: Execution" ".bmc-stuff/SXX-BLUEPRINT.md generated, tasks published"
         ```
     *   Initialize the state of each task in the database using the CLI helper:
         ```bash
-        framework/bin/crew-log task [SLICE-ID] [TASK-ID] Pending 0
+        .bmc-stuff/crew-log task [SLICE-ID] [TASK-ID] Pending 0
         ```
     *   Publish the backlog and trigger the implementation phase.
 
