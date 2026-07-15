@@ -23,24 +23,22 @@ echo "============================================="
 
 # 1. Create target sandbox directories
 echo "-> Creating directories..."
-mkdir -p "${TARGET_DIR}/.bmc-stuff"
+mkdir -p "${TARGET_DIR}/.bmc-stuff/bin"
+mkdir -p "${TARGET_DIR}/.bmc-stuff/work"
 mkdir -p "${TARGET_DIR}/.agents/skills"
 
-# 2. Copy Knowledge Base and Reference Templates
+# 2. Copy Knowledge Base (including Manifesto and Templates)
 echo "-> Copying Knowledge Base and templates..."
 cp -R "${SRC_DIR}/framework/knowledge" "${TARGET_DIR}/.bmc-stuff/"
-cp -R "${SRC_DIR}/framework/templates" "${TARGET_DIR}/.bmc-stuff/"
 
-# 3. Copy crew-log CLI script directly into .bmc-stuff/
-echo "-> Copying crew-log logging helper..."
-cp "${SRC_DIR}/framework/bin/crew-log" "${TARGET_DIR}/.bmc-stuff/crew-log"
-chmod +x "${TARGET_DIR}/.bmc-stuff/crew-log"
+# 3. Copy CLI helpers directly into .bmc-stuff/bin/
+echo "-> Copying CLI helpers..."
+cp "${SRC_DIR}/framework/bin/bmc-log" "${TARGET_DIR}/.bmc-stuff/bin/bmc-log"
+chmod +x "${TARGET_DIR}/.bmc-stuff/bin/bmc-log"
+cp "${SRC_DIR}/framework/bin/bmc-index-skills" "${TARGET_DIR}/.bmc-stuff/bin/bmc-index-skills"
+chmod +x "${TARGET_DIR}/.bmc-stuff/bin/bmc-index-skills"
 
-# 4. Copy Manifesto to .bmc-stuff/ for reference
-echo "-> Copying Manifesto..."
-cp "${SRC_DIR}/framework/MANIFESTO.md" "${TARGET_DIR}/.bmc-stuff/MANIFESTO.md"
-
-# 5. Copy PO, SA, Dev, and QA skills to target .agents/skills/
+# 4. Copy PO, SA, Dev, QA, and Guru skills to target .agents/skills/
 echo "-> Installing primary skills to .agents/skills/..."
 # We recreate the folder structure for each skill to ensure SKILL.md is in the right place
 for skill_dir in "${SRC_DIR}/framework/skills/"*; do
@@ -51,8 +49,23 @@ for skill_dir in "${SRC_DIR}/framework/skills/"*; do
     fi
 done
 
+# 5. Optional indexing of skills
+echo
+if [ -t 0 ]; then
+    read -p "Do you want to clone and index the pre-approved skills repositories now? (Requires git & internet) [y/N]: " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        "${TARGET_DIR}/.bmc-stuff/bin/bmc-index-skills"
+    else
+        echo "Skipping skills indexing. You can run '.bmc-stuff/bin/bmc-index-skills' at any time."
+    fi
+else
+    echo "Non-interactive shell detected. Skipping skills indexing."
+    echo "You can run '.bmc-stuff/bin/bmc-index-skills' manually."
+fi
+
 echo "============================================="
 echo " Baremetal-Crew successfully installed!"
-echo " Check '.bmc-stuff/MANIFESTO.md' for guidelines."
+echo " Check '.bmc-stuff/knowledge/MANIFESTO.md' for guidelines."
 echo " Events will log to '.bmc-stuff/crew.db'."
 echo "============================================="

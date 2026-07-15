@@ -1,0 +1,24 @@
+{
+  "repositories": [
+    {
+      "name": "addyosmani-agent-skills",
+      "url": "https://github.com/addyosmani/agent-skills.git",
+      "selection": ["skills"]
+    },
+    {
+      "name": "mattpocock-skills",
+      "url": "https://github.com/mattpocock/skills.git",
+      "selection": ["skills/engineering", "skills/productivity"]
+    },
+    {
+      "name": "obra-superpowers",
+      "url": "https://github.com/obra/superpowers.git",
+      "selection": ["skills"]
+    },
+    {
+      "name": "caveman",
+      "url": "https://github.com/JuliusBrussee/caveman.git",
+      "selection": ["skills"]
+    }
+  ]
+}

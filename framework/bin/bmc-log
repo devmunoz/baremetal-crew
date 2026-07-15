@@ -3,7 +3,10 @@ import sys
 import os
 import sqlite3
 
-DB_PATH = os.path.join(".bmc-stuff", "crew.db")
+# Resolve DB path relative to the script location (one level up from bin/)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+BMC_STUFF_DIR = os.path.dirname(SCRIPT_DIR)
+DB_PATH = os.path.join(BMC_STUFF_DIR, "crew.db")
 
 def init_db():
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
