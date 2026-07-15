@@ -27,7 +27,7 @@ mkdir -p "${TARGET_DIR}/.bmc-stuff/bin"
 mkdir -p "${TARGET_DIR}/.bmc-stuff/work"
 mkdir -p "${TARGET_DIR}/.agents/skills"
 
-# 2. Copy Knowledge Base (including Manifesto and Templates)
+# 2. Copy Knowledge Base (including templates)
 echo "-> Copying Knowledge Base and templates..."
 cp -R "${SRC_DIR}/knowledge" "${TARGET_DIR}/.bmc-stuff/"
 
@@ -39,13 +39,13 @@ cp "${SRC_DIR}/bin/bmc-index-skills" "${TARGET_DIR}/.bmc-stuff/bin/bmc-index-ski
 chmod +x "${TARGET_DIR}/.bmc-stuff/bin/bmc-index-skills"
 
 # 4. Copy PO, SA, Dev, QA, and Guru skills to target .agents/skills/
-echo "-> Installing primary skills to .agents/skills/..."
-# We recreate the folder structure for each skill to ensure SKILL.md is in the right place
-for skill_dir in "${SRC_DIR}/skills/"*; do
-    if [ -d "${skill_dir}" ]; then
-        skill_name=$(basename "${skill_dir}")
-        mkdir -p "${TARGET_DIR}/.agents/skills/${skill_name}"
-        cp -R "${skill_dir}/"* "${TARGET_DIR}/.agents/skills/${skill_name}/"
+echo "-> Installing primary crew skills to .agents/skills/..."
+# We recreate the folder structure for each crew skill to ensure SKILL.md is in the right place
+for crew_dir in "${SRC_DIR}/crew/"*; do
+    if [ -d "${crew_dir}" ]; then
+        crew_name=$(basename "${crew_dir}")
+        mkdir -p "${TARGET_DIR}/.agents/skills/${crew_name}"
+        cp -R "${crew_dir}/"* "${TARGET_DIR}/.agents/skills/${crew_name}/"
     fi
 done
 

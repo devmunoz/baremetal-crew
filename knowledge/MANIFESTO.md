@@ -28,13 +28,13 @@ This document establishes the rigid, minimalist, and operational working framewo
 
 ### B. Product Owner "PO" (Primary Skill: `product-owner`)
 *   **Reporting Line:** Reports to the CBO.
-*   **Habilidad Asociada:** [product-owner](../skills/product-owner/SKILL.md)
+*   **Habilidad Asociada:** [product-owner](../crew/product-owner/SKILL.md)
 *   **Responsibilities:** Run the *Grill Session* against the CBO, aggressively trim scope to focus on a single functional slice, analyze planned/active slices to detect dependencies, and write the active scope file (`.bmc-stuff/work/SXX-SCOPE.md`) based on the [SCOPE template](templates/SCOPE.md).
 *   **Strict Constraints:** *Don't execute.* Does not decide technologies, does not design architecture, does not write code, and does not create technical tasks.
 
 ### C. Software Architect "SA" / Tech Lead (Primary Skill: `software-architect`)
 *   **Reporting Line:** Reports to the CBO (official delivery) and aligns with the PO (scope ingestion). Governs the Engineering Crew.
-*   **Habilidad Asociada:** [software-architect](../skills/software-architect/SKILL.md)
+*   **Habilidad Asociada:** [software-architect](../crew/software-architect/SKILL.md)
 *   **Responsibilities:**
     1.  Translate functional scope (`.bmc-stuff/work/SXX-SCOPE.md`) into architectural designs and monolithic structures.
     2.  Create the active backlog blueprint (`.bmc-stuff/work/SXX-BLUEPRINT.md`) based on the [BLUEPRINT template](templates/BLUEPRINT.md).
@@ -46,19 +46,19 @@ This document establishes the rigid, minimalist, and operational working framewo
 
 #### D.1. Fullstack Dev (Primary Skill: `fullstack-developer`)
 *   **Reporting Line:** Reports to the SA.
-*   **Habilidad Asociada:** [fullstack-developer](../skills/fullstack-developer/SKILL.md)
+*   **Habilidad Asociada:** [fullstack-developer](../crew/fullstack-developer/SKILL.md)
 *   **Responsibilities:** Implement business logic, write unit/integration tests, and update repository documentation (`ARCHITECTURE.md`, `DESIGN.md`, `README.md`) to prevent documentation drift.
 *   **Strict Constraints:** Does not think about product or add features autonomously.
 
 #### D.2. QA Engineer (Primary Skill: `qa-engineer`)
 *   **Reporting Line:** Reports to the SA.
-*   **Habilidad Asociada:** [qa-engineer](../skills/qa-engineer/SKILL.md)
+*   **Habilidad Asociada:** [qa-engineer](../crew/qa-engineer/SKILL.md)
 *   **Responsibilities:** Design and automate E2E/integration tests to validate completed tasks in the local environment.
 *   **Strict Constraints:** Does not modify application code; validates externally.
 
 ### E. Tech Guru (Primary Guru Skill - Optional)
 *   **Reporting Line:** Invoked manually by the CBO for consulting.
-*   **Habilidad Asociada:** [tech-guru](../skills/tech-guru/SKILL.md)
+*   **Habilidad Asociada:** [tech-guru](../crew/tech-guru/SKILL.md)
 *   **Responsibilities:** Analyze the signed functional scope (`.bmc-stuff/work/SXX-SCOPE.md`), search pre-approved skills libraries, recommend specific technical skills to install in `.skills/` to improve slice quality, and write `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md`.
 *   **Strict Constraints:** *Advisory only.* Does not write business logic or create backlog tasks. Must explicitly remind the CBO that they have the final authority to adjust, configure, or override any skill configuration.
 
