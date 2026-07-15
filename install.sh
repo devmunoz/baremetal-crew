@@ -29,19 +29,19 @@ mkdir -p "${TARGET_DIR}/.agents/skills"
 
 # 2. Copy Knowledge Base (including Manifesto and Templates)
 echo "-> Copying Knowledge Base and templates..."
-cp -R "${SRC_DIR}/framework/knowledge" "${TARGET_DIR}/.bmc-stuff/"
+cp -R "${SRC_DIR}/knowledge" "${TARGET_DIR}/.bmc-stuff/"
 
 # 3. Copy CLI helpers directly into .bmc-stuff/bin/
 echo "-> Copying CLI helpers..."
-cp "${SRC_DIR}/framework/bin/bmc-log" "${TARGET_DIR}/.bmc-stuff/bin/bmc-log"
+cp "${SRC_DIR}/bin/bmc-log" "${TARGET_DIR}/.bmc-stuff/bin/bmc-log"
 chmod +x "${TARGET_DIR}/.bmc-stuff/bin/bmc-log"
-cp "${SRC_DIR}/framework/bin/bmc-index-skills" "${TARGET_DIR}/.bmc-stuff/bin/bmc-index-skills"
+cp "${SRC_DIR}/bin/bmc-index-skills" "${TARGET_DIR}/.bmc-stuff/bin/bmc-index-skills"
 chmod +x "${TARGET_DIR}/.bmc-stuff/bin/bmc-index-skills"
 
 # 4. Copy PO, SA, Dev, QA, and Guru skills to target .agents/skills/
 echo "-> Installing primary skills to .agents/skills/..."
 # We recreate the folder structure for each skill to ensure SKILL.md is in the right place
-for skill_dir in "${SRC_DIR}/framework/skills/"*; do
+for skill_dir in "${SRC_DIR}/skills/"*; do
     if [ -d "${skill_dir}" ]; then
         skill_name=$(basename "${skill_dir}")
         mkdir -p "${TARGET_DIR}/.agents/skills/${skill_name}"

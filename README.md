@@ -12,7 +12,7 @@ Baremetal-Crew enforces a linear, watertight workflow between a Human (**CBO**) 
 4.  **QA Engineer:** Automates integration/E2E tests to verify implementation.
 5.  **Tech Guru:** Evaluates technical needs and indexes/recommends external skills catalog.
 
-For detailed information on the philosophy, roles, and the 4 inviolable phases, read the [Baremetal-Crew Manifesto](framework/knowledge/MANIFESTO.md).
+For detailed information on the philosophy, roles, and the 4 inviolable phases, read the [Baremetal-Crew Manifesto](knowledge/MANIFESTO.md).
 
 ---
 
