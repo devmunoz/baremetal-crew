@@ -22,9 +22,10 @@ Examine the signed functional scope (`SXX-SCOPE.md`) and the draft blueprint (`S
     *   **mattpocock-skills:** (e.g. `tdd`, `diagnosing-bugs`, `domain-modeling`).
     *   **obra-superpowers:** (e.g. `verification-before-completion`, `systematic-debugging`).
     *   **caveman:** (e.g. `caveman`).
+    *   **Analyze Prerequisite Dependencies:** For each candidate skill, read its full documentation in `.bmc-stuff/skills-cache/` to detect if it references, inherits, or requires other helper skills, templates, or external files. (e.g., a `grill-me` skill requiring the `grilling` skill; a `tdd` skill requiring specific templates). Add all detected prerequisites to the recommendation.
 3.  **Formulate Recommendations:** Create the report `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md`:
     *   List recommended skills and their repository source URLs.
-    *   Explain *why* each skill is suggested and *what* specific value it adds to the current tasks, linking to their local cache path under `.bmc-stuff/skills-cache/` so the CBO can read their full instructions.
+    *   Explain *why* each skill is suggested, *what* specific value it adds, and explicitly document any prerequisite helper skills or configuration files required to run it, linking to their local cache path under `.bmc-stuff/skills-cache/`.
     *   Keep it minimal. Avoid recommending skills that add unnecessary complexity or noise.
 4.  **CBO Control Reminder:** Conclude the report with a clear, direct reminder: **The CBO (Human) always has the final authority to adjust, configure, or override any skill parameters to match their preferences.**
 

@@ -3,22 +3,31 @@
     {
       "name": "addyosmani-agent-skills",
       "url": "https://github.com/addyosmani/agent-skills.git",
-      "selection": ["skills"]
+      "selection": [
+        "skills"
+      ]
     },
     {
       "name": "mattpocock-skills",
       "url": "https://github.com/mattpocock/skills.git",
-      "selection": ["skills/engineering", "skills/productivity"]
+      "selection": [
+        "skills/engineering",
+        "skills/productivity"
+      ]
     },
     {
       "name": "obra-superpowers",
       "url": "https://github.com/obra/superpowers.git",
-      "selection": ["skills"]
+      "selection": [
+        "skills"
+      ]
     },
     {
-      "name": "caveman",
+      "name": "JuliusBrussee-caveman",
       "url": "https://github.com/JuliusBrussee/caveman.git",
-      "selection": ["skills"]
+      "selection": [
+        "skills/caveman"
+      ]
     }
   ]
 }

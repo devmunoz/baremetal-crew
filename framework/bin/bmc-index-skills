@@ -20,15 +20,53 @@ def parse_yaml_frontmatter(file_path):
             end_fm = content.find("---", 3)
             if end_fm != -1:
                 fm_text = content[3:end_fm]
-                for line in fm_text.splitlines():
-                    if ":" in line:
-                        key, val = line.split(":", 1)
-                        key = key.strip().lower()
-                        val = val.strip().strip('"').strip("'")
-                        if key == "name":
-                            name = val
-                        elif key == "description":
-                            description = val
+                lines = fm_text.splitlines()
+                
+                fm_dict = {}
+                current_key = None
+                multiline_accumulator = []
+                is_multiline = False
+                
+                for line in lines:
+                    stripped = line.strip()
+                    if not stripped:
+                        continue
+                    
+                    if ":" in line and not is_multiline:
+                        parts = line.split(":", 1)
+                        key = parts[0].strip().lower()
+                        val = parts[1].strip()
+                        
+                        if val in (">", "|"):
+                            current_key = key
+                            is_multiline = True
+                            multiline_accumulator = []
+                        else:
+                            fm_dict[key] = val.strip('"').strip("'")
+                            current_key = None
+                            is_multiline = False
+                    elif is_multiline:
+                        if ":" in line and not line.startswith(" "):
+                            fm_dict[current_key] = " ".join(multiline_accumulator).strip().strip('"').strip("'")
+                            parts = line.split(":", 1)
+                            key = parts[0].strip().lower()
+                            val = parts[1].strip()
+                            if val in (">", "|"):
+                                current_key = key
+                                is_multiline = True
+                                multiline_accumulator = []
+                            else:
+                                fm_dict[key] = val.strip('"').strip("'")
+                                current_key = None
+                                is_multiline = False
+                        else:
+                            multiline_accumulator.append(stripped)
+                            
+                if is_multiline and current_key:
+                    fm_dict[current_key] = " ".join(multiline_accumulator).strip().strip('"').strip("'")
+                    
+                name = fm_dict.get("name")
+                description = fm_dict.get("description")
     except Exception:
         pass
     return name, description
