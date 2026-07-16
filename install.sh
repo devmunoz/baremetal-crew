@@ -10,7 +10,27 @@ set -euo pipefail
 
 # Determine source directory (where this script resides)
 SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-TARGET_DIR="${1:-.}"
+# Parse arguments
+TARGET_DIR="."
+INDEX_SKILLS=false
+
+# Support environment variable override
+if [ "${BMC_INDEX_SKILLS:-}" = "true" ]; then
+    INDEX_SKILLS=true
+fi
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --index-skills)
+            INDEX_SKILLS=true
+            shift
+            ;;
+        *)
+            TARGET_DIR="$1"
+            shift
+            ;;
+    esac
+done
 
 # Resolve target directory to absolute path
 TARGET_DIR="$( cd "${TARGET_DIR}" && pwd )"
@@ -148,7 +168,10 @@ fi
 
 # 6. Optional indexing of skills
 echo
-if [ -t 0 ]; then
+if [ "${INDEX_SKILLS}" = "true" ]; then
+    echo "-> Executing pre-approved skills indexing..."
+    "${TARGET_DIR}/.bmc-stuff/bin/bmc-index-skills"
+elif [ -t 0 ]; then
     read -p "Do you want to clone and index the pre-approved skills repositories now? (Requires git & internet) [y/N]: " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -158,7 +181,7 @@ if [ -t 0 ]; then
     fi
 else
     echo "Non-interactive shell detected. Skipping skills indexing."
-    echo "You can run '.bmc-stuff/bin/bmc-index-skills' manually."
+    echo "You can run '.bmc-stuff/bin/bmc-index-skills' manually or use '--index-skills' flag / 'BMC_INDEX_SKILLS=true' env var."
 fi
 
 echo "============================================="
