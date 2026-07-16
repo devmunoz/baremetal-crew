@@ -1,6 +1,6 @@
 # BAREMETAL-CREW MANIFESTO: THE FRAMEWORK
 
-This document establishes the rigid, minimalist, and operational working framework for local and monolithic software development, led by a human (CBO) and executed by a crew using specialized skills.
+This document establishes the rigid, minimalist, and operational working framework for local and monolithic software development, led by a human (CBO, Chief Baremetal Officer) and executed by a crew using specialized skills.
 
 ---
 

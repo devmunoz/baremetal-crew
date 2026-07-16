@@ -5,7 +5,7 @@ A rigid, minimalist, and highly structured human/agent development framework for
 ---
 
 ## 📖 What is Baremetal-Crew?
-Baremetal-Crew enforces a linear, watertight workflow between a Human (**CBO**) and a Crew of specialized AI agents:
+Baremetal-Crew enforces a linear, watertight workflow between a Human (**CBO**, Chief Baremetal Officer) and a Crew of specialized AI agents:
 1.  **Product Owner (PO):** Interrogates the CBO to freeze functional scope (`SXX-SCOPE.md`).
 2.  **Software Architect (SA):** Breaks down the scope into technical designs and atomic tasks (`SXX-BLUEPRINT.md`).
 3.  **Fullstack Dev:** Implements code and unit tests blindly task-by-task.
