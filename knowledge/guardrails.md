@@ -23,5 +23,5 @@ This document defines the strict guardrails and execution limits for the Baremet
 ## 5. Advisory Gurus
 *   External Guru agents can only generate technical reports in Markdown. They must never write code or directly modify the repository.
 
-## 6. Centralized Logging Guardrail
-*   All crew agents must write event updates, phase transitions, and task status changes to the local SQLite database (`.bmc-stuff/crew.db`) strictly using the CLI logging script helper (`crew-log`). Raw SQL inserts in agent prompts are forbidden.
+## 6. Centralized Database Guardrail
+*   All crew agents must write to and read (query) from the local SQLite database (`.bmc-stuff/crew.db`) strictly using the CLI database script helper (`.bmc-stuff/bin/bmc-log`). Direct/raw SQL connections, queries, or inserts in agent prompts/actions are strictly forbidden.

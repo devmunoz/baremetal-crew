@@ -155,8 +155,15 @@ The Tech Guru and SA can pull reusable skill definitions from these sources:
 *   **mattpocock-skills:** Engineering development and testing skills.
 *   **obra-superpowers:** High-level development process control skills.
 
-### Crew Logging CLI Command Specifications (`bmc-log`)
-The database `.bmc-stuff/crew.db` tracks history using these commands:
+### Centralized SQLite Database CLI Helper (`bmc-log`)
+All writes and queries to the SQLite database `.bmc-stuff/crew.db` must go through the centralized CLI script. Raw SQL operations are strictly forbidden.
+
+**Write Operations:**
 *   `.bmc-stuff/bin/bmc-log transition <slice_id> <from_phase> <to_phase> <details>`
 *   `.bmc-stuff/bin/bmc-log task <slice_id> <task_id> <status> [ping_pong_count]`
 *   `.bmc-stuff/bin/bmc-log event <slice_id> <agent_role> <event_type> <message>`
+
+**Query Operations:**
+*   `.bmc-stuff/bin/bmc-log active` (Lists all active/incomplete slice IDs)
+*   `.bmc-stuff/bin/bmc-log show-slice <slice_id>` (Displays current phase, tasks list, and recent events for a slice)
+*   `.bmc-stuff/bin/bmc-log check-dependency <slice_id>` (Checks if a dependency slice is completed; returns exit code 0 if resolved, 1 otherwise)

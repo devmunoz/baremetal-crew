@@ -97,11 +97,95 @@ def log_event(slice_id, agent_role, event_type, message):
     conn.close()
     print(f"[EVENT] {slice_id} | {agent_role} | {event_type} | {message}")
 
+def get_current_phase(slice_id):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT to_phase FROM transitions WHERE slice_id = ? ORDER BY timestamp DESC, id DESC LIMIT 1",
+        (slice_id,)
+    )
+    row = cursor.fetchone()
+    conn.close()
+    return row[0] if row else "Not Started"
+
+def is_successful_phase(phase):
+    return phase.lower() in ["completed", "successfully completed", "closed"]
+
+def show_slice(slice_id):
+    current_phase = get_current_phase(slice_id)
+    print(f"Slice: {slice_id}")
+    print(f"Current Phase: {current_phase}")
+    print("-" * 50)
+    
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    # Tasks
+    cursor.execute(
+        "SELECT task_id, status, ping_pong_count, updated_at FROM tasks WHERE slice_id = ? ORDER BY task_id ASC",
+        (slice_id,)
+    )
+    tasks = cursor.fetchall()
+    print("Tasks:")
+    if tasks:
+        print(f"{'Task ID':<12} | {'Status':<20} | {'Ping-Pong':<9} | {'Updated At'}")
+        print("-" * 65)
+        for t in tasks:
+            print(f"{t[0]:<12} | {t[1]:<20} | {t[2]:<9} | {t[3]}")
+    else:
+        print("  No tasks logged yet.")
+    print("-" * 50)
+    
+    # Recent Events
+    cursor.execute(
+        "SELECT timestamp, agent_role, event_type, message FROM events WHERE slice_id = ? ORDER BY timestamp DESC, id DESC LIMIT 5",
+        (slice_id,)
+    )
+    events = cursor.fetchall()
+    print("Recent Events (Last 5):")
+    if events:
+        for e in events:
+            print(f"  [{e[0]}] {e[1]} ({e[2]}): {e[3]}")
+    else:
+        print("  No events logged yet.")
+    conn.close()
+
+def list_active_slices():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT DISTINCT slice_id FROM transitions
+        EXCEPT
+        SELECT DISTINCT slice_id FROM transitions 
+        WHERE to_phase IN ('Completed', 'Successfully Completed', 'Closed', 'Aborted')
+    """)
+    rows = cursor.fetchall()
+    conn.close()
+    
+    active_slices = [r[0] for r in rows]
+    if active_slices:
+        for slice_id in active_slices:
+            print(slice_id)
+    else:
+        print("No active slices found.")
+
+def check_dependency(slice_id):
+    current_phase = get_current_phase(slice_id)
+    if is_successful_phase(current_phase):
+        print(f"Dependency {slice_id} is resolved (Phase: {current_phase}).")
+        sys.exit(0)
+    else:
+        print(f"Dependency {slice_id} is unresolved (Phase: {current_phase}).")
+        sys.exit(1)
+
 def print_usage():
     print("Usage:")
-    print("  crew-log transition <slice_id> <from_phase> <to_phase> <details>")
-    print("  crew-log task <slice_id> <task_id> <status> [ping_pong_count]")
-    print("  crew-log event <slice_id> <agent_role> <event_type> <message>")
+    print("  bmc-log transition <slice_id> <from_phase> <to_phase> <details>")
+    print("  bmc-log task <slice_id> <task_id> <status> [ping_pong_count]")
+    print("  bmc-log event <slice_id> <agent_role> <event_type> <message>")
+    print("  bmc-log active")
+    print("  bmc-log show-slice <slice_id>")
+    print("  bmc-log check-dependency <slice_id>")
 
 def main():
     if len(sys.argv) < 2:
@@ -115,14 +199,14 @@ def main():
         if action == "transition":
             if len(sys.argv) < 6:
                 print("Error: Missing arguments for transition log.")
-                print("Usage: crew-log transition <slice_id> <from_phase> <to_phase> <details>")
+                print("Usage: bmc-log transition <slice_id> <from_phase> <to_phase> <details>")
                 sys.exit(1)
             log_transition(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
             
         elif action == "task":
             if len(sys.argv) < 5:
                 print("Error: Missing arguments for task log.")
-                print("Usage: crew-log task <slice_id> <task_id> <status> [ping_pong_count]")
+                print("Usage: bmc-log task <slice_id> <task_id> <status> [ping_pong_count]")
                 sys.exit(1)
             ping_pong = int(sys.argv[5]) if len(sys.argv) > 5 else 0
             log_task(sys.argv[2], sys.argv[3], sys.argv[4], ping_pong)
@@ -130,9 +214,26 @@ def main():
         elif action == "event":
             if len(sys.argv) < 6:
                 print("Error: Missing arguments for event log.")
-                print("Usage: crew-log event <slice_id> <agent_role> <event_type> <message>")
+                print("Usage: bmc-log event <slice_id> <agent_role> <event_type> <message>")
                 sys.exit(1)
             log_event(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+            
+        elif action == "active":
+            list_active_slices()
+            
+        elif action == "show-slice":
+            if len(sys.argv) < 3:
+                print("Error: Missing slice_id.")
+                print("Usage: bmc-log show-slice <slice_id>")
+                sys.exit(1)
+            show_slice(sys.argv[2])
+            
+        elif action == "check-dependency":
+            if len(sys.argv) < 3:
+                print("Error: Missing slice_id.")
+                print("Usage: bmc-log check-dependency <slice_id>")
+                sys.exit(1)
+            check_dependency(sys.argv[2])
             
         else:
             print(f"Unknown action: {action}")

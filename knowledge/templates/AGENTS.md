@@ -18,4 +18,4 @@ This file provides instructions for AI coding agents working on this repository.
 ## 🤖 Baremetal-Crew (BMC) Integration
 *   This project is developed using the Baremetal-Crew framework.
 *   For roles, workflows, phase transitions, and guardrails, refer to the [Manifesto](.bmc-stuff/knowledge/MANIFESTO.md) only when executing crew role transitions or logging tasks.
-*   Find the active slice task backlog in [.bmc-stuff/work/SXX-BLUEPRINT.md](.bmc-stuff/work/SXX-BLUEPRINT.md).
+*   Find the active slice task backlog in `.bmc-stuff/work/SXX-BLUEPRINT.md` (where `SXX` is the active slice ID, e.g. `S01`). To determine the active slice(s), use the centralized helper command: `.bmc-stuff/bin/bmc-log active`.

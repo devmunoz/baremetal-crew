@@ -18,7 +18,7 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
 1.  **Technical Alignment:** Analyze the scope. Conduct a clarification Q&A session with the PO/CBO if gaps arise.
 2.  **Dependency Execution Check:**
     *   Read the `Dependencies / Blockers` field from `.bmc-stuff/work/SXX-SCOPE.md`.
-    *   Query `.bmc-stuff/crew.db` to check if the dependencies are closed and marked successful.
+    *   Query `.bmc-stuff/crew.db` by running `.bmc-stuff/bin/bmc-log check-dependency <dependency_slice_id>` for each blocker.
     *   **Block Execution if Unresolved:** If dependencies are unresolved, halt progress. Do not publish the backlog to the Engineering Crew until the blockers are resolved in the database.
 3.  **Metadata Initialization:**
     *   Inspect `AGENTS.md` in the repository root. If it doesn't exist, initialize it from [AGENTS.md template](../../../.bmc-stuff/knowledge/templates/AGENTS.md). If it already exists, verify that the "Baremetal-Crew (BMC) Integration" section is correctly present; if not, merge it manually at the end of the file. Document/update the specific Setup, Build, and Testing instructions for this repository.
