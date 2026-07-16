@@ -104,7 +104,16 @@ for crew_dir in "${SRC_DIR}/crew/"*; do
     fi
 done
 
-# 5. Optional indexing of skills
+# 5. Initialize or Merge AGENTS.md in the target root
+if [ ! -f "${TARGET_DIR}/AGENTS.md" ]; then
+    echo "-> Initializing AGENTS.md in target project root..."
+    cp "${SRC_DIR}/knowledge/templates/AGENTS.md" "${TARGET_DIR}/AGENTS.md"
+else
+    echo "-> Existing AGENTS.md found in target root. Skipping overwrite."
+    echo "   The Software Architect (SA) or Tech Guru will manually merge the Baremetal-Crew integration section."
+fi
+
+# 6. Optional indexing of skills
 echo
 if [ -t 0 ]; then
     read -p "Do you want to clone and index the pre-approved skills repositories now? (Requires git & internet) [y/N]: " -n 1 -r

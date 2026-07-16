@@ -21,7 +21,7 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
     *   Query `.bmc-stuff/crew.db` to check if the dependencies are closed and marked successful.
     *   **Block Execution if Unresolved:** If dependencies are unresolved, halt progress. Do not publish the backlog to the Engineering Crew until the blockers are resolved in the database.
 3.  **Metadata Initialization:**
-    *   Initialize or update `AGENTS.md` in the repository root.
+    *   Inspect `AGENTS.md` in the repository root. If it doesn't exist, initialize it from [AGENTS.md template](../../../.bmc-stuff/knowledge/templates/AGENTS.md). If it already exists, verify that the "Baremetal-Crew (BMC) Integration" section is correctly present; if not, merge it manually at the end of the file. Document/update the specific Setup, Build, and Testing instructions for this repository.
     *   Initialize or update `DESIGN.md` in the repository root.
 4.  **Architectural Design:** Design database schema changes, directory layouts, and server endpoints. Map any required technical packages from the local `.skills/` directory.
 5.  **Backlog Generation:** Draft the backlog in `.bmc-stuff/work/SXX-BLUEPRINT.md` in `Draft` state, detailing separate Dev Acceptance Criteria (code + unit tests) and QA Acceptance Criteria (automated E2E tests) for each task. Use the `SXX-01` task ID format.

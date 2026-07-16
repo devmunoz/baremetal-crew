@@ -28,17 +28,17 @@ This document establishes the rigid, minimalist, and operational working framewo
 
 ### B. Product Owner "PO" (Primary Skill: `product-owner`)
 *   **Reporting Line:** Reports to the CBO.
-*   **Habilidad Asociada:** [product-owner](../crew/product-owner/SKILL.md)
+*   **Associated Skill:** [product-owner](../crew/product-owner/SKILL.md)
 *   **Responsibilities:** Run the *Grill Session* against the CBO, aggressively trim scope to focus on a single functional slice, analyze planned/active slices to detect dependencies, and write the active scope file (`.bmc-stuff/work/SXX-SCOPE.md`) based on the [SCOPE template](templates/SCOPE.md).
 *   **Strict Constraints:** *Don't execute.* Does not decide technologies, does not design architecture, does not write code, and does not create technical tasks.
 
 ### C. Software Architect "SA" / Tech Lead (Primary Skill: `software-architect`)
 *   **Reporting Line:** Reports to the CBO (official delivery) and aligns with the PO (scope ingestion). Governs the Engineering Crew.
-*   **Habilidad Asociada:** [software-architect](../crew/software-architect/SKILL.md)
+*   **Associated Skill:** [software-architect](../crew/software-architect/SKILL.md)
 *   **Responsibilities:**
     1.  Translate functional scope (`.bmc-stuff/work/SXX-SCOPE.md`) into architectural designs and monolithic structures.
     2.  Create the active backlog blueprint (`.bmc-stuff/work/SXX-BLUEPRINT.md`) based on the [BLUEPRINT template](templates/BLUEPRINT.md).
-    3.  Initialize/update `AGENTS.md` and `DESIGN.md` in the repository root.
+    3.  Maintain the static `AGENTS.md` and `DESIGN.md` in the repository root. (SA initializes build/test/conventions; Devs update them if build commands change; Tech Guru audits them to prevent drift; if `AGENTS.md` exists, they merge the BMC integration block).
     4.  Verify structural alignment and act as the single point of contact for delivering the demo to the CBO.
 *   **Strict Constraints:** *Don't execute.* Does not write business logic or application code. Selects technologies strictly from the pre-approved knowledge base.
 
@@ -46,19 +46,19 @@ This document establishes the rigid, minimalist, and operational working framewo
 
 #### D.1. Fullstack Dev (Primary Skill: `fullstack-developer`)
 *   **Reporting Line:** Reports to the SA.
-*   **Habilidad Asociada:** [fullstack-developer](../crew/fullstack-developer/SKILL.md)
+*   **Associated Skill:** [fullstack-developer](../crew/fullstack-developer/SKILL.md)
 *   **Responsibilities:** Implement business logic, write unit/integration tests, and update repository documentation (`ARCHITECTURE.md`, `DESIGN.md`, `README.md`) to prevent documentation drift.
 *   **Strict Constraints:** Does not think about product or add features autonomously.
 
 #### D.2. QA Engineer (Primary Skill: `qa-engineer`)
 *   **Reporting Line:** Reports to the SA.
-*   **Habilidad Asociada:** [qa-engineer](../crew/qa-engineer/SKILL.md)
+*   **Associated Skill:** [qa-engineer](../crew/qa-engineer/SKILL.md)
 *   **Responsibilities:** Design and automate E2E/integration tests to validate completed tasks in the local environment.
 *   **Strict Constraints:** Does not modify application code; validates externally.
 
 ### E. Tech Guru (Primary Guru Skill - Optional)
 *   **Reporting Line:** Invoked manually by the CBO for consulting.
-*   **Habilidad Asociada:** [tech-guru](../crew/tech-guru/SKILL.md)
+*   **Associated Skill:** [tech-guru](../crew/tech-guru/SKILL.md)
 *   **Responsibilities:** Analyze the signed functional scope (`.bmc-stuff/work/SXX-SCOPE.md`), search pre-approved skills libraries, recommend specific technical skills to install in `.skills/` to improve slice quality, and write `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md`.
 *   **Strict Constraints:** *Advisory only.* Does not write business logic or create backlog tasks. Must explicitly remind the CBO that they have the final authority to adjust, configure, or override any skill configuration.
 
@@ -98,7 +98,7 @@ All stage transitions are logged in the SQLite database using the command helper
 
 ### Phase 2: The Breakdown (PO -> SA)
 *   **Trigger:** `.bmc-stuff/work/SXX-SCOPE.md` signed by the CBO.
-*   **Process:** The SA executes the `software-architect` skill. The SA clarifies requirements, validates stack feasibility, updates `DESIGN.md` and `AGENTS.md`, and drafts `.bmc-stuff/work/SXX-BLUEPRINT.md` (based on [BLUEPRINT.md template](templates/BLUEPRINT.md)).
+*   **Process:** The SA executes the `software-architect` skill. The SA clarifies requirements, validates stack feasibility, updates `DESIGN.md` and `AGENTS.md` (merging BMC reference block if existing, documenting setup/build/test), and drafts `.bmc-stuff/work/SXX-BLUEPRINT.md` (based on [BLUEPRINT.md template](templates/BLUEPRINT.md)).
 *   **Execution Block Rule:** If `.bmc-stuff/work/SXX-BLUEPRINT.md` contains unresolved dependencies on slices that are not yet marked closed/successful in the database, the SA **must block the execution**. Phase 3 cannot start for this slice until the blocking slices are completed.
 *   **Phase Sign-off:** The SA logs the transition and publishes the sequential backlog:
     ```bash
@@ -119,7 +119,7 @@ All stage transitions are logged in the SQLite database using the command helper
 *   **Process:** The SA logs transition to validation, generates `.bmc-stuff/work/SXX-DEMO.md` (based on [DEMO.md template](templates/DEMO.md)), and hands it over to the CBO. The CBO manually validates the critical flows.
 *   **Phase Sign-off:** 
     *   *Green Light:* Cycle closed. Transitions logged.
-    *   *Squad Failure (Bug):* Reverted to Phase 3 via `[BUG-VALIDACION]` tasks.
+    *   *Squad Failure (Bug):* Reverted to Phase 3 via `[BUG-VALIDATION]` tasks.
     *   *CBO Change of Mind:* Cycle aborted and reverted to Phase 1.
 
 ---
@@ -135,9 +135,9 @@ The crew uses these static templates as references to generate active execution 
 
 ## 5. Exceptions and Failsafes Protocol
 
-*   **Fallo del Squad (Bug en Validación):** The SA appends `[BUG-VALIDACION]` tasks to `.bmc-stuff/work/SXX-BLUEPRINT.md`, which the Crew executes and verifies in-place.
-*   **Cambio de Opinión del CBO:** The current cycle is closed as `Successfully Completed`, committed to the main branch, and the improvements are queued as a new cycle starting from Phase 1.
-*   **Deadlock Técnico:** The SA halts execution, logs a `BLOCK` event via `bmc-log event`, and escalates to the CBO for a **Session of Emergency Technical Bypass** (Scope Bypass, Code Bypass, or Slice Abortion).
+*   **Squad Failure (Validation Bug):** The SA appends `[BUG-VALIDATION]` tasks to `.bmc-stuff/work/SXX-BLUEPRINT.md`, which the Crew executes and verifies in-place.
+*   **CBO Change of Mind:** The current cycle is closed as `Successfully Completed`, committed to the main branch, and the improvements are queued as a new cycle starting from Phase 1.
+*   **Technical Deadlock:** The SA halts execution, logs a `BLOCK` event via `bmc-log event`, and escalates to the CBO for a **Session of Emergency Technical Bypass** (Scope Bypass, Code Bypass, or Slice Abortion).
 
 ---
 
