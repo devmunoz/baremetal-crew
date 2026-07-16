@@ -11,6 +11,8 @@ This document defines the strict guardrails and execution limits for the Baremet
 ## 2. PO & SA Guardrails (Don't Execute)
 *   **No Business Code:** The Product Owner (PO) and Software Architect (SA) must never write business logic or application code.
 *   **No UI/CSS Hacks:** The PO/SA cannot make UI modifications or styling edits.
+*   **No Scope, No Action:** The SA must never modify, create, or initialize any files (including `AGENTS.md`, `DESIGN.md`, or `ARCHITECTURE.md`) without a signed and frozen `.bmc-stuff/work/SXX-SCOPE.md` for the active slice.
+*   **Propose, Don't Execute:** If the SA detects that the repository is uninitialized or missing metadata/base files but lacks a signed scope or explicit instruction to proceed, the SA must halt execution, report this to the CBO, propose the initialization plan, and wait for confirmation. Autonomous execution without any clear scope or plan is strictly forbidden.
 
 ## 3. Engineering Squad Guardrails
 *   **Stop-the-Line on Ambiguity:** Developers and QAs must immediately halt execution on any task containing functional or technical ambiguity. They must set the task to `Blocked` and report it to the SA.

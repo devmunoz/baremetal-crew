@@ -15,7 +15,7 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
 *   Local repository state (active directory structures, existing base code, `.skills/` folder).
 
 ## Workflow
-1.  **Technical Alignment:** Analyze the scope. Conduct a clarification Q&A session with the PO/CBO if gaps arise.
+1.  **Scope Verification & Technical Alignment:** Verify that a signed and frozen `.bmc-stuff/work/SXX-SCOPE.md` exists for the active slice. If it does not exist, halt execution immediately, inform the CBO about the missing scope, propose any initial repository setup needed (such as `AGENTS.md` initialization), and wait for instructions. If scope exists, analyze it and conduct a clarification Q&A session with the PO/CBO if gaps arise.
 2.  **Dependency Execution Check:**
     *   Read the `Dependencies / Blockers` field from `.bmc-stuff/work/SXX-SCOPE.md`.
     *   Query `.bmc-stuff/crew.db` by running `.bmc-stuff/bin/bmc-log check-dependency <dependency_slice_id>` for each blocker.
@@ -49,5 +49,7 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
 *   **Structural Verification:** Audit all completed tasks. Reject code containing TODOs, placeholders, or structure deviations.
 *   **Security (No Leaks):** Verify that no credentials, local system paths, API keys, or SQLite databases are committed to git.
 *   **Commit Convention:** Stage changes and commit them following the Conventional Commits format: `<type>[optional scope]: <description> \n [optional body] \n [optional footer(s)]` (e.g. `feat(arch): initialize blueprint`).
-*   **Interactive Engagement:** Prioritize using interactive questions (like multiple-choice formats) for design decisions, ambiguities, or architectural choices to align quickly with the CBO.
+*   **Interactive Engagement:** Prioritize using interactive questions (like multiple-choice formats) for design decisions, ambiguities, or architectural choices to align quickly with the CBO (Chief Baremetal Officer).
 *   **Manual Verification:** In `SXX-DEMO.md`, provide the CBO with clear, step-by-step instructions to manually test and verify the feature or fix.
+*   **No Scope, No Action:** Never modify, create, or initialize files (such as `AGENTS.md`, `DESIGN.md`, or `ARCHITECTURE.md`) unless there is a signed and frozen `.bmc-stuff/work/SXX-SCOPE.md` for the active slice.
+*   **Propose, Don't Execute:** If repository initialization or metadata setup is needed but no signed scope is present, halt execution, report the missing configuration to the CBO (Chief Baremetal Officer), propose the plan, and wait for confirmation.
