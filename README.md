@@ -18,18 +18,44 @@ For detailed information on the philosophy, roles, and the 4 inviolable phases, 
 
 ## 🚀 Installation & Setup
 
-To install the framework in a target repository, run the installer script:
+You can install Baremetal-Crew in a target project directory using either of the following options:
+
+### Option 1: Local Clone Installation
+Use this option if you have already cloned the `baremetal-crew` repository locally. Run the installer script and pass the target project directory:
 
 ```bash
 ./install.sh /path/to/target/project
 ```
 
-### What the installer does:
-1.  Creates a metadata sandbox folder `.bmc-stuff/` in your project root, with `bin/`, `work/`, and `knowledge/` subdirectories.
-2.  Copies the core **Knowledge Base** (`.bmc-stuff/knowledge/`) and **Reference Templates** (`.bmc-stuff/knowledge/templates/`).
-3.  Copies the database logging helper `.bmc-stuff/bin/bmc-log` and indexer `.bmc-stuff/bin/bmc-index-skills`.
-4.  Optionally clones and indexes pre-approved skills repositories from GitHub (such as Addy Osmani, Matt Pocock, Julius Brussee, and Obra skills) to `.bmc-stuff/skills-cache/` for the Tech Guru to analyze.
-5.  Installs the primary AI skills into your project's `.agents/skills/` directory.
+---
+
+### Option 2: One-Command Remote Installation (Standalone)
+Use this option to install the framework directly from GitHub without cloning the repo. The installer will automatically download and unpack the latest release package.
+
+#### A. Private Repository (Current)
+Export your GitHub Personal Access Token (PAT) with read permissions, navigate to your target project folder, and run:
+
+```bash
+export GITHUB_TOKEN="your_personal_access_token_here"
+
+curl -H "Authorization: token $GITHUB_TOKEN" -L \
+  "https://raw.githubusercontent.com/devmunoz/baremetal-crew/master/install.sh" | bash
+```
+
+*Note: If you want to specify the target directory explicitly instead of using the current folder, pass it as a parameter using the `bash -s` syntax:*
+
+```bash
+curl -H "Authorization: token $GITHUB_TOKEN" -L \
+  "https://raw.githubusercontent.com/devmunoz/baremetal-crew/master/install.sh" | bash -s -- /path/to/target/project
+```
+
+#### B. Public URL installation (not available yet)
+Just run into your project folder:
+
+```bash
+cd /path/to/target/project
+curl -L "https://raw.githubusercontent.com/devmunoz/baremetal-crew/master/install.sh" | bash
+```
 
 ---
 
