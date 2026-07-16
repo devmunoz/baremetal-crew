@@ -9,7 +9,7 @@
 set -euo pipefail
 
 # Determine source directory (where this script resides)
-SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]:-$0}" )" && pwd )"
 # Parse arguments
 TARGET_DIR="."
 INDEX_SKILLS=false
