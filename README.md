@@ -33,9 +33,10 @@ To install the framework in a target repository, run the installer script:
 
 ---
 
-## 🛠️ Logging and Database
-All cycle history, tasks statuses, and transitions are recorded locally in a SQLite database at `.bmc-stuff/crew.db`. You can manage transitions or query status using the CLI command:
+## 🌟 Credits & Skill Sources
 
-```bash
-.bmc-stuff/bin/bmc-log transition S01 "Phase 1: Grill" "Phase 2: Breakdown" "SCOPE signed"
-```
+The primary crew skills and advisory skills indexing catalogs are inspired by and sourced from the following repositories:
+*   [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) – General software engineering agent skills.
+*   [mattpocock/skills](https://github.com/mattpocock/skills) – Engineering triage, domain modeling, and testing skills.
+*   [obra/superpowers](https://github.com/obra/superpowers) – Adversarial and verification skills.
+*   [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman) – Ultra-compressed token communication mode.
