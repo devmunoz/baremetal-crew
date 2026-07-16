@@ -47,3 +47,7 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
 *   **Don't Execute:** Do not write application logic, CSS, or business code.
 *   **Approved Stack:** Choose frameworks and DB engines strictly from [tech.md](../../../.bmc-stuff/knowledge/tech.md). Any change requires CBO approval.
 *   **Structural Verification:** Audit all completed tasks. Reject code containing TODOs, placeholders, or structure deviations.
+*   **Security (No Leaks):** Verify that no credentials, local system paths, API keys, or SQLite databases are committed to git.
+*   **Commit Convention:** Stage changes and commit them following the Conventional Commits format: `<type>[optional scope]: <description> \n [optional body] \n [optional footer(s)]` (e.g. `feat(arch): initialize blueprint`).
+*   **Interactive Engagement:** Prioritize using interactive questions (like multiple-choice formats) for design decisions, ambiguities, or architectural choices to align quickly with the CBO.
+*   **Manual Verification:** In `SXX-DEMO.md`, provide the CBO with clear, step-by-step instructions to manually test and verify the feature or fix.

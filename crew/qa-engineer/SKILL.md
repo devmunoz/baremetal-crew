@@ -48,3 +48,9 @@ Certify that the developer's implementation matches the functional requirements 
             .bmc-stuff/bin/bmc-log event [SLICE-ID] QA PING_PONG_EXCEEDED "Task [TASK-ID] blocked: Ping-pong limit exceeded"
             ```
         *   Escalate to the SA immediately.
+
+## Guardrails & Constraints
+*   **Security (No Leaks):** Never commit credentials, local system paths, API keys, or SQLite databases to git.
+*   **Commit Convention:** Stage changes and commit them following the Conventional Commits format: `<type>[optional scope]: <description> \n [optional body] \n [optional footer(s)]` (e.g. `test(auth): add integration tests for login`).
+*   **Simplicity First:** Write only the code/tests required to fulfill the active task criteria. Avoid speculative E2E flows or abstractions.
+*   **Surgical Changes:** Touch only what you must. Do not refactor or reformat unrelated adjacent code. Clean up any unused imports, variables, or functions created by your changes.

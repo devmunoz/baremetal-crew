@@ -35,3 +35,4 @@ Translate a raw high-level software idea into a crisp, trimmed, and minimal func
 *   **No technical decisions:** Do not discuss database engines, APIs, or frameworks.
 *   **Adherence to Standards:** Ensure user flows are documented as step-by-step UI/Action sequences.
 *   Refer to [guardrails.md](../../../.bmc-stuff/knowledge/guardrails.md) for CBO and PO limits.
+*   **Interactive Engagement:** During the Grill session, ask exactly one question at a time. Prioritize interactive, structured choices (like multiple-choice formats) to resolve functional scope ambiguity quickly and dynamically.

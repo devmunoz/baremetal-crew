@@ -25,3 +25,15 @@ This document defines the strict guardrails and execution limits for the Baremet
 
 ## 6. Centralized Database Guardrail
 *   All crew agents must write to and read (query) from the local SQLite database (`.bmc-stuff/crew.db`) strictly using the CLI database script helper (`.bmc-stuff/bin/bmc-log`). Direct/raw SQL connections, queries, or inserts in agent prompts/actions are strictly forbidden.
+
+## 7. Security & Secret Management Guardrail
+*   **No Leaks:** Never commit credentials, local system paths, API keys, certificates, or SQLite databases to git. Use environment files (`.env`) for local runtime secrets and create `.env.example` templates if modifications are made.
+
+## 8. Development Guardrails (Minimalism & Scope)
+### Simplicity First
+*   **Minimum Code:** Write only the code required to fulfill the active task criteria. Avoid speculative features, early optimizations, or abstractions for single-use code.
+*   **Complexity Check:** Keep implementations minimal and clean. If a solution can be written in a significantly shorter/simpler manner, it must be rewritten.
+
+### Surgical Changes
+*   **Scope Limit:** Touch only the files and lines necessary for the task. Refactoring or reformatting unrelated adjacent code is strictly prohibited.
+*   **Clean Orphans:** Remove unused imports, variables, or functions created by your changes. Do not clean up pre-existing dead code in unrelated modules unless explicitly requested in the task.
