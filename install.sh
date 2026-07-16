@@ -38,6 +38,30 @@ cleanup_download() {
 }
 trap cleanup_download EXIT INT TERM
 
+# Helper to insert version metadata into MANIFESTO.md
+update_manifesto_title() {
+    local file="$1"
+    local version="$2"
+    if [ -f "$file" ]; then
+        local tmp_file
+        tmp_file=$(mktemp)
+        local found=false
+        while IFS= read -r raw_line || [ -n "$raw_line" ]; do
+            local line
+            line=$(echo "$raw_line" | tr -d '\r')
+            if [ "$found" = false ] && [ "$line" = "# BAREMETAL-CREW MANIFESTO: THE FRAMEWORK" ]; then
+                echo "# BAREMETAL-CREW MANIFESTO: THE FRAMEWORK - ${version}" >> "$tmp_file"
+                found=true
+            else
+                echo "$raw_line" >> "$tmp_file"
+            fi
+        done < "$file"
+        mv "$tmp_file" "$file"
+    fi
+}
+
+VERSION="unknown"
+
 if [ "${RUNNING_STANDALONE}" = true ]; then
     echo "-> Standalone installation detected. Fetching latest release package..."
     TMP_DOWNLOAD_DIR=$(mktemp -d)
@@ -82,9 +106,18 @@ mkdir -p "${TARGET_DIR}/.bmc-stuff/bin"
 mkdir -p "${TARGET_DIR}/.bmc-stuff/work"
 mkdir -p "${TARGET_DIR}/.agents/skills"
 
+# Determine version
+if [ -f "${SRC_DIR}/knowledge/VERSION" ]; then
+    VERSION=$(cat "${SRC_DIR}/knowledge/VERSION")
+else
+    VERSION=$(git -C "${SRC_DIR}" describe --tags --abbrev=0 2>/dev/null || echo "local")
+fi
+
 # 2. Copy Knowledge Base (including templates)
 echo "-> Copying Knowledge Base and templates..."
 cp -R "${SRC_DIR}/knowledge" "${TARGET_DIR}/.bmc-stuff/"
+update_manifesto_title "${TARGET_DIR}/.bmc-stuff/knowledge/MANIFESTO.md" "${VERSION}"
+rm -f "${TARGET_DIR}/.bmc-stuff/knowledge/VERSION"
 
 # 3. Copy CLI helpers directly into .bmc-stuff/bin/
 echo "-> Copying CLI helpers..."
@@ -129,7 +162,7 @@ else
 fi
 
 echo "============================================="
-echo " Baremetal-Crew successfully installed!"
+echo " Baremetal-Crew successfully installed (Version: ${VERSION})!"
 echo " Check '.bmc-stuff/knowledge/MANIFESTO.md' for guidelines."
 echo " Events will log to '.bmc-stuff/crew.db'."
 echo "============================================="

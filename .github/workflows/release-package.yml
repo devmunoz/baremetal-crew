@@ -17,6 +17,7 @@ jobs:
 
       - name: Build release package
         run: |
+          echo "${{ github.ref_name }}" > knowledge/VERSION
           tar -czf baremetal-crew.tar.gz bin/ knowledge/ crew/
 
       - name: Create Release and Upload Asset
