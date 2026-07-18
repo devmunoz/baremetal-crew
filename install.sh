@@ -162,8 +162,13 @@ if [ ! -f "${TARGET_DIR}/AGENTS.md" ]; then
     echo "-> Initializing AGENTS.md in target project root..."
     cp "${SRC_DIR}/knowledge/templates/AGENTS.md" "${TARGET_DIR}/AGENTS.md"
 else
-    echo "-> Existing AGENTS.md found in target root. Skipping overwrite."
-    echo "   The Software Architect (SA) or Tech Guru will manually merge the Baremetal-Crew integration section."
+    echo "-> Existing AGENTS.md found in target root."
+    if ! grep -q "Baremetal-Crew" "${TARGET_DIR}/AGENTS.md"; then
+        echo "   No Baremetal-Crew reference found. Appending integration block..."
+        printf "\n## 🤖 Baremetal-Crew (BMC) Integration\n> [!IMPORTANT]\n> The CBO must check this \`AGENTS.md\` file against the framework guidelines (Setup, Build, Testing, and Conventions) to align both when running the agentic process with the framework for the first time.\n*   This project is developed using the Baremetal-Crew framework.\n*   For roles, workflows, phase transitions, and guardrails, refer to the [Manifesto](.bmc-stuff/knowledge/MANIFESTO.md) only when executing crew role transitions or logging tasks.\n*   Find the active slice task backlog in \`.bmc-stuff/work/SXX-BLUEPRINT.md\` (where \`SXX\` is the active slice ID, e.g. \`S01\`). To determine the active slice(s), use the centralized helper command: \`.bmc-stuff/bin/bmc-log active\`.\n" >> "${TARGET_DIR}/AGENTS.md"
+    else
+        echo "   Baremetal-Crew reference already present. Skipping merge."
+    fi
 fi
 
 # 6. Optional indexing of skills
