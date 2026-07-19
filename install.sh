@@ -13,17 +13,46 @@ SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]:-$0}" )" && pwd )"
 # Parse arguments
 TARGET_DIR="."
 INDEX_SKILLS=false
+YES_TO_ALL=false
 
 # Support environment variable override
 if [ "${BMC_INDEX_SKILLS:-}" = "true" ]; then
     INDEX_SKILLS=true
 fi
 
+print_help() {
+    echo "Baremetal-Crew Installer Script"
+    echo
+    echo "Usage:"
+    echo "  $0 [target_directory] [options]"
+    echo
+    echo "Options:"
+    echo "  -h, --help        Show this help message and exit"
+    echo "  -y, --yes         Automatic yes to prompts (non-interactive friendly)"
+    echo "  --index-skills    Clone and index the pre-approved skills repositories"
+    echo
+    echo "Environment Variables:"
+    echo "  BMC_INDEX_SKILLS  Set to 'true' to force skills indexing"
+}
+
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        -h|--help)
+            print_help
+            exit 0
+            ;;
+        -y|--yes)
+            YES_TO_ALL=true
+            shift
+            ;;
         --index-skills)
             INDEX_SKILLS=true
             shift
+            ;;
+        -*)
+            echo "Error: Unknown option $1"
+            echo "Use -h or --help for usage information."
+            exit 1
             ;;
         *)
             TARGET_DIR="$1"
@@ -118,6 +147,25 @@ if [ "${RUNNING_STANDALONE}" = true ]; then
     
     # Re-route the source directory to point to the unpacked contents
     SRC_DIR="${TMP_DOWNLOAD_DIR}"
+fi
+
+# Confirmation prompt in interactive mode
+if [ -t 0 ] && [ "${YES_TO_ALL}" = "false" ]; then
+    echo "============================================="
+    echo " Baremetal-Crew Installation Information"
+    echo " Target: ${TARGET_DIR}"
+    echo
+    echo " The following changes will be made in the target directory:"
+    echo "   - Create: .bmc-stuff/ (knowledge base and CLI tools)"
+    echo "   - Create: .agents/skills/ (crew role skill definitions)"
+    echo "   - Initialize or update: AGENTS.md (in the repository root)"
+    echo "============================================="
+    read -p "Do you want to proceed with the installation? [y/N]: " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "Installation aborted by the user."
+        exit 0
+    fi
 fi
 
 # 1. Create target sandbox directories
