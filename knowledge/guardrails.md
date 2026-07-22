@@ -40,6 +40,16 @@ This document defines the strict guardrails and execution limits for the Baremet
 *   **Clean Orphans:** Remove unused imports, variables, or functions created by your changes. Do not clean up pre-existing dead code in unrelated modules unless explicitly requested in the task.
 
 ## 9. Host System Protection & Infrastructure Verification
-*   **Absolute Host Installation Ban:** Under no circumstances may any crew agent execute commands that download or install system-level packages, libraries, or binaries directly onto the host machine (e.g., no `brew install`, `apt-get`, `yum`, `apk`, global npm packages `npm install -g`, or downloading raw executable binaries). All external system dependencies must either be containerized (Docker) or flagged to the CBO (Human) for manual host installation.
+*   **Absolute Host Installation Ban:** Under no circumstances may any crew agent execute commands that download or install system-level packages, libraries, or binaries directly onto the host machine. All external system dependencies must either be containerized (Docker) or flagged to the CBO (Human) for manual host installation. Rigid slice planning is designed to prevent technical omissions, eliminating any need to run local system installations mid-execution.
+*   **Network Download Restraints:** Running `curl`, `wget`, or any web fetching utility to download and install OS packages, external installers, raw binaries, or to execute piping scripts (e.g., `curl ... | bash` or `wget -O- ... | sh`) is strictly forbidden.
+    *   *Permitted Exception:* Agents are allowed to use `curl` or `wget` targeting loopback addresses (e.g., `localhost`, `127.0.0.1`, `[::1]`) for testing local server APIs or checking service health.
 *   **Infrastructure Check Gate:** The SA must check for the presence and active status of all required infrastructure (e.g., verifying if Docker is installed and running via `docker info` or similar commands) before finalizing the blueprint. If required infrastructure or external host-level commands (e.g., `ffmpeg`) are missing, the SA must halt execution and coordinate with the CBO to resolve it.
+*   **Dangerous & Restricted Commands Catalog:** The following commands must never be executed directly on the host shell by crew agents:
+    1.  **OS Package Installers:** `brew install`, `apt`, `apt-get`, `yum`, `dnf`, `apk`, `pkg`, `pacman`.
+    2.  **Script Piping Execution:** `curl ... | bash`, `wget -O- ... | sh`, `curl ... | sh`, `wget ... -O - | bash`.
+    3.  **Global Dependency Pollution:** `npm install -g`, `npm i -g`, `pip install --global`, `gem install` (any global package manager commands).
+    4.  **Privilege Escalation:** `sudo`, `su`, or executing commands inside root-only system paths.
+    5.  **System Service Manipulation:** `systemctl`, `service`, `initctl` (use docker-compose for service orchestration instead).
+    6.  **Host Permission Modifications:** `chown` or `chmod` targeting paths outside the local project workspace.
+
 

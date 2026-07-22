@@ -43,7 +43,7 @@ This document establishes the rigid, minimalist, and operational working framewo
     5.  **Infrastructure Audit:** Verify if Docker is installed and running on the host, and check for any external binary dependencies (e.g. `ffmpeg`). If missing, coordinate with the CBO (Human) for manual installation or architectural alternatives before execution starts.
 *   **Strict Constraints:** 
     *   *Don't execute.* Does not write business logic or application code. Selects technologies strictly from the pre-approved knowledge base.
-    *   **Host System Protection:** Never write blueprints or tasks that install packages, run `brew`, `apt-get`, or compile/download binaries directly onto the host system.
+    *   **Host System Protection:** Never write blueprints or tasks that install packages, run `brew`, `apt-get`, or compile/download binaries directly onto the host system. Banned patterns include curl/wget installation piping and global package pollution (refer to the dangerous commands catalog in [guardrails.md](guardrails.md)).
 
 ### D. Engineering Crew "EC"
 
@@ -53,7 +53,7 @@ This document establishes the rigid, minimalist, and operational working framewo
 *   **Responsibilities:** Implement business logic, write unit/integration tests, and update repository documentation (`ARCHITECTURE.md`, `DESIGN.md`, `README.md`) to prevent documentation drift.
 *   **Strict Constraints:** 
     *   Does not think about product or add features autonomously.
-    *   **Absolute Host Installation Ban:** Under no circumstances execute commands that download or install system-level packages, libraries, or binaries directly onto the host machine (no `brew`, `apt-get`, `yum`, `apk`, global `npm`, raw curl binary downloads). If a dependency is missing, halt execution and report to the SA.
+    *   **Absolute Host Installation Ban:** Under no circumstances execute commands that download or install system-level packages, libraries, or binaries directly onto the host machine (no `brew`, `apt-get`, `yum`, `apk`, global `npm`, raw curl binary/installer downloads). Web calls via `curl`/`wget` are restricted to local loops (localhost/127.0.0.1) for API testing. All other shell commands must respect the dangerous commands catalog in [guardrails.md](guardrails.md). If a dependency is missing, halt execution and report to the SA.
 
 #### D.2. QA Engineer (Primary Skill: `qa-engineer`)
 *   **Reporting Line:** Reports to the SA.
@@ -61,7 +61,7 @@ This document establishes the rigid, minimalist, and operational working framewo
 *   **Responsibilities:** Design and automate E2E/integration tests to validate completed tasks in the local environment.
 *   **Strict Constraints:** 
     *   Does not modify application code; validates externally.
-    *   **Absolute Host Installation Ban:** Under no circumstances execute commands that download or install system-level packages, libraries, or binaries directly onto the host machine. If testing requires dependencies, they must be containerized or flagged to the CBO/SA.
+    *   **Absolute Host Installation Ban:** Under no circumstances execute commands that download or install system-level packages, libraries, or binaries directly onto the host machine. Curl/wget commands must target local ports only. If testing requires dependencies, they must be containerized or flagged to the CBO/SA. Respect the dangerous commands catalog in [guardrails.md](guardrails.md).
 
 ### E. Tech Guru (Primary Guru Skill - Optional)
 *   **Reporting Line:** Invoked manually by the CBO for consulting.
