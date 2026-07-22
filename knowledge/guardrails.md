@@ -38,3 +38,8 @@ This document defines the strict guardrails and execution limits for the Baremet
 ### Surgical Changes
 *   **Scope Limit:** Touch only the files and lines necessary for the task. Refactoring or reformatting unrelated adjacent code is strictly prohibited.
 *   **Clean Orphans:** Remove unused imports, variables, or functions created by your changes. Do not clean up pre-existing dead code in unrelated modules unless explicitly requested in the task.
+
+## 9. Host System Protection & Infrastructure Verification
+*   **Absolute Host Installation Ban:** Under no circumstances may any crew agent execute commands that download or install system-level packages, libraries, or binaries directly onto the host machine (e.g., no `brew install`, `apt-get`, `yum`, `apk`, global npm packages `npm install -g`, or downloading raw executable binaries). All external system dependencies must either be containerized (Docker) or flagged to the CBO (Human) for manual host installation.
+*   **Infrastructure Check Gate:** The SA must check for the presence and active status of all required infrastructure (e.g., verifying if Docker is installed and running via `docker info` or similar commands) before finalizing the blueprint. If required infrastructure or external host-level commands (e.g., `ffmpeg`) are missing, the SA must halt execution and coordinate with the CBO to resolve it.
+

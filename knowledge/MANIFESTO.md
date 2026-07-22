@@ -40,7 +40,10 @@ This document establishes the rigid, minimalist, and operational working framewo
     2.  Create the active backlog blueprint (`.bmc-stuff/work/SXX-BLUEPRINT.md`) based on the [BLUEPRINT template](templates/BLUEPRINT.md).
     3.  Maintain the static `AGENTS.md` and `DESIGN.md` in the repository root. (SA initializes build/test/conventions; Devs update them if build commands change; Tech Guru audits them to prevent drift; if `AGENTS.md` exists, they merge the BMC integration block).
     4.  Verify structural alignment and act as the single point of contact for delivering the demo to the CBO.
-*   **Strict Constraints:** *Don't execute.* Does not write business logic or application code. Selects technologies strictly from the pre-approved knowledge base.
+    5.  **Infrastructure Audit:** Verify if Docker is installed and running on the host, and check for any external binary dependencies (e.g. `ffmpeg`). If missing, coordinate with the CBO (Human) for manual installation or architectural alternatives before execution starts.
+*   **Strict Constraints:** 
+    *   *Don't execute.* Does not write business logic or application code. Selects technologies strictly from the pre-approved knowledge base.
+    *   **Host System Protection:** Never write blueprints or tasks that install packages, run `brew`, `apt-get`, or compile/download binaries directly onto the host system.
 
 ### D. Engineering Crew "EC"
 
@@ -48,19 +51,24 @@ This document establishes the rigid, minimalist, and operational working framewo
 *   **Reporting Line:** Reports to the SA.
 *   **Associated Skill:** [fullstack-developer](../crew/fullstack-developer/SKILL.md)
 *   **Responsibilities:** Implement business logic, write unit/integration tests, and update repository documentation (`ARCHITECTURE.md`, `DESIGN.md`, `README.md`) to prevent documentation drift.
-*   **Strict Constraints:** Does not think about product or add features autonomously.
+*   **Strict Constraints:** 
+    *   Does not think about product or add features autonomously.
+    *   **Absolute Host Installation Ban:** Under no circumstances execute commands that download or install system-level packages, libraries, or binaries directly onto the host machine (no `brew`, `apt-get`, `yum`, `apk`, global `npm`, raw curl binary downloads). If a dependency is missing, halt execution and report to the SA.
 
 #### D.2. QA Engineer (Primary Skill: `qa-engineer`)
 *   **Reporting Line:** Reports to the SA.
 *   **Associated Skill:** [qa-engineer](../crew/qa-engineer/SKILL.md)
 *   **Responsibilities:** Design and automate E2E/integration tests to validate completed tasks in the local environment.
-*   **Strict Constraints:** Does not modify application code; validates externally.
+*   **Strict Constraints:** 
+    *   Does not modify application code; validates externally.
+    *   **Absolute Host Installation Ban:** Under no circumstances execute commands that download or install system-level packages, libraries, or binaries directly onto the host machine. If testing requires dependencies, they must be containerized or flagged to the CBO/SA.
 
 ### E. Tech Guru (Primary Guru Skill - Optional)
 *   **Reporting Line:** Invoked manually by the CBO for consulting.
 *   **Associated Skill:** [tech-guru](../crew/tech-guru/SKILL.md)
-*   **Responsibilities:** Analyze the signed functional scope (`.bmc-stuff/work/SXX-SCOPE.md`), search pre-approved skills libraries, recommend specific technical skills to install in `.skills/` to improve slice quality, and write `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md`.
+*   **Responsibilities:** Analyze the signed functional scope (`.bmc-stuff/work/SXX-SCOPE.md`), search pre-approved skills libraries, recommend specific technical skills to install in `.skills/` to improve slice quality, audit `AGENTS.md` for drift, and write `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md`.
 *   **Strict Constraints:** *Advisory only.* Does not write business logic or create backlog tasks. Must explicitly remind the CBO that they have the final authority to adjust, configure, or override any skill configuration.
+
 
 ---
 
@@ -98,7 +106,7 @@ All stage transitions are logged in the SQLite database using the command helper
 
 ### Phase 2: The Breakdown (PO -> SA)
 *   **Trigger:** `.bmc-stuff/work/SXX-SCOPE.md` signed by the CBO.
-*   **Process:** The SA executes the `software-architect` skill. The SA clarifies requirements, validates stack feasibility, updates `DESIGN.md` and `AGENTS.md` (merging BMC reference block if existing, documenting setup/build/test), and drafts `.bmc-stuff/work/SXX-BLUEPRINT.md` (based on [BLUEPRINT.md template](templates/BLUEPRINT.md)).
+*   **Process:** The SA executes the `software-architect` skill. The SA clarifies requirements, validates stack feasibility, audits host capabilities (ensures Docker is running and required binaries are present, otherwise halting and coordinating with CBO), updates `DESIGN.md` and `AGENTS.md` (merging BMC reference block if existing, documenting setup/build/test), and drafts `.bmc-stuff/work/SXX-BLUEPRINT.md` (based on [BLUEPRINT.md template](templates/BLUEPRINT.md)).
 *   **Execution Block Rule:** If `.bmc-stuff/work/SXX-BLUEPRINT.md` contains unresolved dependencies on slices that are not yet marked closed/successful in the database, the SA **must block the execution**. Phase 3 cannot start for this slice until the blocking slices are completed.
 *   **Phase Sign-off:** The SA logs the transition and publishes the sequential backlog:
     ```bash

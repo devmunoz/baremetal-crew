@@ -19,7 +19,12 @@ The Software Architect (SA) must choose technologies exclusively from this catal
 *   **Testing Frameworks:**
     *   Playwright, Cypress, Jest, Vitest, unittest, pytest.
 
-## 3. Living Documentation Standard
+## 3. Infrastructure & System Dependencies
+*   **Container-First Infrastructure:** All infrastructure components (e.g., PostgreSQL, Redis) and external system utilities/binaries (e.g., `ffmpeg`, `imagemagick`) that are not standard language runtimes must be containerized and run via local `docker-compose.yml`.
+*   **Host-Level Isolation:** The repository code must not rely on globally installed binaries on the user's host machine, unless they are standard dev tools (e.g. `node`, `python`, `git`, `docker`) that have been checked and confirmed to be present.
+
+## 4. Living Documentation Standard
+
 To prevent documentation from going out of sync with the implementation:
 *   **ARCHITECTURE.md:** Must document database schemas, folder layout, API endpoints, and architectural patterns of the codebase.
 *   **DESIGN.md:** Documents UX/UI design decisions, UI component structure, design tokens, and user flow principles.

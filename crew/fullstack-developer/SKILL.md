@@ -36,6 +36,7 @@ Implement clean, test-covered code for the active backlog task, keeping reposito
 
 ## Guardrails & Constraints
 *   **Security (No Leaks):** Never commit credentials, local system paths, API keys, or SQLite databases to git.
+*   **Host System Protection:** Under no circumstances execute commands that download or install system-level packages, libraries, or binaries directly onto the host machine (e.g., no `brew install`, `apt-get`, `yum`, `apk`, global `npm` packages, raw curl binary downloads). If a required system utility is missing, halt execution immediately, mark the task as `Blocked`, and escalate to the SA.
 *   **Commit Convention:** Stage changes and commit them following the Conventional Commits format: `<type>[optional scope]: <description> \n [optional body] \n [optional footer(s)]` (e.g. `feat(auth): add logout endpoint`).
 *   **Simplicity First:** Write only the code required to fulfill the active task criteria. Avoid speculative features or abstractions.
 *   **Surgical Changes:** Touch only what you must. Do not refactor or reformat unrelated adjacent code. Clean up any unused imports, variables, or functions created by your changes.

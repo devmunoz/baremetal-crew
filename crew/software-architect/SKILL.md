@@ -21,11 +21,16 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
     *   Read the `Dependencies / Blockers` field from `.bmc-stuff/work/SXX-SCOPE.md`.
     *   Query `.bmc-stuff/crew.db` by running `.bmc-stuff/bin/bmc-log check-dependency <dependency_slice_id>` for each blocker.
     *   **Block Execution if Unresolved:** If dependencies are unresolved, halt progress. Do not publish the backlog to the Engineering Crew until the blockers are resolved in the database.
-4.  **Metadata Initialization:**
+4.  **Infrastructure & Host Capability Audit:**
+    *   **Verify Environment Capabilities:** Check host system capabilities prior to finalizing architectural plans.
+    *   **Docker Verification:** Verify if Docker is installed and running (e.g., execute `docker info` or `docker --version` safely). For database engines (like PostgreSQL) or tools that require host services, ensure they are designed to run containerized via `docker-compose.yml`.
+    *   **Identify Host Binaries:** Check if the slice requires system utilities (e.g., `ffmpeg`, `imagemagick`). Audit if they are currently present in the system path.
+    *   **Escalate Missing Infra:** If any required host dependency or Docker itself is missing/not running, **halt execution immediately**. Present a clear multiple-choice question or clarification to the CBO (Human) requesting manual installation of the required software on the host, or discuss architectural fallbacks (e.g., SQLite instead of PostgreSQL). Never create tasks that try to install OS packages.
+5.  **Metadata Initialization:**
     *   Inspect `AGENTS.md` in the repository root. If it doesn't exist, initialize it from [AGENTS.md template](../../../.bmc-stuff/knowledge/templates/AGENTS.md). If it already exists, verify that the "Baremetal-Crew (BMC) Integration" section is correctly present; if not, append it at the end of the file including the CBO check warning note. Update and align the specific Setup, Build, and Testing instructions to match this repository's structure.
     *   Initialize or update `DESIGN.md` in the repository root.
-5.  **Architectural Design:** Design database schema changes, directory layouts, and server endpoints. Map any required technical packages from the local `.skills/` directory.
-6.  **Backlog Generation:** Draft the backlog in `.bmc-stuff/work/SXX-BLUEPRINT.md` in `Draft` state, detailing separate Dev Acceptance Criteria (code + unit tests) and QA Acceptance Criteria (automated E2E tests) for each task. Use the `SXX-01` task ID format.
+6.  **Architectural Design:** Design database schema changes, directory layouts, and server endpoints. Map any required technical packages from the local `.skills/` directory.
+7.  **Backlog Generation:** Draft the backlog in `.bmc-stuff/work/SXX-BLUEPRINT.md` in `Draft` state, detailing separate Dev Acceptance Criteria (code + unit tests) and QA Acceptance Criteria (automated E2E tests) for each task. Use the `SXX-01` task ID format.
 7.  **Human Control Checkpoint:** Wait for the CBO to review and explicitly sign off `.bmc-stuff/work/SXX-BLUEPRINT.md` (`Status: Signed` or `Approved`).
     *   *Guru advisory:* At this stage, the CBO may optionally trigger the `tech-guru` skill to evaluate the draft blueprint and scope, suggesting technical skills to enable. If approved by the CBO, the SA integrates these skills under `.skills/` and updates the blueprint.
 8.  **Logging & Handoff:** Once the CBO signs the blueprint:
@@ -47,6 +52,7 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
 ## Guardrails & Constraints
 *   **Don't Execute:** Do not write application logic, CSS, or business code.
 *   **Approved Stack:** Choose frameworks and DB engines strictly from [tech.md](../../../.bmc-stuff/knowledge/tech.md). Any change requires CBO approval.
+*   **Host System Protection:** Never design tasks, architectures, or write scripts that download, install, or compile OS-level packages, libraries, or binaries directly onto the host system (e.g., `brew`, `apt-get`, `yum`, `apk`, global `npm` packages, raw curl binary downloads). Ensure required components are run containerized (Docker) or verify pre-existence on host. If missing, escalate to CBO immediately.
 *   **Structural Verification:** Audit all completed tasks. Reject code containing TODOs, placeholders, or structure deviations.
 *   **Security (No Leaks):** Verify that no credentials, local system paths, API keys, or SQLite databases are committed to git.
 *   **Commit Convention:** Stage changes and commit them following the Conventional Commits format: `<type>[optional scope]: <description> \n [optional body] \n [optional footer(s)]` (e.g. `feat(arch): initialize blueprint`).
