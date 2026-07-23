@@ -43,9 +43,21 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
         .bmc-stuff/bin/bmc-log task [SLICE-ID] [TASK-ID] Pending 0
         ```
     *   Publish the backlog and trigger the implementation phase.
+9.  **Phase 4: Validation Handoff & Demo Logging:** Once all tasks in the backlog are `QA Passed` in the blueprint and database:
+    *   **Generate DEMO.md:** Generate `.bmc-stuff/work/SXX-DEMO.md` using [DEMO.md template](../../../.bmc-stuff/knowledge/templates/DEMO.md) as a reference, providing clear local verification instructions.
+    *   **Log Phase Transition:** Log the transition to Phase 4 in SQLite:
+        ```bash
+        .bmc-stuff/bin/bmc-log transition [SLICE-ID] "Phase 3: Execution" "Phase 4: Validation" ".bmc-stuff/work/SXX-DEMO.md generated, handoff to CBO"
+        ```
+    *   **Log Demo Generation Event:** Log the explicit creation of the validation guide:
+        ```bash
+        .bmc-stuff/bin/bmc-log event [SLICE-ID] SA GENERATE_DEMO ".bmc-stuff/work/SXX-DEMO.md generated for CBO manual validation"
+        ```
+    *   **Clean Turn Conclusion:** Conclude the turn by clearly informing the CBO that the slice execution is complete, providing the file path for validation, and ending the conversation to let the CBO test at their own pace.
 
 ## Output
 *   `.bmc-stuff/work/SXX-BLUEPRINT.md` (with atomic task statuses, generated from [BLUEPRINT.md template](../../../.bmc-stuff/knowledge/templates/BLUEPRINT.md)).
+*   `.bmc-stuff/work/SXX-DEMO.md` (delivery validation guide, generated from [DEMO.md template](../../../.bmc-stuff/knowledge/templates/DEMO.md)).
 *   Updated `AGENTS.md` and `DESIGN.md`.
 *   SQLite logs synchronized.
 

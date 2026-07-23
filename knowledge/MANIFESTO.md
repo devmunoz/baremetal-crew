@@ -149,10 +149,11 @@ All stage transitions are logged in the SQLite database using the command helper
 
 ### Phase 4: Validation (SA -> CBO)
 *   **Trigger:** Backlog completed and verified by the SA.
-*   **Process:** The SA logs transition to validation, generates `.bmc-stuff/work/SXX-DEMO.md` (based on [DEMO.md template](templates/DEMO.md)), and hands it over to the CBO.
-    *   **Logging validation phase start:** The SA logs the transition to validation:
+*   **Process:** The SA logs transition to validation, generates `.bmc-stuff/work/SXX-DEMO.md` (based on [DEMO.md template](templates/DEMO.md)), hands it over to the CBO, and cleanly ends the conversation to allow validation at the CBO's own pace.
+    *   **Logging validation phase start:** The SA logs the transition to validation and registers the explicit delivery event:
         ```bash
         .bmc-stuff/bin/bmc-log transition SXX "Phase 3: Execution" "Phase 4: Validation" "Backlog completed and verified by SA"
+        .bmc-stuff/bin/bmc-log event SXX SA GENERATE_DEMO ".bmc-stuff/work/SXX-DEMO.md generated for CBO manual validation"
         ```
 *   **Phase Sign-off:** 
     *   *Green Light (Completed):* Cycle closed successfully and logged:
