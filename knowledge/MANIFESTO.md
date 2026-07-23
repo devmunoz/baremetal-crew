@@ -160,9 +160,9 @@ All stage transitions are logged in the SQLite database using the command helper
         ```bash
         .bmc-stuff/bin/bmc-log transition SXX "Phase 4: Validation" "Completed" "Validated successfully by CBO"
         ```
-    *   *Squad Failure (Bug):* Reverted to Phase 3 via `[BUG-VALIDATION]` tasks:
+    *   *Squad Failure (Bug):* If validation fails, the SA drafts the `[BUG-VALIDATION]` tasks in the blueprint. **CBO Approval Gate:** These tasks must be explicitly approved and signed off by the CBO before execution begins. Once signed off, the SA logs the transition:
         ```bash
-        .bmc-stuff/bin/bmc-log transition SXX "Phase 4: Validation" "Phase 3: Execution" "Reverted due to validation bug [BUG-DETAILS]"
+        .bmc-stuff/bin/bmc-log transition SXX "Phase 4: Validation" "Phase 3: Execution" "Reverted due to validation bug [BUG-DETAILS], fixes approved by CBO"
         ```
     *   *CBO Change of Mind (Aborted):* Cycle aborted and logged:
         ```bash
