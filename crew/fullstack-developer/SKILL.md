@@ -43,5 +43,5 @@ Implement clean, test-covered code for the active backlog task, keeping reposito
     **[SLICE: <Slice ID>] | [PHASE: <Phase Name>]**
     ```
 *   **Simplicity First:** Write only the code required to fulfill the active task criteria. Avoid speculative features or abstractions.
-*   **Single Active Slice Focus:** Never process, reference, plan, or execute code for more than one slice at a time. Ignore all other slices.
+*   **Single Target Slice per Session:** Never process, reference, plan, or execute code for more than one slice ID during a single conversation thread or crew iteration. Ignore all other slices.
 *   **Surgical Changes:** Touch only what you must. Do not refactor or reformat unrelated adjacent code. Clean up any unused imports, variables, or functions created by your changes.

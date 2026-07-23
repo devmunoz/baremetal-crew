@@ -15,7 +15,11 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
 *   Local repository state (active directory structures, existing base code, `.skills/` folder).
 
 ## Workflow
-1.  **Scope Verification:** Stop immediately if `.bmc-stuff/work/SXX-SCOPE.md` is missing or unsigned. Inform the CBO that no active slice is defined and do not modify/propose repository setup.
+1.  **Thread Target Selection & Scope Verification:**
+    *   **Resolve Session Slice Target:** The SA must identify which single slice ID is the target of the current conversation thread.
+    *   **Ask CBO if Ambiguous:** If the CBO's prompt is ambiguous, or if multiple active scopes or draft blueprints exist and it is unclear which one to process in this session, the SA **must halt immediately** and present a clear multiple-choice question to the CBO to select which single slice to focus on in this thread.
+    *   **Single-Slice Focus Execution:** Once the target slice ID for the session is resolved, the SA must focus strictly on that slice ID, ignoring all other scopes, blueprints, and files associated with different slices.
+    *   **Verify Scope:** Verify that `.bmc-stuff/work/SXX-SCOPE.md` (for the target slice) is present and signed. If missing or unsigned, halt and notify the CBO. Do not modify or setup files.
 2.  **Technical Alignment:** Analyze the signed scope and clarify any functional or technical gaps with the PO/CBO.
 3.  **Dependency Execution Check:**
     *   Read the `Dependencies / Blockers` field from `.bmc-stuff/work/SXX-SCOPE.md`.

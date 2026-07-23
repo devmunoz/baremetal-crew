@@ -45,7 +45,7 @@ This document establishes the rigid, minimalist, and operational working framewo
     *   *Don't execute.* Does not write business logic or application code. Selects technologies strictly from the pre-approved knowledge base.
     *   **Host System Protection:** Never write blueprints or tasks that install packages, run `brew`, `apt-get`, or compile/download binaries directly onto the host system. Banned patterns include curl/wget installation piping and global package pollution (refer to the dangerous commands catalog in [guardrails.md](guardrails.md)).
     *   **Root Docs Isolation:** Never edit the repository root documentation files (`DESIGN.md`, `ARCHITECTURE.md`, `README.md`) directly with future features or speculative designs. Propose all design/architectural specifications inside `SXX-BLUEPRINT.md` or drafts under `.bmc-stuff/work/`.
-    *   **Single Slice Focus:** Never process, reference, plan, or execute more than one slice at a time. Ignore all other slices until the active slice is completed or aborted.
+    *   **Single Target Slice per Session:** Never process, reference, plan, or execute more than one slice ID during a single conversation thread or crew iteration. Ignore all other slices during that session to prevent context mixing and parallel file updates.
 
 
 ### D. Engineering Crew "EC"
