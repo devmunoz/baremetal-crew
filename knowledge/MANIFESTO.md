@@ -38,19 +38,22 @@ This document establishes the rigid, minimalist, and operational working framewo
 *   **Responsibilities:**
     1.  Translate functional scope (`.bmc-stuff/work/SXX-SCOPE.md`) into architectural designs and monolithic structures.
     2.  Create the active backlog blueprint (`.bmc-stuff/work/SXX-BLUEPRINT.md`) based on the [BLUEPRINT template](templates/BLUEPRINT.md).
-    3.  Maintain the static `AGENTS.md` and `DESIGN.md` in the repository root. (SA initializes build/test/conventions; Devs update them if build commands change; Tech Guru audits them to prevent drift; if `AGENTS.md` exists, they merge the BMC integration block).
-    4.  Verify structural alignment and act as the single point of contact for delivering the demo to the CBO.
+    3.  Maintain the static `AGENTS.md` in the repository root. (SA initializes build/test/conventions; Devs update them if build commands change; Tech Guru audits them to prevent drift; if `AGENTS.md` exists, they merge the BMC integration block).
+    4.  Update and maintain the root technical documentation files (`ARCHITECTURE.md`, `DESIGN.md`, `README.md`) post-QA to reflect the completed slice details before validation. Verify structural alignment and act as the single point of contact for delivering the demo to the CBO.
     5.  **Infrastructure Audit:** Verify if Docker is installed and running on the host, and check for any external binary dependencies (e.g. `ffmpeg`). If missing, coordinate with the CBO (Human) for manual installation or architectural alternatives before execution starts.
 *   **Strict Constraints:** 
     *   *Don't execute.* Does not write business logic or application code. Selects technologies strictly from the pre-approved knowledge base.
     *   **Host System Protection:** Never write blueprints or tasks that install packages, run `brew`, `apt-get`, or compile/download binaries directly onto the host system. Banned patterns include curl/wget installation piping and global package pollution (refer to the dangerous commands catalog in [guardrails.md](guardrails.md)).
+    *   **Root Docs Isolation:** Never edit the repository root documentation files (`DESIGN.md`, `ARCHITECTURE.md`, `README.md`) directly with future features or speculative designs. Propose all design/architectural specifications inside `SXX-BLUEPRINT.md` or drafts under `.bmc-stuff/work/`.
+    *   **Single Slice Focus:** Never process, reference, plan, or execute more than one slice at a time. Ignore all other slices until the active slice is completed or aborted.
+
 
 ### D. Engineering Crew "EC"
 
 #### D.1. Fullstack Dev (Primary Skill: `fullstack-developer`)
 *   **Reporting Line:** Reports to the SA.
 *   **Associated Skill:** [fullstack-developer](../crew/fullstack-developer/SKILL.md)
-*   **Responsibilities:** Implement business logic, write unit/integration tests, and update repository documentation (`ARCHITECTURE.md`, `DESIGN.md`, `README.md`) to prevent documentation drift.
+*   **Responsibilities:** Implement business logic and write unit/integration tests.
 *   **Strict Constraints:** 
     *   Does not think about product or add features autonomously.
     *   **Absolute Host Installation Ban:** Under no circumstances execute commands that download or install system-level packages, libraries, or binaries directly onto the host machine (no `brew`, `apt-get`, `yum`, `apk`, global `npm`, raw curl binary/installer downloads). Web calls via `curl`/`wget` are restricted to local loops (localhost/127.0.0.1) for API testing. All other shell commands must respect the dangerous commands catalog in [guardrails.md](guardrails.md). If a dependency is missing, halt execution and report to the SA.
@@ -106,7 +109,7 @@ All stage transitions are logged in the SQLite database using the command helper
 
 ### Phase 2: The Breakdown (PO -> SA)
 *   **Trigger:** `.bmc-stuff/work/SXX-SCOPE.md` signed by the CBO.
-*   **Process:** The SA executes the `software-architect` skill. The SA clarifies requirements, validates stack feasibility, audits host capabilities (ensures Docker is running and required binaries are present, otherwise halting and coordinating with CBO), updates `DESIGN.md` and `AGENTS.md` (merging BMC reference block if existing, documenting setup/build/test), and drafts `.bmc-stuff/work/SXX-BLUEPRINT.md` (based on [BLUEPRINT.md template](templates/BLUEPRINT.md)).
+*   **Process:** The SA executes the `software-architect` skill, focusing strictly on this single active slice. The SA clarifies requirements, validates stack feasibility, audits host capabilities (ensures Docker is running and required binaries are present, otherwise halting and coordinating with CBO), updates `AGENTS.md` (merging BMC reference block if existing, documenting setup/build/test), and drafts `.bmc-stuff/work/SXX-BLUEPRINT.md` (based on [BLUEPRINT.md template](templates/BLUEPRINT.md)) specifying all architectural/UI design proposals inside it. The root `DESIGN.md` and `ARCHITECTURE.md` are left untouched.
 *   **Execution Block Rule:** If `.bmc-stuff/work/SXX-BLUEPRINT.md` contains unresolved dependencies on slices that are not yet marked closed/successful in the database, the SA **must block the execution**. Phase 3 cannot start for this slice until the blocking slices are completed.
 *   **Phase Sign-off:** The SA logs the transition and publishes the sequential backlog:
     ```bash
@@ -121,7 +124,7 @@ All stage transitions are logged in the SQLite database using the command helper
         .bmc-stuff/bin/bmc-log task SXX SXX-01 "In Development" [CURRENT-PING-PONG]
         .bmc-stuff/bin/bmc-log event SXX Dev START_TASK "Started task SXX-01"
         ```
-    *   **Dev completes task:** Updates documentation (`ARCHITECTURE.md`, `README.md`), writes unit tests, and logs status update and finish event:
+    *   **Dev completes task:** Writes unit tests, and logs status update and finish event:
         ```bash
         .bmc-stuff/bin/bmc-log task SXX SXX-01 "Ready for QA" [CURRENT-PING-PONG]
         .bmc-stuff/bin/bmc-log event SXX Dev FINISH_TASK "Ready for QA on task SXX-01"
@@ -149,10 +152,11 @@ All stage transitions are logged in the SQLite database using the command helper
 
 ### Phase 4: Validation (SA -> CBO)
 *   **Trigger:** Backlog completed and verified by the SA.
-*   **Process:** The SA logs transition to validation, generates `.bmc-stuff/work/SXX-DEMO.md` (based on [DEMO.md template](templates/DEMO.md)), hands it over to the CBO, and cleanly ends the conversation to allow validation at the CBO's own pace.
-    *   **Logging validation phase start:** The SA logs the transition to validation and registers the explicit delivery event:
+*   **Process:** The SA updates the root technical documentation files (`ARCHITECTURE.md`, `DESIGN.md`, `README.md`) to integrate the slice changes, logs the transition to validation, generates `.bmc-stuff/work/SXX-DEMO.md` (based on [DEMO.md template](templates/DEMO.md)), suggests that the CBO check the updated docs and query the Tech Guru, and cleanly ends the conversation to allow validation at the CBO's own pace.
+    *   **Logging validation phase start & docs update:** The SA logs the transition, the documentation update, and registers the explicit delivery event:
         ```bash
         .bmc-stuff/bin/bmc-log transition SXX "Phase 3: Execution" "Phase 4: Validation" "Backlog completed and verified by SA"
+        .bmc-stuff/bin/bmc-log event SXX SA UPDATE_DOCS "Root technical documentation updated for slice SXX"
         .bmc-stuff/bin/bmc-log event SXX SA GENERATE_DEMO ".bmc-stuff/work/SXX-DEMO.md generated for CBO manual validation"
         ```
 *   **Phase Sign-off:** 

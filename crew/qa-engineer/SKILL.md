@@ -59,4 +59,5 @@ Certify that the developer's implementation matches the functional requirements 
     **[SLICE: <Slice ID>] | [PHASE: <Phase Name>]**
     ```
 *   **Simplicity First:** Write only the code/tests required to fulfill the active task criteria. Avoid speculative E2E flows or abstractions.
+*   **Single Active Slice Focus:** Never process, reference, plan, or execute tests for more than one slice at a time. Ignore all other slices.
 *   **Surgical Changes:** Touch only what you must. Do not refactor or reformat unrelated adjacent code. Clean up any unused imports, variables, or functions created by your changes.

@@ -23,8 +23,7 @@ Implement clean, test-covered code for the active backlog task, keeping reposito
     ```
 4.  **Clean Development:** Implement the logic. Ensure no TODOs, placeholders, or empty mock code segments remain in the codebase.
 5.  **Unit/Integration Testing:** Write unit or integration tests matching the task's Dev Criteria. Ensure all local tests pass.
-6.  **Living Documentation:** Update the relevant repository documentation files (e.g. `ARCHITECTURE.md` for schemas/endpoints, `DESIGN.md` for user experience alignments, `README.md` for execution commands) to reflect the implementation details.
-7.  **QA Hand-off Logging:** Mark the task `Ready for QA` in `.bmc-stuff/work/SXX-BLUEPRINT.md`, and log the completion event, preserving the current ping-pong count:
+6.  **QA Hand-off Logging:** Mark the task `Ready for QA` in `.bmc-stuff/work/SXX-BLUEPRINT.md`, and log the completion event, preserving the current ping-pong count:
     ```bash
     .bmc-stuff/bin/bmc-log task [SLICE-ID] [TASK-ID] "Ready for QA" [CURRENT-PING-PONG]
     .bmc-stuff/bin/bmc-log event [SLICE-ID] Dev FINISH_TASK "Ready for QA on task [TASK-ID]"
@@ -44,4 +43,5 @@ Implement clean, test-covered code for the active backlog task, keeping reposito
     **[SLICE: <Slice ID>] | [PHASE: <Phase Name>]**
     ```
 *   **Simplicity First:** Write only the code required to fulfill the active task criteria. Avoid speculative features or abstractions.
+*   **Single Active Slice Focus:** Never process, reference, plan, or execute code for more than one slice at a time. Ignore all other slices.
 *   **Surgical Changes:** Touch only what you must. Do not refactor or reformat unrelated adjacent code. Clean up any unused imports, variables, or functions created by your changes.

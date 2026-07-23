@@ -60,6 +60,9 @@ This document defines the strict guardrails and execution limits for the Baremet
     ```
     This identifies the executing role and slice state at first glance for the CBO.
 *   **Validation Bug Approval Gate:** If validation fails (`Validation Failed / Bug Found`), the SA must draft the required `[BUG-VALIDATION]` tasks in the blueprint. The SA must never hand these tasks to the developers until the CBO has reviewed the proposed fixes/tasks and explicitly approved them.
+*   **Single Active Slice Focus:** A session, conversation thread, or crew iteration must *never* process, reference, plan, or execute more than one slice at a time. All other slices (even if signed as scopes) must remain ignored until the active slice is either marked `Completed` or `Aborted` in SQLite.
+*   **Root Documentation Isolation (No Speculative Pollution):** The repository root documentation files (`DESIGN.md`, `ARCHITECTURE.md`, `README.md`) must only reflect the *current, validated codebase*. They must never be updated with speculative or future designs of unreleased slices. The SA must document all design/architectural proposals for the active slice inside `.bmc-stuff/work/SXX-BLUEPRINT.md` (or as draft files under `.bmc-stuff/work/`). Only the developers (Phase 3) may merge these changes into the root documentation files as they implement the task.
+
 
 
 

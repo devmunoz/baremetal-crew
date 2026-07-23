@@ -27,9 +27,8 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
     *   **Identify Host Binaries:** Check if the slice requires system utilities (e.g., `ffmpeg`, `imagemagick`). Audit if they are currently present in the system path.
     *   **Escalate Missing Infra:** If any required host dependency or Docker itself is missing/not running, **halt execution immediately**. Present a clear multiple-choice question or clarification to the CBO (Human) requesting manual installation of the required software on the host, or discuss architectural fallbacks (e.g., SQLite instead of PostgreSQL). Never create tasks that try to install OS packages.
 5.  **Metadata Initialization:**
-    *   Inspect `AGENTS.md` in the repository root. If it doesn't exist, initialize it from [AGENTS.md template](../../../.bmc-stuff/knowledge/templates/AGENTS.md). If it already exists, verify that the "Baremetal-Crew (BMC) Integration" section is correctly present; if not, append it at the end of the file including the CBO check warning note. Update and align the specific Setup, Build, and Testing instructions to match this repository's structure.
-    *   Initialize or update `DESIGN.md` in the repository root.
-6.  **Architectural Design:** Design database schema changes, directory layouts, and server endpoints. Map any required technical packages from the local `.skills/` directory.
+    *   Inspect `AGENTS.md` in the repository root. If it doesn't exist, initialize it from [AGENTS.md template](../../../.bmc-stuff/knowledge/templates/AGENTS.md). If it already exists, verify that the "Baremetal-Crew (BMC) Integration" section is correctly present; if not, append it at the end of the file including the CBO check warning note. Update and align the specific Setup, Build, and Testing instructions to match this repository's structure. Do not create or edit the root `DESIGN.md` file.
+6.  **Architectural Design:** Design database schema changes, directory layouts, and server endpoints. Map any required technical packages from the local `.skills/` directory. Document all architectural/UI design proposals for the active slice inside `.bmc-stuff/work/SXX-BLUEPRINT.md` (or as draft files under `.bmc-stuff/work/`). Leave root `DESIGN.md` and `ARCHITECTURE.md` untouched during this phase.
 7.  **Backlog Generation:** Draft the backlog in `.bmc-stuff/work/SXX-BLUEPRINT.md` in `Draft` state, detailing separate Dev Acceptance Criteria (code + unit tests) and QA Acceptance Criteria (automated E2E tests) for each task. Use the `SXX-01` task ID format.
 7.  **Human Control Checkpoint:** Wait for the CBO to review and explicitly sign off `.bmc-stuff/work/SXX-BLUEPRINT.md` (`Status: Signed` or `Approved`).
     *   *Guru advisory:* At this stage, the CBO may optionally trigger the `tech-guru` skill to evaluate the draft blueprint and scope, suggesting technical skills to enable. If approved by the CBO, the SA integrates these skills under `.skills/` and updates the blueprint.
@@ -44,16 +43,18 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
         ```
     *   Publish the backlog and trigger the implementation phase.
 9.  **Phase 4: Validation Handoff & Demo Logging:** Once all tasks in the backlog are `QA Passed` in the blueprint and database:
-    *   **Generate DEMO.md:** Generate `.bmc-stuff/work/SXX-DEMO.md` using [DEMO.md template](../../../.bmc-stuff/knowledge/templates/DEMO.md) as a reference, providing clear local verification instructions.
-    *   **Log Phase Transition:** Log the transition to Phase 4 in SQLite:
+    *   **Technical Documentation Update:** Check and update the root technical documentation files (`ARCHITECTURE.md` for endpoints/schemas, `DESIGN.md` for UI designs, `README.md` for dependencies/setup commands) to integrate all changes from the slice.
+    *   **Log Documentation Update Event:** Log the event:
+        ```bash
+        .bmc-stuff/bin/bmc-log event [SLICE-ID] SA UPDATE_DOCS "Root technical documentation updated for slice [SLICE-ID]"
+        ```
+    *   **Generate DEMO.md:** Generate `.bmc-stuff/work/SXX-DEMO.md` using the [DEMO.md template](../../../.bmc-stuff/knowledge/templates/DEMO.md) as a reference, providing clear local verification instructions.
+    *   **Log Phase Transition & Demo Event:** Log the validation phase start and the demo creation:
         ```bash
         .bmc-stuff/bin/bmc-log transition [SLICE-ID] "Phase 3: Execution" "Phase 4: Validation" ".bmc-stuff/work/SXX-DEMO.md generated, handoff to CBO"
-        ```
-    *   **Log Demo Generation Event:** Log the explicit creation of the validation guide:
-        ```bash
         .bmc-stuff/bin/bmc-log event [SLICE-ID] SA GENERATE_DEMO ".bmc-stuff/work/SXX-DEMO.md generated for CBO manual validation"
         ```
-    *   **Clean Turn Conclusion:** Conclude the turn by clearly informing the CBO that the slice execution is complete, providing the file path for validation, and ending the conversation to let the CBO test at their own pace.
+    *   **Clean Turn Conclusion:** Conclude the turn by clearly informing the CBO that the slice is complete and validation instructions are ready in `.bmc-stuff/work/SXX-DEMO.md`. Explicitly suggest that the CBO check the updated root documentation files (`ARCHITECTURE.md`, `DESIGN.md`, `README.md`) and consult with the Tech Guru (if needed) to ensure the stack health, then end the conversation.
 
 ## Output
 *   `.bmc-stuff/work/SXX-BLUEPRINT.md` (with atomic task statuses, generated from [BLUEPRINT.md template](../../../.bmc-stuff/knowledge/templates/BLUEPRINT.md)).
@@ -76,4 +77,6 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
     **[SLICE: <Slice ID>] | [PHASE: <Phase Name>]**
     ```
 *   **Manual Verification:** In `SXX-DEMO.md`, provide the CBO with clear, step-by-step instructions to manually test and verify the feature or fix.
+*   **Single Active Slice Focus:** Never process, reference, plan, or execute more than one slice at a time. All other slices, even if signed as scopes, must remain ignored until the active slice is completed or aborted.
+*   **Root Docs Isolation:** Never edit the repository root documentation files (`DESIGN.md`, `ARCHITECTURE.md`, `README.md`) directly with speculative or future designs. All architectural and design specifications must be proposed inside `SXX-BLUEPRINT.md` or drafts under `.bmc-stuff/work/`.
 *   **No Scope, No Action:** If no signed and frozen `.bmc-stuff/work/SXX-SCOPE.md` is in place for the active slice, the SA must halt execution immediately, inform the CBO of the lack of active definitions, and stop. The SA must never modify, create, initialize, or propose any setup plans for files (such as `AGENTS.md`, `DESIGN.md`, or `ARCHITECTURE.md`) without a signed scope.
