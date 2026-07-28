@@ -52,7 +52,10 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
         ```bash
         .bmc-stuff/bin/bmc-log event [SLICE-ID] SA UPDATE_DOCS "Root technical documentation updated for slice [SLICE-ID]"
         ```
-    *   **Generate DEMO.md:** Generate `.bmc-stuff/work/SXX-DEMO.md` using the [DEMO.md template](../../../.bmc-stuff/knowledge/templates/DEMO.md) as a reference, providing clear local verification instructions.
+    *   **Generate DEMO.md:** Generate `.bmc-stuff/work/SXX-DEMO.md` using the [DEMO.md template](../../../.bmc-stuff/knowledge/templates/DEMO.md) as a reference. Enforce strict environment consistency:
+        - If the project uses Docker, ALL commands in `SXX-DEMO.md` must be 100% containerized (`docker compose ...`). Never mix host local execution with Docker execution.
+        - Include explicit fresh build commands (`docker compose build --no-cache` or `docker compose up --build`) to guarantee newly added binaries, TUI components, or static assets are compiled into the image.
+        - Verify container mount paths (e.g. `/music` vs `music`) and volume mappings against `docker-compose.yml` definitions before generating instructions.
     *   **Log Phase Transition & Demo Event:** Log the validation phase start and the demo creation:
         ```bash
         .bmc-stuff/bin/bmc-log transition [SLICE-ID] "Phase 3: Execution" "Phase 4: Validation" ".bmc-stuff/work/SXX-DEMO.md generated, handoff to CBO"

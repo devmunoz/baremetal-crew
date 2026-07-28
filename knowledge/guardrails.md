@@ -64,6 +64,12 @@ This document defines the strict guardrails and execution limits for the Baremet
 *   **Single Target Slice per Session:** Multiple slices may be active or incomplete in the project database/workspace (provided they have no unresolved dependencies between them). However, a single conversation thread, session, or crew iteration must *never* process, reference, plan, or execute more than one slice ID. The target slice ID for the session must be resolved at the start, and all other slices must be completely ignored during that session to prevent context mixing and parallel file updates.
 *   **Root Documentation Isolation (No Speculative Pollution):** The repository root documentation files (`DESIGN.md`, `ARCHITECTURE.md`, `README.md`) must only reflect the *current, validated codebase*. They must never be updated with speculative or future designs of unreleased slices. The SA must document all design/architectural proposals for the active slice inside `.bmc-stuff/work/SXX-BLUEPRINT.md` (or as draft files under `.bmc-stuff/work/`). Only the developers (Phase 3) may merge these changes into the root documentation files as they implement the task.
 
+## 11. Environment & Demo Validation Guardrails
+*   **Strict Execution Consistency:** Never mix local host execution commands with containerized Docker commands in `SXX-DEMO.md`. If Docker is used for the project/slice, ALL commands in `SXX-DEMO.md` must execute strictly inside or via Docker (`docker compose ...`).
+*   **Mandatory Fresh Container Build:** All containerized `SXX-DEMO.md` instructions must explicitly include fresh build steps (`docker compose build --no-cache` or `docker compose up --build`) to guarantee newly compiled binaries, TUI components, or updated dependencies are built into the image layer before validation.
+*   **Container Path & Mount Precision:** Container volume paths (e.g. `/music` vs `music`), slashes, and working directory targets must be explicitly verified and matched against `docker-compose.yml` mounts before outputting DEMO instructions.
+*   **QA Environment Build Verification:** QA Engineer and SA must verify that the codebase builds cleanly in the target container environment (`docker compose build`) and that containerized entry points execute without path/binary errors before marking tasks `QA Passed` or generating `SXX-DEMO.md`.
+
 
 
 

@@ -152,7 +152,7 @@ All stage transitions are logged in the SQLite database using the command helper
 
 ### Phase 4: Validation (SA -> CBO)
 *   **Trigger:** Backlog completed and verified by the SA.
-*   **Process:** The SA updates the root technical documentation files (`ARCHITECTURE.md`, `DESIGN.md`, `README.md`) to integrate the slice changes, logs the transition to validation, generates `.bmc-stuff/work/SXX-DEMO.md` (based on [DEMO.md template](templates/DEMO.md)), suggests that the CBO check the updated docs and query the Tech Guru, and cleanly ends the conversation to allow validation at the CBO's own pace.
+*   **Process:** The SA updates the root technical documentation files (`ARCHITECTURE.md`, `DESIGN.md`, `README.md`) to integrate the slice changes, logs the transition to validation, generates `.bmc-stuff/work/SXX-DEMO.md` (based on [DEMO.md template](templates/DEMO.md) with 100% container consistency, fresh build commands, and verified mount paths), suggests that the CBO check the updated docs and query the Tech Guru, and cleanly ends the conversation to allow validation at the CBO's own pace.
     *   **Logging validation phase start & docs update:** The SA logs the transition, the documentation update, and registers the explicit delivery event:
         ```bash
         .bmc-stuff/bin/bmc-log transition SXX "Phase 3: Execution" "Phase 4: Validation" "Backlog completed and verified by SA"

@@ -19,7 +19,9 @@ Certify that the developer's implementation matches the functional requirements 
     ```bash
     .bmc-stuff/bin/bmc-log event [SLICE-ID] QA START_QA "Started QA testing for task [TASK-ID]"
     ```
-3.  **Test Implementation:** Write and run automated E2E/integration tests matching the task's QA Criteria.
+3.  **Test Implementation & Environment Build Verification:**
+    *   Write and run automated E2E/integration tests matching the task's QA Criteria.
+    *   **Container Environment Check:** If the project/slice uses Docker, verify that a fresh container build (`docker compose build` / `docker build`) succeeds cleanly without missing binaries, compilation errors, or stale image layers. Verify that paths, mounts, and entrypoints (e.g. `/music`) function as expected inside the container environment before certifying.
 4.  **Read Current Ping-Pong Count:** Read the current `Ping-Pong Count` value (e.g. `1 / 3`) for this task from `.bmc-stuff/work/SXX-BLUEPRINT.md`.
 5.  **Acceptance Decision & Logging:**
     *   **Pass (Green Light):** If E2E tests pass at 100%:
