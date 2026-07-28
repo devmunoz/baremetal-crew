@@ -26,7 +26,7 @@ The Software Architect (SA) must choose technologies exclusively from this catal
 ## 4. Living Documentation Standard
 
 To prevent documentation from going out of sync with the implementation:
-*   **ARCHITECTURE.md:** Must document database schemas, folder layout, API endpoints, and architectural patterns of the codebase.
+*   **ARCHITECTURE.md:** Must define the overall system structure. It must strictly comply with the official ARCHITECTURE.md specification (timajwilliams/architecture), including the following numbered h2 sections: 1. Project Structure, 2. High-Level System Diagram, 3. Core Components, 4. Data Stores, 5. External Integrations / APIs, 6. Deployment & Infrastructure, 7. Security Considerations, 8. Development & Testing Environment, 9. Future Considerations / Roadmap, 10. Project Identification, and 11. Glossary / Acronyms.
 *   **DESIGN.md:** Defines the visual identity and style guide of the application. It must strictly adhere to the official DESIGN.md specification (spec.md), including the YAML frontmatter for design tokens (colors, typography, rounded, spacing, components) and the designated h2 body sections: Overview, Colors, Typography, Layout, Elevation & Depth, Shapes, Components, and Do's and Don'ts.
 *   **README.md:** Must document local execution, dependencies, and environment variables.
 *   **Dev Rule:** The Fullstack Developer is responsible for updating the affected documentation files as part of their tasks.
