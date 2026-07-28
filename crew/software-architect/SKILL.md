@@ -47,7 +47,7 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
         ```
     *   Publish the backlog and trigger the implementation phase.
 9.  **Phase 4: Validation Handoff & Demo Logging:** Once all tasks in the backlog are `QA Passed` in the blueprint and database:
-    *   **Technical Documentation Update:** Check and update the root technical documentation files (`ARCHITECTURE.md` for endpoints/schemas, `DESIGN.md` for UI designs, `README.md` for dependencies/setup commands) to integrate all changes from the slice.
+    *   **Technical Documentation Update:** Check and update the root technical documentation files. Specifically, update `ARCHITECTURE.md` (endpoints/schemas), `README.md` (setup commands), and `DESIGN.md` (visual identity and layout). Ensure `DESIGN.md` strictly complies with the official specification format (including the YAML design tokens frontmatter and the ordered h2 sections), initializing it from the [DESIGN.md template](../../../.bmc-stuff/knowledge/templates/DESIGN.md) if it does not exist.
     *   **Log Documentation Update Event:** Log the event:
         ```bash
         .bmc-stuff/bin/bmc-log event [SLICE-ID] SA UPDATE_DOCS "Root technical documentation updated for slice [SLICE-ID]"

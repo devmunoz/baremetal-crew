@@ -27,7 +27,7 @@ The Software Architect (SA) must choose technologies exclusively from this catal
 
 To prevent documentation from going out of sync with the implementation:
 *   **ARCHITECTURE.md:** Must document database schemas, folder layout, API endpoints, and architectural patterns of the codebase.
-*   **DESIGN.md:** Documents UX/UI design decisions, UI component structure, design tokens, and user flow principles.
+*   **DESIGN.md:** Defines the visual identity and style guide of the application. It must strictly adhere to the official DESIGN.md specification (spec.md), including the YAML frontmatter for design tokens (colors, typography, rounded, spacing, components) and the designated h2 body sections: Overview, Colors, Typography, Layout, Elevation & Depth, Shapes, Components, and Do's and Don'ts.
 *   **README.md:** Must document local execution, dependencies, and environment variables.
 *   **Dev Rule:** The Fullstack Developer is responsible for updating the affected documentation files as part of their tasks.
 
