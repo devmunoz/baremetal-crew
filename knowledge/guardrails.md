@@ -28,8 +28,9 @@ This document defines the strict guardrails and execution limits for the Baremet
 ## 6. Centralized Database Guardrail
 *   All crew agents must write to and read (query) from the local SQLite database (`.bmc-stuff/crew.db`) strictly using the CLI database script helper (`.bmc-stuff/bin/bmc-log`). Direct/raw SQL connections, queries, or inserts in agent prompts/actions are strictly forbidden.
 
-## 7. Security & Secret Management Guardrail
+## 7. Security, Secret Management & Git Staging Guardrails
 *   **No Leaks:** Never commit credentials, local system paths, API keys, certificates, or SQLite databases to git. Use environment files (`.env`) for local runtime secrets and create `.env.example` templates if modifications are made.
+*   **Git Staging & Ignored Files Protection:** Under no circumstances attempt to stage or commit gitignored files (such as SQLite databases like `.bmc-stuff/crew.db`, local environment files, cache directories, or build artifacts). Agents must verify `.gitignore` or use `git check-ignore <path>` before staging. Always use explicit file staging (`git add <file>`) rather than wildcard staging (`git add .`).
 
 ## 8. Development Guardrails (Minimalism & Scope)
 ### Simplicity First
@@ -70,9 +71,9 @@ This document defines the strict guardrails and execution limits for the Baremet
 *   **Container Path & Mount Precision:** Container volume paths (e.g. `/music` vs `music`), slashes, and working directory targets must be explicitly verified and matched against `docker-compose.yml` mounts before outputting DEMO instructions.
 *   **QA Environment Build Verification:** QA Engineer and SA must verify that the codebase builds cleanly in the target container environment (`docker compose build`) and that containerized entry points execute without path/binary errors before marking tasks `QA Passed` or generating `SXX-DEMO.md`.
 
-## 12. Git Staging & Autonomous Subagent Execution
-*   **Git Staging & Ignored Files Protection:** Under no circumstances attempt to stage or commit gitignored files (such as SQLite databases like `.bmc-stuff/crew.db`, local environment files, cache directories, or build artifacts). Agents must verify `.gitignore` or use `git check-ignore <path>` before staging. Always use explicit file staging (`git add <file>`) rather than wildcard staging (`git add .`).
-*   **Proactive SA Subagent Orchestration:** Upon CBO sign-off/approval of `.bmc-stuff/work/SXX-BLUEPRINT.md`, the SA acts as the proactive autonomous orchestrator for Phase 3. The SA must immediately spawn subagents (via `invoke_subagent` for `fullstack-developer` and `qa-engineer` roles) for independent tasks and manage task progression to completion without halting or waiting for manual human prompts between individual tasks.
+## 12. Autonomous Subagent Execution & Skill Binding
+*   **Proactive SA Subagent Orchestration:** Upon CBO sign-off/approval of `.bmc-stuff/work/SXX-BLUEPRINT.md`, the SA acts as the proactive autonomous orchestrator for Phase 3. The SA must immediately spawn subagents for independent tasks and manage task progression to completion without halting or waiting for manual human prompts between individual tasks.
+*   **Subagent Skill File Binding:** When spawning developer or QA subagents via `invoke_subagent`, the SA must explicitly bind the subagent to its crew role skill by instructing the subagent in its `Prompt` to read `.agents/skills/<role>/SKILL.md` using `view_file` and execute its designated workflow. Subagents must never be launched without explicit skill binding instructions.
 
 
 
