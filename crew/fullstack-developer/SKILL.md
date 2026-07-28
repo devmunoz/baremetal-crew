@@ -11,7 +11,7 @@ Implement clean, test-covered code for the active backlog task, keeping reposito
 ## Inputs
 *   `.bmc-stuff/work/SXX-BLUEPRINT.md` (generated from [BLUEPRINT.md template](../../../.bmc-stuff/knowledge/templates/BLUEPRINT.md)).
 *   Active knowledge files: [tech.md](../../../.bmc-stuff/knowledge/tech.md) and [guardrails.md](../../../.bmc-stuff/knowledge/guardrails.md).
-*   Required local helper packages in `.skills/` (if defined in the blueprint).
+*   Required local helper packages in `.agents/skills/` (if defined in the blueprint).
 
 ## Workflow
 1.  **Verify Sign-off & Task Selection:** Read `.bmc-stuff/work/SXX-BLUEPRINT.md`. Verify that the blueprint has been signed off by the CBO (`Status: Signed` or `Approved`). Do not start development if unsigned. Once verified, select the first task marked `Pending` or `Pending Correction`.

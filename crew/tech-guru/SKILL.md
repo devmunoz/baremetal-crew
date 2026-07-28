@@ -6,7 +6,7 @@ description: Analyze functional scope and suggest minimal technical skills from 
 # tech-guru (Advisory Guru Skill)
 
 ## Purpose
-Examine the signed functional scope (`SXX-SCOPE.md`) and the draft blueprint (`SXX-BLUEPRINT.md`), query the indexed pre-approved skills catalogs, and recommend specific technical skills to be installed in `.skills/` for the Engineering Crew.
+Examine the signed functional scope (`SXX-SCOPE.md`) and the draft blueprint (`SXX-BLUEPRINT.md`), query the indexed pre-approved skills catalogs, and recommend specific technical skills to be installed in `.agents/skills/` for the Engineering Crew.
 
 ## Inputs
 *   `.bmc-stuff/work/SXX-SCOPE.md` (signed functional scope).

@@ -69,7 +69,7 @@ This document establishes the rigid, minimalist, and operational working framewo
 ### E. Tech Guru (Primary Guru Skill - Optional)
 *   **Reporting Line:** Invoked manually by the CBO for consulting.
 *   **Associated Skill:** [tech-guru](../crew/tech-guru/SKILL.md)
-*   **Responsibilities:** Analyze the signed functional scope (`.bmc-stuff/work/SXX-SCOPE.md`), search pre-approved skills libraries, recommend specific technical skills to install in `.skills/` to improve slice quality, audit `AGENTS.md` for drift, and write `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md`.
+*   **Responsibilities:** Analyze the signed functional scope (`.bmc-stuff/work/SXX-SCOPE.md`), search pre-approved skills libraries, recommend specific technical skills to install in `.agents/skills/` to improve slice quality, audit `AGENTS.md` for drift, and write `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md`.
 *   **Strict Constraints:** *Advisory only.* Does not write business logic or create backlog tasks. Must explicitly remind the CBO that they have the final authority to adjust, configure, or override any skill configuration.
 
 
@@ -104,7 +104,7 @@ All stage transitions are logged in the SQLite database using the command helper
 
 ### Optional Advisory Step: Tech Guru Consulting (CBO -> Guru)
 *   **Trigger:** `.bmc-stuff/work/SXX-SCOPE.md` signed by the CBO.
-*   **Process:** The CBO manually invokes the `tech-guru` skill. The Guru analyzes the scope, queries pre-approved skills libraries, and creates `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md` outlining specific skills to enable under `.skills/`.
+*   **Process:** The CBO manually invokes the `tech-guru` skill. The Guru analyzes the scope, queries pre-approved skills libraries, and creates `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md` outlining specific skills to enable under `.agents/skills/`.
 *   **CBO Decision:** The CBO reviews the recommendations, performs any necessary configurations (with final authority), and decides which skills to approve for the slice.
 
 ### Phase 2: The Breakdown (PO -> SA)

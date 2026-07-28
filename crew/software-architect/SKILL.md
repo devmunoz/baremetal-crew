@@ -12,7 +12,7 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
 *   `.bmc-stuff/work/SXX-SCOPE.md` (signed and frozen, generated from [SCOPE.md template](../../../.bmc-stuff/knowledge/templates/SCOPE.md)).
 *   SQLite database `.bmc-stuff/crew.db` (to inspect blocker slice completion status).
 *   Active knowledge files: [tech.md](../../../.bmc-stuff/knowledge/tech.md) and [guardrails.md](../../../.bmc-stuff/knowledge/guardrails.md).
-*   Local repository state (active directory structures, existing base code, `.skills/` folder).
+*   Local repository state (active directory structures, existing base code, `.agents/skills/` folder).
 
 ## Workflow
 1.  **Thread Target Selection & Scope Verification:**
@@ -32,10 +32,10 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
     *   **Escalate Missing Infra:** If any required host dependency or Docker itself is missing/not running, **halt execution immediately**. Present a clear multiple-choice question or clarification to the CBO (Human) requesting manual installation of the required software on the host, or discuss architectural fallbacks (e.g., SQLite instead of PostgreSQL). Never create tasks that try to install OS packages.
 5.  **Metadata Initialization:**
     *   Inspect `AGENTS.md` in the repository root. If it doesn't exist, initialize it from [AGENTS.md template](../../../.bmc-stuff/knowledge/templates/AGENTS.md). If it already exists, verify that the "Baremetal-Crew (BMC) Integration" section is correctly present; if not, append it at the end of the file including the CBO check warning note. Update and align the specific Setup, Build, and Testing instructions to match this repository's structure. Do not create or edit the root `DESIGN.md` file.
-6.  **Architectural Design:** Design database schema changes, directory layouts, and server endpoints. Map any required technical packages from the local `.skills/` directory. Document all architectural/UI design proposals for the active slice inside `.bmc-stuff/work/SXX-BLUEPRINT.md` (or as draft files under `.bmc-stuff/work/`). Leave root `DESIGN.md` and `ARCHITECTURE.md` untouched during this phase.
+6.  **Architectural Design:** Design database schema changes, directory layouts, and server endpoints. Map any required technical packages from the local `.agents/skills/` directory. Document all architectural/UI design proposals for the active slice inside `.bmc-stuff/work/SXX-BLUEPRINT.md` (or as draft files under `.bmc-stuff/work/`). Leave root `DESIGN.md` and `ARCHITECTURE.md` untouched during this phase.
 7.  **Backlog Generation:** Draft the backlog in `.bmc-stuff/work/SXX-BLUEPRINT.md` in `Draft` state, detailing separate Dev Acceptance Criteria (code + unit tests) and QA Acceptance Criteria (automated E2E tests) for each task. Use the `SXX-01` task ID format.
 7.  **Human Control Checkpoint:** Wait for the CBO to review and explicitly sign off `.bmc-stuff/work/SXX-BLUEPRINT.md` (`Status: Signed` or `Approved`).
-    *   *Guru advisory:* At this stage, the CBO may optionally trigger the `tech-guru` skill to evaluate the draft blueprint and scope, suggesting technical skills to enable. If approved by the CBO, the SA integrates these skills under `.skills/` and updates the blueprint.
+    *   *Guru advisory:* At this stage, the CBO may optionally trigger the `tech-guru` skill to evaluate the draft blueprint and scope, suggesting technical skills to enable. If approved by the CBO, the SA integrates these skills under `.agents/skills/` and updates the blueprint.
 8.  **Logging & Handoff:** Once the CBO signs the blueprint:
     *   Record the phase transition:
         ```bash
@@ -67,7 +67,7 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
 *   SQLite logs synchronized.
 
 ## Guardrails & Constraints
-*   **Don't Execute:** Do not write application logic, CSS, or business code.
+*   **Don't Execute / Change Code:** Do not write application logic, CSS, or business code. The SA must never modify, write, or fix code directly (even if requested by the CBO for an already completed slice). Any new requirements or changes to completed slices must follow the formal sequence: PO drafts scope (Phase 1) -> SA breaks down backlog (Phase 2) -> Dev/QA executes (Phase 3). Refuse to perform direct code changes.
 *   **Approved Stack:** Choose frameworks and DB engines strictly from [tech.md](../../../.bmc-stuff/knowledge/tech.md). Any change requires CBO approval.
 *   **Host System Protection:** Never design tasks, architectures, or write scripts that download, install, or compile OS-level packages, libraries, or binaries directly onto the host system. The use of `curl` or `wget` to download and execute remote scripts/installers is strictly forbidden. Curl/wget may only be run targeting local endpoints (e.g. `localhost`, `127.0.0.1`) for API/health checks. Consult the restricted/dangerous commands catalog in [guardrails.md](../../../.bmc-stuff/knowledge/guardrails.md) before writing blueprints. Ensure required components are run containerized (Docker) or verify pre-existence on host. If missing, escalate to CBO immediately.
 *   **Structural Verification:** Audit all completed tasks. Reject code containing TODOs, placeholders, or structure deviations.

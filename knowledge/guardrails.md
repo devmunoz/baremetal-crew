@@ -11,6 +11,7 @@ This document defines the strict guardrails and execution limits for the Baremet
 ## 2. PO & SA Guardrails (Don't Execute)
 *   **No Business Code:** The Product Owner (PO) and Software Architect (SA) must never write business logic or application code.
 *   **No UI/CSS Hacks:** The PO/SA cannot make UI modifications or styling edits.
+*   **No Code Modifications on Completed Slices:** Under no circumstances may the SA perform direct code adjustments or implement fixes (even if requested by the CBO on an already completed slice). Any change or adjustment to a completed slice must follow the formal sequence: PO drafts scope (Phase 1) -> SA breaks down backlog (Phase 2) -> Dev/QA executes (Phase 3).
 *   **No Scope, No Action:** If no signed and frozen `.bmc-stuff/work/SXX-SCOPE.md` is in place for the active slice, the SA must halt execution immediately, inform the CBO of the lack of active definitions, and stop. The SA must never modify, create, initialize, or propose any setup plans for files (such as `AGENTS.md`, `DESIGN.md`, or `ARCHITECTURE.md`) without a signed scope.
 
 ## 3. Engineering Squad Guardrails

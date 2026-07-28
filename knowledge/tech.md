@@ -32,5 +32,5 @@ To prevent documentation from going out of sync with the implementation:
 *   **Dev Rule:** The Fullstack Developer is responsible for updating the affected documentation files as part of their tasks.
 
 ## 4. Local SKILLS Specification (agentskills.io)
-*   Reusable technical setups or tool executions (e.g. `fastapi-setup`, `docker-compose-setup`) must be stored in the local `.skills/` folder at the root of the repository.
+*   Reusable technical setups or tool executions (e.g. `fastapi-setup`, `docker-compose-setup`) must be stored in the local `.agents/skills/` folder at the root of the repository.
 *   Each skill must contain a `SKILL.md` file following the agentskills.io standard.

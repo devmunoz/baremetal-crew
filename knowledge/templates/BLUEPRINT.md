@@ -11,7 +11,7 @@
 - **API Endpoints / Server Routes:**
   - `[METHOD] /route/endpoint` -> Input: `JSON` / Output: `JSON` + HTTP Code.
 - **Required Skills:**
-  - `.skills/[skill-name]`
+  - `.agents/skills/[skill-name]`
 
 ## 2. Atomic Task Backlog
 ### Task ID: [SXX-01] - [Module]
