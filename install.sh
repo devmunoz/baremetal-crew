@@ -29,7 +29,7 @@ print_help() {
     echo "Options:"
     echo "  -h, --help        Show this help message and exit"
     echo "  -y, --yes         Automatic yes to prompts (non-interactive friendly)"
-    echo "  --index-skills    Clone and index the pre-approved skills repositories"
+    echo "  -i, --index-skills Clone and index the pre-approved skills repositories"
     echo
     echo "Environment Variables:"
     echo "  BMC_INDEX_SKILLS  Set to 'true' to force skills indexing"
@@ -45,7 +45,7 @@ while [[ $# -gt 0 ]]; do
             YES_TO_ALL=true
             shift
             ;;
-        --index-skills)
+        -i|--index-skills)
             INDEX_SKILLS=true
             shift
             ;;
@@ -234,7 +234,7 @@ elif [ -t 0 ]; then
     fi
 else
     echo "Non-interactive shell detected. Skipping skills indexing."
-    echo "You can run '.bmc-stuff/bin/bmc-index-skills' manually or use '--index-skills' flag / 'BMC_INDEX_SKILLS=true' env var."
+    echo "You can run '.bmc-stuff/bin/bmc-index-skills' manually or use '-i' / '--index-skills' flag / 'BMC_INDEX_SKILLS=true' env var."
 fi
 
 echo "============================================="

@@ -24,8 +24,18 @@ You can install Baremetal-Crew in a target project directory using either of the
 Use this option if you have already cloned the `baremetal-crew` repository locally. Run the installer script and pass the target project directory:
 
 ```bash
-./install.sh /path/to/target/project
+./install.sh /path/to/target/project -y -i
 ```
+
+### Installer Flags & Options
+
+The `install.sh` script supports the following command-line flags:
+
+| Flag | Short | Description |
+| :--- | :--- | :--- |
+| `-i`, `--index-skills` | `-i` | Automatically clone and index pre-approved technical skills libraries during install. |
+| `-y`, `--yes` | `-y` | Non-interactive mode (automatically confirms installation prompts). |
+| `-h`, `--help` | `-h` | Display the installer help message and options. |
 
 ---
 
