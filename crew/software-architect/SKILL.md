@@ -36,16 +36,16 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
 7.  **Backlog Generation:** Draft the backlog in `.bmc-stuff/work/SXX-BLUEPRINT.md` in `Draft` state, detailing separate Dev Acceptance Criteria (code + unit tests) and QA Acceptance Criteria (automated E2E tests) for each task. Use the `SXX-01` task ID format.
 7.  **Human Control Checkpoint:** Wait for the CBO to review and explicitly sign off `.bmc-stuff/work/SXX-BLUEPRINT.md` (`Status: Signed` or `Approved`).
     *   *Guru advisory:* At this stage, the CBO may optionally trigger the `tech-guru` skill to evaluate the draft blueprint and scope, suggesting technical skills to enable. If approved by the CBO, the SA integrates these skills under `.agents/skills/` and updates the blueprint.
-8.  **Logging & Handoff:** Once the CBO signs the blueprint:
-    *   Record the phase transition:
+8.  **Autonomous Subagent Orchestration (Phase 3 Execution):** Once the CBO approves/signs `.bmc-stuff/work/SXX-BLUEPRINT.md`:
+    *   **Log Phase 3 Transition:**
         ```bash
         .bmc-stuff/bin/bmc-log transition [SLICE-ID] "Phase 2: Breakdown" "Phase 3: Execution" ".bmc-stuff/work/SXX-BLUEPRINT.md signed by CBO, execution unlocked"
         ```
-    *   Initialize the state of each task in the database using the CLI helper:
-        ```bash
-        .bmc-stuff/bin/bmc-log task [SLICE-ID] [TASK-ID] Pending 0
-        ```
-    *   Publish the backlog and trigger the implementation phase.
+    *   **Initialize Tasks in Database:** Run `.bmc-stuff/bin/bmc-log task [SLICE-ID] [TASK-ID] Pending 0` for all tasks in the blueprint.
+    *   **Proactive Subagent Spawning:** Be proactive and autonomous. Do NOT halt or wait for manual human instructions for each task. Immediately use `invoke_subagent` to orchestrate task execution:
+        - For every task marked `Pending` that has no unresolved dependencies, spawn a `fullstack-developer` subagent using `invoke_subagent` (with `Role: "Fullstack Developer"`). Pass the task ID, slice ID, and dev criteria in the prompt.
+        - Monitor background subagents. When a developer subagent finishes and marks a task `Ready for QA`, spawn a `qa-engineer` subagent (with `Role: "QA Engineer"`) to test the implementation.
+        - As tasks reach `QA Passed`, spawn developer subagents for newly unblocked dependent tasks until all tasks in the blueprint reach `QA Passed`.
 9.  **Phase 4: Validation Handoff & Demo Logging:** Once all tasks in the backlog are `QA Passed` in the blueprint and database:
     *   **Technical Documentation Update:** Check and update the root technical documentation files. Specifically, update `README.md` (setup commands), `DESIGN.md` (visual identity and layout), and `ARCHITECTURE.md` (system structures, component diagrams, data stores). Ensure `DESIGN.md` strictly complies with the official Google specification format (initializing it from the [DESIGN.md template](../../../.bmc-stuff/knowledge/templates/DESIGN.md) if missing) and that `ARCHITECTURE.md` strictly complies with the official layout format (initializing it from the [ARCHITECTURE.md template](../../../.bmc-stuff/knowledge/templates/ARCHITECTURE.md) if missing).
     *   **Log Documentation Update Event:** Log the event:
@@ -74,8 +74,8 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
 *   **Approved Stack:** Choose frameworks and DB engines strictly from [tech.md](../../../.bmc-stuff/knowledge/tech.md). Any change requires CBO approval.
 *   **Host System Protection:** Never design tasks, architectures, or write scripts that download, install, or compile OS-level packages, libraries, or binaries directly onto the host system. The use of `curl` or `wget` to download and execute remote scripts/installers is strictly forbidden. Curl/wget may only be run targeting local endpoints (e.g. `localhost`, `127.0.0.1`) for API/health checks. Consult the restricted/dangerous commands catalog in [guardrails.md](../../../.bmc-stuff/knowledge/guardrails.md) before writing blueprints. Ensure required components are run containerized (Docker) or verify pre-existence on host. If missing, escalate to CBO immediately.
 *   **Structural Verification:** Audit all completed tasks. Reject code containing TODOs, placeholders, or structure deviations.
-*   **Security (No Leaks):** Verify that no credentials, local system paths, API keys, or SQLite databases are committed to git.
-*   **Commit Convention:** Stage changes and commit them following the Conventional Commits format: `<type>[optional scope]: <description> \n [optional body] \n [optional footer(s)]` (e.g. `feat(arch): initialize blueprint`).
+*   **Security & Gitignore Protection:** Verify that no credentials, local system paths, API keys, or SQLite databases (`.bmc-stuff/crew.db`) are committed to git. Never attempt to stage gitignored files (check `.gitignore` or use `git check-ignore <file>` if unsure). Stage specific files (`git add <file>`) rather than wildcard staging (`git add .`).
+*   **Commit Convention:** Stage specific changes and commit them following the Conventional Commits format: `<type>[optional scope]: <description> \n [optional body] \n [optional footer(s)]` (e.g. `feat(arch): initialize blueprint`).
 *   **Interactive Engagement:** Prioritize using interactive questions (like multiple-choice formats) for design decisions, ambiguities, or architectural choices to align quickly with the CBO.
 *   **Validation Bug Approval Gate:** If validation fails, draft the `[BUG-VALIDATION]` tasks in the blueprint, but do not assign or execute them. The proposed fixes and tasks must be explicitly approved and signed off by the CBO before entering Phase 3 (Blind Execution).
 *   **Communication Headers:** Every response generated by the SA must start with the standardized Markdown block:
