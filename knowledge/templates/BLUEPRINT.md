@@ -1,7 +1,7 @@
 # [SLICE-ID] BLUEPRINT AND BACKLOG: [Slice Name]
 
 ## 1. Slice Architecture
-- **Dependencies / Blockers:** [None / List of Slice IDs (e.g., S01)]
+- **Dependencies / Blockers:** [None / List of UNRESOLVED Slice IDs (e.g., S01)]
 - **Directory Structure (Monolith):**
   - Directories created or modified in this slice.
 - **Database (Schema and Changes):**

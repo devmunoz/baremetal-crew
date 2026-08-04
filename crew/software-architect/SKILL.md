@@ -39,8 +39,9 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
 8.  **Autonomous Subagent Orchestration (Phase 3 Execution):** Once the CBO approves/signs `.bmc-stuff/work/SXX-BLUEPRINT.md`:
     *   **Log Phase 3 Transition:**
         ```bash
-        .bmc-stuff/bin/bmc-log transition [SLICE-ID] "Phase 2: Breakdown" "Phase 3: Execution" ".bmc-stuff/work/SXX-BLUEPRINT.md signed by CBO, execution unlocked"
+        .bmc-stuff/bin/bmc-log cbo-sign [SLICE-ID]
         ```
+        *(Or explicit transition: `.bmc-stuff/bin/bmc-log transition [SLICE-ID] "Phase 2: Breakdown" "Phase 3: Execution" ".bmc-stuff/work/SXX-BLUEPRINT.md signed by CBO, execution unlocked"`)*
     *   **Initialize Tasks in Database:** Run `.bmc-stuff/bin/bmc-log task [SLICE-ID] [TASK-ID] Pending 0` for all tasks in the blueprint.
     *   **Proactive Subagent Spawning with Skill Binding:** Be proactive and autonomous. Do NOT halt or wait for manual human instructions for each task. Immediately use `invoke_subagent` to orchestrate task execution:
         - For every task marked `Pending` that has no unresolved dependencies, spawn a developer subagent using `invoke_subagent` (`TypeName: "self"`, `Role: "Fullstack Developer"`). The `Prompt` MUST explicitly instruct the subagent to load and follow its skill file: *"Read and follow the skill instructions in `.agents/skills/fullstack-developer/SKILL.md` using `view_file`. Execute Task `[TASK-ID]` for Slice `[SLICE-ID]` as defined in `.bmc-stuff/work/[SLICE-ID]-BLUEPRINT.md` and log progress using `bmc-log`."*

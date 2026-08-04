@@ -17,16 +17,18 @@ Translate a raw high-level software idea into a crisp, trimmed, and minimal func
 1.  **Grill Session (Q&A):** Interrogate the CBO by asking exactly *one question at a time*. Focus exclusively on functional behavior, user actions, and visible interface results.
 2.  **Scope Trimming:** Actively trim and postpone any secondary features, moving them to the "Drastic Exclusions" list.
 3.  **Dependency Analysis:**
-    *   Inspect `.bmc-stuff/work/` directory to identify other active (`Status: Signed` / in development) or planned (`Status: Draft`) slices.
-    *   If the new slice depends on or is blocked by an existing slice, **propose to the CBO to pause** the definition, save a `Draft` version of `.bmc-stuff/work/SXX-SCOPE.md`, and resume it later.
-    *   If CBO approves defining it anyway, write the dependency explicitly in the `Dependencies / Blockers` field of `.bmc-stuff/work/SXX-SCOPE.md`.
+    *   Inspect `.bmc-stuff/work/` directory to identify active (`Status: Signed` / in development) or planned (`Status: Draft`) slices that are **not yet built or completed**.
+    *   *Rule:* **Only uncompleted slices count as dependencies/blockers.** Completed slices (`Phase 4 Completed`) are part of the baseline codebase and MUST NOT be listed as dependencies/blockers.
+    *   If the new slice depends on or is blocked by an uncompleted slice, **propose to the CBO to pause** the definition, save a `Draft` version of `.bmc-stuff/work/SXX-SCOPE.md`, and resume it later.
+    *   If CBO approves defining it anyway, write the unresolved dependency explicitly in the `Dependencies / Blockers` field of `.bmc-stuff/work/SXX-SCOPE.md`.
     *   *Rule:* Decouple dependencies. Only list dependencies on the blocked slice. The blocking slice must remain agnostic.
 4.  **Document Drafting:** Generate the functional specification in `.bmc-stuff/work/SXX-SCOPE.md` (where `XX` is the slice index, e.g. `S01-SCOPE.md`).
 5.  **Sign-off:** Wait for the CBO to explicitly sign the scope (`Status: Signed`).
 6.  **Logging:** Log Phase 1 completion and transition to Phase 2:
     ```bash
-    .bmc-stuff/bin/bmc-log transition [SLICE-ID] "Phase 1: Grill" "Phase 2: Breakdown" ".bmc-stuff/work/SXX-SCOPE.md signed by CBO"
+    .bmc-stuff/bin/bmc-log cbo-sign [SLICE-ID]
     ```
+    *(Or explicit transition: `.bmc-stuff/bin/bmc-log transition [SLICE-ID] "Phase 1: Grill" "Phase 2: Breakdown" ".bmc-stuff/work/SXX-SCOPE.md signed by CBO"`)*
 
 ## Output
 *   `.bmc-stuff/work/SXX-SCOPE.md` (generated from [SCOPE.md template](../../../.bmc-stuff/knowledge/templates/SCOPE.md), signed and frozen).

@@ -109,8 +109,32 @@ def get_current_phase(slice_id):
     return row[0] if row else "Not Started"
 
 def is_successful_phase(phase):
-    return phase.lower() in ["completed", "successfully completed", "closed"]
+    p = phase.lower()
+    return any(w in p for w in ["completed", "closed"])
 
+def cbo_sign(slice_id, custom_details=None):
+    current_phase = get_current_phase(slice_id)
+    p = current_phase.lower()
+    
+    if "phase 3" in p or "execution" in p:
+        from_phase = "Phase 3: Execution"
+        to_phase = "Phase 4 Completed"
+        default_details = f".bmc-stuff/work/{slice_id}-DEMO.md validated by CBO"
+    elif "phase 2" in p or "breakdown" in p:
+        from_phase = "Phase 2: Breakdown"
+        to_phase = "Phase 3: Execution"
+        default_details = f".bmc-stuff/work/{slice_id}-BLUEPRINT.md signed by CBO"
+    elif "phase 4" in p or is_successful_phase(current_phase):
+        print(f"[CBO-SIGN] Slice {slice_id} is already in final phase: {current_phase}")
+        return
+    else:
+        # Default: Not Started or Phase 1: Grill -> transition to Phase 2
+        from_phase = "Phase 1: Grill"
+        to_phase = "Phase 2: Breakdown"
+        default_details = f".bmc-stuff/work/{slice_id}-SCOPE.md signed by CBO"
+        
+    details = custom_details if custom_details else default_details
+    log_transition(slice_id, from_phase, to_phase, details)
 def show_slice(slice_id):
     current_phase = get_current_phase(slice_id)
     print(f"Slice: {slice_id}")
@@ -181,12 +205,12 @@ def check_dependency(slice_id):
 def print_usage():
     print("Usage:")
     print("  bmc-log transition <slice_id> <from_phase> <to_phase> <details>")
+    print("  bmc-log cbo-sign <slice_id> [details]")
     print("  bmc-log task <slice_id> <task_id> <status> [ping_pong_count]")
     print("  bmc-log event <slice_id> <agent_role> <event_type> <message>")
     print("  bmc-log active")
     print("  bmc-log show-slice <slice_id>")
     print("  bmc-log check-dependency <slice_id>")
-
 def main():
     if len(sys.argv) < 2:
         print_usage()
@@ -202,6 +226,13 @@ def main():
                 print("Usage: bmc-log transition <slice_id> <from_phase> <to_phase> <details>")
                 sys.exit(1)
             log_transition(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+        elif action == "cbo-sign":
+            if len(sys.argv) < 3:
+                print("Error: Missing slice_id.")
+                print("Usage: bmc-log cbo-sign <slice_id> [details]")
+                sys.exit(1)
+            details = sys.argv[3] if len(sys.argv) > 3 else None
+            cbo_sign(sys.argv[2], details)
             
         elif action == "task":
             if len(sys.argv) < 5:

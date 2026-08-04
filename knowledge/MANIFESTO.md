@@ -94,12 +94,13 @@ All stage transitions are logged in the SQLite database using the command helper
 *   **Process:** The PO executes the `product-owner` skill, interrogating the CBO and drafting `.bmc-stuff/work/SXX-SCOPE.md` (based on [SCOPE.md template](templates/SCOPE.md)).
 *   **Dependency Guardrail:** 
     *   The PO analyzes files in `.bmc-stuff/work/` to check for dependencies or blockers with active/planned slices.
-    *   If a dependency is detected, the PO **must propose to the CBO** to pause the definition, save a `Draft` version of `.bmc-stuff/work/SXX-SCOPE.md`, and resume it later.
-    *   If the CBO approves defining it anyway, the PO writes the dependency explicitly in the `Dependencies / Blockers` field of `.bmc-stuff/work/SXX-SCOPE.md`.
+    *   **Only uncompleted slices count as dependencies:** Completed slices (`Phase 4 Completed`) are part of the baseline codebase and MUST NOT be listed as dependencies/blockers.
+    *   If an unresolved dependency is detected, the PO **must propose to the CBO** to pause the definition, save a `Draft` version of `.bmc-stuff/work/SXX-SCOPE.md`, and resume it later.
+    *   If the CBO approves defining it anyway, the PO writes the unresolved dependency explicitly in the `Dependencies / Blockers` field of `.bmc-stuff/work/SXX-SCOPE.md`.
     *   **Decoupled Dependencies Rule:** The dependency is declared *only* in the blocked slice (e.g. S02 depends on S01). The blocking slice (S01) remains agnostic and does not list what it blocks.
 *   **Phase Sign-off:** The CBO signs `.bmc-stuff/work/SXX-SCOPE.md`. The PO logs the transition:
     ```bash
-    .bmc-stuff/bin/bmc-log transition SXX "Phase 1: Grill" "Phase 2: Breakdown" ".bmc-stuff/work/SXX-SCOPE.md signed by CBO"
+    .bmc-stuff/bin/bmc-log cbo-sign SXX
     ```
 
 ### Optional Advisory Step: Tech Guru Consulting (CBO -> Guru)
@@ -113,7 +114,7 @@ All stage transitions are logged in the SQLite database using the command helper
 *   **Execution Block Rule:** If `.bmc-stuff/work/SXX-BLUEPRINT.md` contains unresolved dependencies on slices that are not yet marked closed/successful in the database, the SA **must block the execution**. Phase 3 cannot start for this slice until the blocking slices are completed.
 *   **Phase Sign-off:** The SA logs the transition and publishes the sequential backlog:
     ```bash
-    .bmc-stuff/bin/bmc-log transition SXX "Phase 2: Breakdown" "Phase 3: Execution" ".bmc-stuff/work/SXX-BLUEPRINT.md generated"
+    .bmc-stuff/bin/bmc-log cbo-sign SXX
     ```
 
 ### Phase 3: Blind Execution (SA Orchestration -> Dev/QA Subagents)

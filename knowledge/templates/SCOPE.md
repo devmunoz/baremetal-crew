@@ -4,7 +4,7 @@
 - **Slice ID:** [SXX] (e.g., S01, S02)
 - **Date Created:** YYYY-MM-DD
 - **Status:** [Draft / Signed]
-- **Dependencies / Blockers:** [None / List of Slice IDs (e.g., S01)]
+- **Dependencies / Blockers:** [None / List of UNRESOLVED Slice IDs (e.g., S01)]
 
 ## 2. General Objective
 (A single concise paragraph defining the success of this cycle)
