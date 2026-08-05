@@ -75,6 +75,10 @@ This document defines the strict guardrails and execution limits for the Baremet
 *   **Proactive SA Subagent Orchestration:** Upon CBO sign-off/approval of `.bmc-stuff/work/SXX-BLUEPRINT.md`, the SA acts as the proactive autonomous orchestrator for Phase 3. The SA must immediately spawn subagents for independent tasks and manage task progression to completion without halting or waiting for manual human prompts between individual tasks.
 *   **Subagent Skill File Binding:** When spawning developer or QA subagents via `invoke_subagent`, the SA must explicitly bind the subagent to its crew role skill by instructing the subagent in its `Prompt` to read `.agents/skills/<role>/SKILL.md` using `view_file` and execute its designated workflow. Subagents must never be launched without explicit skill binding instructions.
 
+## 13. Skills Indexing & Local Synchronization Guardrails
+*   **Target Workspace Scope:** All execution of `.bmc-stuff/bin/bmc-index-skills` during installation or maintenance must explicitly specify `--target <path>` to prevent misdirected file reads or updates outside the target project root.
+*   **Skill Synchronization Discipline:** Automatically updating local skills (`--update-local`) must only overwrite matching skill definitions in `.agents/skills/` from authoritative primary crew skills (`crew/`) or verified cached skills (`.bmc-stuff/skills-cache/`), while excluding `.git` metadata folders. Agents may use `--check` to verify available updates without modifying disk state.
+
 
 
 

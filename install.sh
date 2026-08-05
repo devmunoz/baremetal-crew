@@ -222,13 +222,13 @@ fi
 # 6. Optional indexing of skills
 echo
 if [ "${INDEX_SKILLS}" = "true" ]; then
-    echo "-> Executing pre-approved skills indexing..."
-    "${TARGET_DIR}/.bmc-stuff/bin/bmc-index-skills"
+    echo "-> Executing pre-approved skills indexing and updating existing .agents/skills..."
+    "${TARGET_DIR}/.bmc-stuff/bin/bmc-index-skills" --target "${TARGET_DIR}"
 elif [ -t 0 ]; then
     read -p "Do you want to clone and index the pre-approved skills repositories now? (Requires git & internet) [y/N]: " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        "${TARGET_DIR}/.bmc-stuff/bin/bmc-index-skills"
+        "${TARGET_DIR}/.bmc-stuff/bin/bmc-index-skills" --target "${TARGET_DIR}"
     else
         echo "Skipping skills indexing. You can run '.bmc-stuff/bin/bmc-index-skills' at any time."
     fi

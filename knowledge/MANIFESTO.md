@@ -219,3 +219,9 @@ All writes and queries to the SQLite database `.bmc-stuff/crew.db` must go throu
 *   `.bmc-stuff/bin/bmc-log active` (Lists all active/incomplete slice IDs)
 *   `.bmc-stuff/bin/bmc-log show-slice <slice_id>` (Displays current phase, tasks list, and recent events for a slice)
 *   `.bmc-stuff/bin/bmc-log check-dependency <slice_id>` (Checks if a dependency slice is completed; returns exit code 0 if resolved, 1 otherwise)
+
+### Centralized Skills Indexer & Updater CLI Helper (`bmc-index-skills`)
+All skills catalog indexing and local `.agents/skills/` updates are managed via `.bmc-stuff/bin/bmc-index-skills`.
+*   **Indexing & Cache:** Clones pre-approved skills repositories into `.bmc-stuff/skills-cache/` and builds `.bmc-stuff/skills-cache/skills-index.json`.
+*   **Local Skills Synchronization:** Automatically synchronizes matching local skills in `.agents/skills/` with fresh primary crew skills (`crew/`) and indexed cached skills.
+*   **CLI Modes & Target Scope:** Supports target path resolution (`--target <path>`), dry-run check mode (`--check`), auto-update toggles (`--update-local` / `--no-update-local`), and silent output (`--silent`).

@@ -5,10 +5,41 @@ import json
 import subprocess
 import shutil
 import tempfile
+import argparse
 
-# Resolve paths relative to the script location (one level up from bin/)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-BMC_STUFF_DIR = os.path.dirname(SCRIPT_DIR)
+
+def resolve_paths(target_dir=None):
+    if target_dir:
+        project_root = os.path.abspath(target_dir)
+    else:
+        project_root = os.getcwd()
+        
+    bmc_stuff = os.path.join(project_root, ".bmc-stuff")
+    if os.path.exists(bmc_stuff):
+        bmc_stuff_dir = bmc_stuff
+    else:
+        bmc_stuff_dir = project_root
+        
+    catalog_path = os.path.join(bmc_stuff_dir, "knowledge", "skills-catalog.json")
+    if not os.path.exists(catalog_path):
+        catalog_path = os.path.join(project_root, "knowledge", "skills-catalog.json")
+
+    cache_dir = os.path.join(bmc_stuff_dir, "skills-cache")
+    local_skills_dir = os.path.join(project_root, ".agents", "skills")
+    
+    crew_dir = os.path.join(project_root, "crew")
+    if not os.path.exists(crew_dir):
+        crew_dir = os.path.join(bmc_stuff_dir, "crew")
+        
+    return {
+        "project_root": project_root,
+        "bmc_stuff_dir": bmc_stuff_dir,
+        "catalog_path": catalog_path,
+        "cache_dir": cache_dir,
+        "local_skills_dir": local_skills_dir,
+        "crew_dir": crew_dir
+    }
 
 def parse_yaml_frontmatter(file_path):
     name = None
@@ -71,8 +102,10 @@ def parse_yaml_frontmatter(file_path):
         pass
     return name, description
 
-def index_skills(silent=False):
-    catalog_path = os.path.join(BMC_STUFF_DIR, "knowledge", "skills-catalog.json")
+def index_skills(paths, silent=False):
+    catalog_path = paths["catalog_path"]
+    cache_dir = paths["cache_dir"]
+    
     if not os.path.exists(catalog_path):
         print(f"Error: Catalog file not found at {catalog_path}")
         sys.exit(1)
@@ -80,8 +113,6 @@ def index_skills(silent=False):
     with open(catalog_path, "r", encoding="utf-8") as f:
         catalog = json.load(f)
         
-    cache_dir = os.path.join(BMC_STUFF_DIR, "skills-cache")
-    # Clean previous cache to ensure freshness
     if os.path.exists(cache_dir):
         shutil.rmtree(cache_dir)
     os.makedirs(cache_dir, exist_ok=True)
@@ -145,12 +176,117 @@ def index_skills(silent=False):
     if not silent:
         print(f"Skills index generated successfully at {index_dest} ({len(skills_index)} skills cached).")
 
+    return skills_index
+
+def update_local_skills(paths, skills_index, check_only=False, silent=False):
+    local_skills_dir = paths["local_skills_dir"]
+    cache_dir = paths["cache_dir"]
+    crew_dir = paths.get("crew_dir", "")
+    
+    if not os.path.exists(local_skills_dir):
+        return 0, 0
+
+    available_skills = {}
+    
+    # 1. Primary Crew Skills (if present)
+    if os.path.exists(crew_dir):
+        for item in os.listdir(crew_dir):
+            c_path = os.path.join(crew_dir, item)
+            if os.path.isdir(c_path) and os.path.exists(os.path.join(c_path, "SKILL.md")):
+                fm_name, _ = parse_yaml_frontmatter(os.path.join(c_path, "SKILL.md"))
+                key_folder = item.lower()
+                available_skills[key_folder] = (c_path, "primary crew skills")
+                if fm_name:
+                    available_skills[fm_name.lower()] = (c_path, "primary crew skills")
+
+    # 2. Indexed Cached Skills (from skills-index.json)
+    for entry in skills_index:
+        s_name = entry.get("name")
+        repo_name = entry.get("repo_name")
+        if not s_name or not repo_name:
+            continue
+        c_path = os.path.join(cache_dir, repo_name, s_name)
+        if os.path.exists(c_path):
+            key_name = s_name.lower()
+            available_skills[key_name] = (c_path, f"cache ({repo_name})")
+
+    updated_count = 0
+    total_local = 0
+
+    for item in os.listdir(local_skills_dir):
+        target_skill_dir = os.path.join(local_skills_dir, item)
+        if not os.path.isdir(target_skill_dir):
+            continue
+            
+        total_local += 1
+        skill_file = os.path.join(target_skill_dir, "SKILL.md")
+        fm_name = None
+        if os.path.exists(skill_file):
+            fm_name, _ = parse_yaml_frontmatter(skill_file)
+            
+        match_key = None
+        if item.lower() in available_skills:
+            match_key = item.lower()
+        elif fm_name and fm_name.lower() in available_skills:
+            match_key = fm_name.lower()
+            
+        if match_key:
+            source_path, source_label = available_skills[match_key]
+            
+            if os.path.abspath(source_path) == os.path.abspath(target_skill_dir):
+                continue
+
+            if check_only:
+                if not silent:
+                    print(f"[CHECK] Local skill '.agents/skills/{item}' matches fresh version in {source_label}.")
+                updated_count += 1
+            else:
+                try:
+                    for s_item in os.listdir(source_path):
+                        s_sub = os.path.join(source_path, s_item)
+                        d_sub = os.path.join(target_skill_dir, s_item)
+                        if os.path.isdir(s_sub):
+                            if s_item != ".git":
+                                shutil.copytree(s_sub, d_sub, dirs_exist_ok=True)
+                        else:
+                            shutil.copy2(s_sub, d_sub)
+                    updated_count += 1
+                    if not silent:
+                        print(f"[UPDATE] Updated local skill '.agents/skills/{item}' from {source_label}.")
+                except Exception as e:
+                    if not silent:
+                        print(f"Failed to update local skill '{item}': {e}")
+
+    return updated_count, total_local
+
 def main():
-    silent = "--silent" in sys.argv
+    parser = argparse.ArgumentParser(description="Baremetal-Crew Skills Indexer & Updater")
+    parser.add_argument("-t", "--target", help="Target project directory path")
+    parser.add_argument("-s", "--silent", action="store_true", help="Run silently without verbose logs")
+    parser.add_argument("-c", "--check", action="store_true", help="Check local .agents/skills without overwriting")
+    parser.add_argument("-u", "--update-local", dest="update_local", action="store_true", default=True, help="Update local .agents/skills matching fresh indexed skills (default: enabled)")
+    parser.add_argument("--no-update-local", dest="update_local", action="store_false", help="Do not update local .agents/skills")
+
+    args, unknown = parser.parse_known_args()
+    
+    # Backward compatibility with positional --silent or positional target
+    if "--silent" in sys.argv:
+        args.silent = True
+
+    paths = resolve_paths(target_dir=args.target)
+    
     try:
-        index_skills(silent=silent)
+        skills_index = index_skills(paths, silent=args.silent)
+        if args.check:
+            updated, total = update_local_skills(paths, skills_index, check_only=True, silent=args.silent)
+            if not args.silent:
+                print(f"Check complete: {updated}/{total} local skills have fresh updates available.")
+        elif args.update_local:
+            updated, total = update_local_skills(paths, skills_index, check_only=False, silent=args.silent)
+            if not args.silent and total > 0:
+                print(f"Local skills update complete: {updated}/{total} matching skills updated in .agents/skills/.")
     except Exception as e:
-        print(f"Failed to index skills: {e}")
+        print(f"Failed to index/update skills: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":

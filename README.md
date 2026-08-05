@@ -33,10 +33,9 @@ The `install.sh` script supports the following command-line flags:
 
 | Flag | Short | Description |
 | :--- | :--- | :--- |
-| `-i`, `--index-skills` | `-i` | Automatically clone and index pre-approved technical skills libraries during install. |
+| `-i`, `--index-skills` | `-i` | Automatically clone, index pre-approved technical skills libraries, and update matching skills in `.agents/skills/` during install. |
 | `-y`, `--yes` | `-y` | Non-interactive mode (automatically confirms installation prompts). |
 | `-h`, `--help` | `-h` | Display the installer help message and options. |
-
 ---
 
 ### Option 2: One-Command Remote Installation (Standalone)
@@ -68,6 +67,33 @@ curl -L "https://raw.githubusercontent.com/devmunoz/baremetal-crew/master/instal
 ```
 
 ---
+---
+
+## 🛠️ Helper Utilities & Skills Management
+
+Baremetal-Crew provides centralized CLI utilities under `.bmc-stuff/bin/`:
+
+*   **`.bmc-stuff/bin/bmc-log`**: Manages execution state, phase transitions, and task logs in `.bmc-stuff/crew.db`.
+*   **`.bmc-stuff/bin/bmc-index-skills`**: Clones and indexes pre-approved skills repositories into `.bmc-stuff/skills-cache/` and synchronizes matching skills under `.agents/skills/`.
+
+### Skills Indexer & Updater CLI Options (`bmc-index-skills`)
+
+| Flag / Option | Description |
+| :--- | :--- |
+| `-t`, `--target <path>` | Specify target project directory path (defaults to working directory). |
+| `-c`, `--check` | Check local `.agents/skills/` for available updates without overwriting files. |
+| `-u`, `--update-local` | Automatically update local `.agents/skills/` from primary crew skills and cache (default: enabled). |
+| `--no-update-local` | Skip updating local `.agents/skills/`. |
+| `-s`, `--silent` | Run silently without verbose terminal logs. |
+
+Example usage:
+```bash
+# Index skills catalog and update matching .agents/skills in target project
+.bmc-stuff/bin/bmc-index-skills --target /path/to/project
+
+# Check for local skill updates without overwriting
+.bmc-stuff/bin/bmc-index-skills --check
+```
 
 ## 🌟 Credits & Skill Sources
 

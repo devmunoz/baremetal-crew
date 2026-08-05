@@ -31,6 +31,7 @@ To prevent documentation from going out of sync with the implementation:
 *   **README.md:** Must document local execution, dependencies, and environment variables.
 *   **Slice-Agnostic Standard:** Root documentation (`ARCHITECTURE.md`, `DESIGN.md`, `README.md`) and production source code MUST be strictly slice-agnostic. Slices (`SXX`) are management artifacts used in `.bmc-stuff/work/` and database tracking. Slice IDs must NEVER appear in root documentation files, code comments, or application source code.
 *   **Dev Rule:** The Fullstack Developer is responsible for updating the affected documentation files as part of their tasks.
-## 4. Local SKILLS Specification (agentskills.io)
+## 5. Local SKILLS Specification (agentskills.io)
 *   Reusable technical setups or tool executions (e.g. `fastapi-setup`, `docker-compose-setup`) must be stored in the local `.agents/skills/` folder at the root of the repository.
 *   Each skill must contain a `SKILL.md` file following the agentskills.io standard.
+*   **Indexing & Synchronization:** Local skills under `.agents/skills/` are maintained and synchronized using `.bmc-stuff/bin/bmc-index-skills`. The script clones pre-approved skills repositories into `.bmc-stuff/skills-cache/` and updates existing local skills matching primary crew skills (`crew/`) or cached indexes.
