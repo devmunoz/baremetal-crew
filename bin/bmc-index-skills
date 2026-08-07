@@ -149,7 +149,7 @@ def index_skills(paths, silent=False):
                         if not skill_name:
                             skill_name = os.path.basename(root)
                             
-                        dest_skill_dir = os.path.join(cache_dir, name, skill_name)
+                        dest_skill_dir = os.path.join(cache_dir, name, skill_name).replace(" ", "-")
                         os.makedirs(dest_skill_dir, exist_ok=True)
                         
                         for item in os.listdir(root):

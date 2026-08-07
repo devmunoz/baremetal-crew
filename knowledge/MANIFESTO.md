@@ -11,7 +11,9 @@ This document establishes the rigid, minimalist, and operational working framewo
 *   **Military and Irrevocable Flow:** The development flow is linear, sequential, and watertight. AI skills are forbidden from assuming or guessing; when in doubt, they must stop, report, and ask. The human commits to never changing the scope once a cycle is locked.
 *   **Slices & Dependencies:** The project is developed in **Slices** (denoted as `SXX`, e.g., `S01`, `S02`). Multiple slices can be defined and planned in parallel. Slices can have dependencies/blockers on other slices (unresolved dependencies block development execution, but allow functional definition).
 *   **Centralized Knowledge & Governance:** Technical specs, processes, and stacks are managed in a structured **Knowledge Base** (`knowledge/`) and a set of static reference templates (`knowledge/templates/`). A local CLI script (`.bmc-stuff/bin/bmc-log`) abstracts and records execution history to a local SQLite database (`.bmc-stuff/crew.db`).
-
+*   **STE Communication Standard:** All inter-agent and CBO communications must strictly follow Simplified Technical English (ASD-STE100 style) by default to eliminate ambiguity and optimize token consumption: active voice, simple tenses, short sentences (≤20 words for instructions, ≤25 for descriptions), and explicit terminology.
+*   **Artifact Token Optimization Standard:** Agents must never duplicate or print the contents of created or modified artifact files in chat responses. Responses must provide only the file name/path, a super short STE summary (1–3 sentences), and direct instructions or actions required by the CBO or receiving agents.
+*   **Optional Caveman Skill Suggestion:** `caveman` is an indexed external skill available in the skills catalog. Crew agents may advertise `caveman` mode to the CBO as an optional suggestion for ultra-compressed communication, but its activation is strictly up to the CBO.
 ---
 
 ## 2. Strict Definition of Roles and Primary Skills
@@ -196,16 +198,18 @@ The crew uses these static templates as references to generate active execution 
 ## 6. Project Governance & Standards
 
 All Crew operations are configured and guided by the files in the structured **Knowledge Base** directory:
-*   [principles.md](principles.md): Defines operational minimalism, isolation rules, and WAILL-E framework principles.
+*   [principles.md](principles.md): Defines operational minimalism, isolation rules, and BMC framework principles.
 *   [tech.md](tech.md): Defines pre-approved technologies, monolithic structures, living documentation files (`ARCHITECTURE.md`, `DESIGN.md`), and local skills lifecycle.
 *   [guardrails.md](guardrails.md): Defines absolute limits for roles, the 3-attempt ping-pong limit, Stop-the-Line rules, and logging protocols.
 
 ### Pre-approved Skills Libraries
 The Tech Guru and SA can pull reusable skill definitions from these sources:
-*   **WAILL-E Core:** Minimal required skills for the Crew (slicing, TDD, TPLP).
+*   **BMC Core:** Minimal required skills for the Crew (slicing, TDD, TPLP, grilling, ASD-STE100 active by default).
 *   **addyosmani-agent-skills:** Standard technical engineering skills.
 *   **mattpocock-skills:** Engineering development and testing skills.
 *   **obra-superpowers:** High-level development process control skills.
+*   **JuliusBrussee-caveman:** Optional skill for ultra-compressed token communication mode (advertised as a suggestion for the user/CBO to invoke if desired).
+*   **danyuchn-asd-ste100-skill:** (built-in framework default communication standard for unambiguous prose).
 
 ### Centralized SQLite Database CLI Helper (`bmc-log`)
 All writes and queries to the SQLite database `.bmc-stuff/crew.db` must go through the centralized CLI script. Raw SQL operations are strictly forbidden.

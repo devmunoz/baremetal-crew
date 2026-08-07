@@ -28,6 +28,13 @@
       "selection": [
         "skills/caveman"
       ]
+    },
+    {
+      "name": "danyuchn-asd-ste100-skill",
+      "url": "https://github.com/danyuchn/asd-ste100-skill.git",
+      "selection": [
+        "."
+      ]
     }
   ]
 }
