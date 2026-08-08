@@ -144,6 +144,21 @@ def show_slice(slice_id):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     
+    # Phase Transitions History
+    cursor.execute(
+        "SELECT timestamp, from_phase, to_phase, details FROM transitions WHERE slice_id = ? ORDER BY id ASC",
+        (slice_id,)
+    )
+    transitions = cursor.fetchall()
+    print("Phase Transitions History:")
+    if transitions:
+        for tr in transitions:
+            details_str = f" | {tr[3]}" if tr[3] else ""
+            print(f"  [{tr[0]}] {tr[1]} -> {tr[2]}{details_str}")
+    else:
+        print("  No transitions logged yet.")
+    print("-" * 50)
+    
     # Tasks
     cursor.execute(
         "SELECT task_id, status, ping_pong_count, updated_at FROM tasks WHERE slice_id = ? ORDER BY task_id ASC",
@@ -173,7 +188,6 @@ def show_slice(slice_id):
     else:
         print("  No events logged yet.")
     conn.close()
-
 def list_active_slices():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()

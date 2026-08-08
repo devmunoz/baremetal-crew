@@ -13,6 +13,8 @@ This document defines the core process principles that govern the Baremetal-Crew
 *   **Irrevocable Scope:** Once Phase 1 is signed off, the functional scope is frozen. Changes are prohibited until the next cycle.
 *   **Explicit Sign-offs:** Each transition between phases requires a formal sign-off (e.g., CBO signs `.bmc-stuff/SCOPE.md`, SA signs `.bmc-stuff/BLUEPRINT.md`, QA marks task `QA Passed`).
 *   **Transition Logging:** All stage transitions must be recorded in the local SQLite logging database (`.bmc-stuff/crew.db`) using the centralized logging script.
+*   **Framework Binary Protection:** Helper scripts under `bin/` or `.bmc-stuff/bin/` (`bmc-log`, `bmc-index-skills`) are immutable framework executables. Crew agents must NEVER edit, patch, or modify binary scripts.
+*   **Centralized DB Access:** All state changes and queries must execute strictly via `.bmc-stuff/bin/bmc-log`. Executing direct shell database commands (e.g., `sqlite3`) is strictly prohibited.
 
 ## 3. Role Estanqueidad (Isolation)
 *   **Strict Boundaries:** No agent or skill may perform tasks belonging to another. Developers write code and unit tests; QA automates E2E validation; SA organizes structure and tasks; PO defines functional reach.

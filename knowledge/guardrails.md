@@ -25,9 +25,9 @@ This document defines the strict guardrails and execution limits for the Baremet
 ## 5. Advisory Gurus
 *   External Guru agents can only generate technical reports in Markdown. They must never write code or directly modify the repository.
 
-## 6. Centralized Database Guardrail
-*   All crew agents must write to and read (query) from the local SQLite database (`.bmc-stuff/crew.db`) strictly using the CLI database script helper (`.bmc-stuff/bin/bmc-log`). Direct/raw SQL connections, queries, or inserts in agent prompts/actions are strictly forbidden.
-
+## 6. Centralized Database & Framework Binary Protection Guardrail
+*   **Centralized Database Access Only:** All crew agents must write to and read (query) from the local SQLite database (`.bmc-stuff/crew.db`) strictly using the CLI database script helper (`.bmc-stuff/bin/bmc-log`). Executing direct shell database queries (such as `sqlite3 .bmc-stuff/crew.db ...` or raw SQL scripts) is strictly forbidden.
+*   **Absolute Ban on Modifying Framework Binaries:** Crew agents are strictly forbidden from modifying, editing, patching, or overwriting any CLI scripts or binary helpers under `bin/` or `.bmc-stuff/bin/` (such as `bmc-log` or `bmc-index-skills`). Framework binaries are immutable system executables. If a tool limitation occurs, agents must halt and report it to the CBO; altering framework binaries is a critical violation.
 ## 7. Security, Secret Management & Git Staging Guardrails
 *   **No Leaks:** Never commit credentials, local system paths, API keys, certificates, or SQLite databases to git. Use environment files (`.env`) for local runtime secrets and create `.env.example` templates if modifications are made.
 *   **Git Staging & Ignored Files Protection:** Under no circumstances attempt to stage or commit gitignored files (such as SQLite databases like `.bmc-stuff/crew.db`, local environment files, cache directories, or build artifacts). Agents must verify `.gitignore` or use `git check-ignore <path>` before staging. Always use explicit file staging (`git add <file>`) rather than wildcard staging (`git add .`).

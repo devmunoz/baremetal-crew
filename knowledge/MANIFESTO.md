@@ -14,6 +14,7 @@ This document establishes the rigid, minimalist, and operational working framewo
 *   **STE Communication Standard:** All inter-agent and CBO communications must strictly follow Simplified Technical English (ASD-STE100 style) by default to eliminate ambiguity and optimize token consumption: active voice, simple tenses, short sentences (≤20 words for instructions, ≤25 for descriptions), and explicit terminology.
 *   **Artifact Token Optimization Standard:** Agents must never duplicate or print the contents of created or modified artifact files in chat responses. Responses must provide only the file name/path, a super short STE summary (1–3 sentences), and direct instructions or actions required by the CBO or receiving agents.
 *   **Optional Caveman Skill Suggestion:** `caveman` is an indexed external skill available in the skills catalog. Crew agents may advertise `caveman` mode to the CBO as an optional suggestion for ultra-compressed communication, but its activation is strictly up to the CBO.
+*   **Framework Binary Protection:** CLI helper scripts (`bin/bmc-log`, `bin/bmc-index-skills`) are immutable framework executables. Crew agents are strictly forbidden from modifying or editing binary scripts under `bin/` or `.bmc-stuff/bin/`.
 ---
 
 ## 2. Strict Definition of Roles and Primary Skills
@@ -211,8 +212,8 @@ The Tech Guru and SA can pull reusable skill definitions from these sources:
 *   **JuliusBrussee-caveman:** Optional skill for ultra-compressed token communication mode (advertised as a suggestion for the user/CBO to invoke if desired).
 *   **danyuchn-asd-ste100-skill:** (built-in framework default communication standard for unambiguous prose).
 
-### Centralized SQLite Database CLI Helper (`bmc-log`)
-All writes and queries to the SQLite database `.bmc-stuff/crew.db` must go through the centralized CLI script. Raw SQL operations are strictly forbidden.
+### Centralized SQLite Database CLI Helper & Binary Protection (`bmc-log`)
+All database operations on `.bmc-stuff/crew.db` must strictly use the CLI database script helper (`.bmc-stuff/bin/bmc-log`). Direct shell database queries (e.g. `sqlite3`) and modifying binary helper scripts are strictly forbidden.
 
 **Write Operations:**
 *   `.bmc-stuff/bin/bmc-log transition <slice_id> <from_phase> <to_phase> <details>`
