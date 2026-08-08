@@ -110,13 +110,21 @@ def get_current_phase(slice_id):
 
 def is_successful_phase(phase):
     p = phase.lower()
-    return any(w in p for w in ["completed", "closed"])
+    return any(w in p for w in ["completed", "closed", "aborted"])
 
 def cbo_sign(slice_id, custom_details=None):
     current_phase = get_current_phase(slice_id)
     p = current_phase.lower()
     
-    if "phase 3" in p or "execution" in p:
+    if is_successful_phase(current_phase):
+        print(f"[CBO-SIGN] Slice {slice_id} is already in final phase: {current_phase}")
+        return
+
+    if "phase 4" in p or "validation" in p:
+        from_phase = current_phase if current_phase != "Not Started" else "Phase 4: Validation"
+        to_phase = "Phase 4 Completed"
+        default_details = f".bmc-stuff/work/{slice_id}-DEMO.md validated and signed off by CBO"
+    elif "phase 3" in p or "execution" in p:
         from_phase = "Phase 3: Execution"
         to_phase = "Phase 4 Completed"
         default_details = f".bmc-stuff/work/{slice_id}-DEMO.md validated by CBO"
@@ -124,12 +132,9 @@ def cbo_sign(slice_id, custom_details=None):
         from_phase = "Phase 2: Breakdown"
         to_phase = "Phase 3: Execution"
         default_details = f".bmc-stuff/work/{slice_id}-BLUEPRINT.md signed by CBO"
-    elif "phase 4" in p or is_successful_phase(current_phase):
-        print(f"[CBO-SIGN] Slice {slice_id} is already in final phase: {current_phase}")
-        return
     else:
         # Default: Not Started or Phase 1: Grill -> transition to Phase 2
-        from_phase = "Phase 1: Grill"
+        from_phase = "Phase 1: Grill" if ("phase 1" in p or "grill" in p) else current_phase
         to_phase = "Phase 2: Breakdown"
         default_details = f".bmc-stuff/work/{slice_id}-SCOPE.md signed by CBO"
         
@@ -191,16 +196,17 @@ def show_slice(slice_id):
 def list_active_slices():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("""
-        SELECT DISTINCT slice_id FROM transitions
-        EXCEPT
-        SELECT DISTINCT slice_id FROM transitions 
-        WHERE to_phase IN ('Completed', 'Successfully Completed', 'Closed', 'Aborted')
-    """)
+    cursor.execute("SELECT DISTINCT slice_id FROM transitions")
     rows = cursor.fetchall()
     conn.close()
     
-    active_slices = [r[0] for r in rows]
+    all_slices = [r[0] for r in rows]
+    active_slices = []
+    for slice_id in all_slices:
+        cp = get_current_phase(slice_id)
+        if not is_successful_phase(cp):
+            active_slices.append(slice_id)
+            
     if active_slices:
         for slice_id in active_slices:
             print(slice_id)
