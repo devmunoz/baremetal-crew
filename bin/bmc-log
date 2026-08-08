@@ -122,11 +122,11 @@ def cbo_sign(slice_id, custom_details=None):
 
     if "phase 4" in p or "validation" in p:
         from_phase = current_phase if current_phase != "Not Started" else "Phase 4: Validation"
-        to_phase = "Phase 4 Completed"
+        to_phase = "Completed"
         default_details = f".bmc-stuff/work/{slice_id}-DEMO.md validated and signed off by CBO"
     elif "phase 3" in p or "execution" in p:
         from_phase = "Phase 3: Execution"
-        to_phase = "Phase 4 Completed"
+        to_phase = "Completed"
         default_details = f".bmc-stuff/work/{slice_id}-DEMO.md validated by CBO"
     elif "phase 2" in p or "breakdown" in p:
         from_phase = "Phase 2: Breakdown"

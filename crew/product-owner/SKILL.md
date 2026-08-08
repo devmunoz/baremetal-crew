@@ -18,7 +18,7 @@ Translate a raw high-level software idea into a crisp, trimmed, and minimal func
 2.  **Scope Trimming:** Actively trim and postpone any secondary features, moving them to the "Drastic Exclusions" list.
 3.  **Dependency Analysis:**
     *   Inspect `.bmc-stuff/work/` directory to identify active (`Status: Signed` / in development) or planned (`Status: Draft`) slices that are **not yet built or completed**.
-    *   *Rule:* **Only uncompleted slices count as dependencies/blockers.** Completed slices (`Phase 4 Completed`) are part of the baseline codebase and MUST NOT be listed as dependencies/blockers.
+    *   *Rule:* **Only uncompleted slices count as dependencies/blockers.** Completed slices (`Completed` or `Phase 4 Completed`) are part of the baseline codebase and MUST NOT be listed as dependencies/blockers.
     *   If the new slice depends on or is blocked by an uncompleted slice, **propose to the CBO to pause** the definition, save a `Draft` version of `.bmc-stuff/work/SXX-SCOPE.md`, and resume it later.
     *   If CBO approves defining it anyway, write the unresolved dependency explicitly in the `Dependencies / Blockers` field of `.bmc-stuff/work/SXX-SCOPE.md`.
     *   *Rule:* Decouple dependencies. Only list dependencies on the blocked slice. The blocking slice must remain agnostic.
