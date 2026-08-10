@@ -109,7 +109,7 @@ All stage transitions are logged in the SQLite database using the command helper
 
 ### Optional Advisory Step: Tech Guru Consulting (CBO -> Guru)
 *   **Trigger:** `.bmc-stuff/work/SXX-SCOPE.md` signed by the CBO.
-*   **Process:** The CBO manually invokes the `tech-guru` skill. The Guru analyzes the scope, queries pre-approved skills libraries, and creates `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md` outlining specific skills to enable under `.agents/skills/`.
+*   **Process:** The CBO manually invokes the `tech-guru` skill. The Guru analyzes the scope, checks `.agents/skills/` to filter out already installed skills, runs `.bmc-stuff/bin/bmc-index-skills --check` to detect available updates for existing skills, and creates `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md` highlighting ONLY new recommended skills (or noting that all recommended skills are already installed) and suggesting updates when detected.
 *   **CBO Decision:** The CBO reviews the recommendations, performs any necessary configurations (with final authority), and decides which skills to approve for the slice.
 
 ### Phase 2: The Breakdown (PO -> SA)

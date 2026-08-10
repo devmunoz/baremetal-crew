@@ -18,14 +18,18 @@ Examine the signed functional scope (`SXX-SCOPE.md`) and the draft blueprint (`S
 
 ## Workflow
 1.  **Analyze Context:** Read `.bmc-stuff/work/SXX-SCOPE.md` and `.bmc-stuff/work/SXX-BLUEPRINT.md` (Draft) to understand the planned database schema, server endpoints, and user flows.
-2.  **Match Skills:** Search `.bmc-stuff/skills-cache/skills-index.json` and the cloned folders in `.bmc-stuff/skills-cache/` for minimal technical skills matching the pre-approved sources listed in [MANIFESTO.md](../../../knowledge/MANIFESTO.md#pre-approved-skills-libraries).
-    *   **Analyze Prerequisite Dependencies:** For each candidate skill, read its full documentation in `.bmc-stuff/skills-cache/` to detect if it references, inherits, or requires other helper skills, templates, or external files. (e.g., a `grill-me` skill requiring the `grilling` skill; a `tdd` skill requiring specific templates). Add all detected prerequisites to the recommendation.
-3.  **Audit AGENTS.md:** Inspect `AGENTS.md` in the repository root. Audit the setup, build, and test commands to ensure they align with the blueprint/tech stack and are functional. Verify the presence of the "Baremetal-Crew (BMC) Integration" block; if the project has an existing `AGENTS.md`, ensure the BMC section is correctly merged. Detail any errors or drift findings in the final report.
-4.  **Formulate Recommendations:** Create the report `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md`:
-    *   List recommended skills and their repository source URLs.
-    *   Explain *why* each skill is suggested, *what* specific value it adds, and explicitly document any prerequisite helper skills or configuration files required to run it, linking to their local cache path under `.bmc-stuff/skills-cache/`.
+2.  **Match Skills & Audit Existing:** Search `.bmc-stuff/skills-cache/skills-index.json` for technical skills matching the pre-approved sources listed in [MANIFESTO.md](../../../knowledge/MANIFESTO.md#pre-approved-skills-libraries).
+    *   **Inspect Installed Skills:** Check `.agents/skills/` to identify which matching skills are already installed in the project.
+    *   **Filter Recommendations:** Separate candidate skills into NEW skills (not yet installed) and ALREADY INSTALLED skills.
+    *   **Analyze Prerequisite Dependencies:** For each candidate skill, read its full documentation in `.bmc-stuff/skills-cache/` to detect if it references, inherits, or requires other helper skills, templates, or external files. Add all detected prerequisites to the recommendation.
+3.  **Check Skill Updates:** Run `.bmc-stuff/bin/bmc-index-skills --check` to detect available updates for currently installed skills in `.agents/skills/`.
+4.  **Audit AGENTS.md:** Inspect `AGENTS.md` in the repository root. Audit setup, build, and test commands to ensure they align with the blueprint/tech stack. Verify the presence of the "Baremetal-Crew (BMC) Integration" block.
+5.  **Formulate Optimized Recommendations:** Create `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md`:
+    *   **New Skills Section:** List ONLY new skills recommended for installation and their source URLs. If all matching skills are already present, explicitly state: *"All recommended skills for this slice are already installed in `.agents/skills/`."*
+    *   **Installed Skills Note:** Summarize skills already present under `.agents/skills/` without cluttering the main recommendation.
+    *   **Skill Updates Notice:** If `.bmc-stuff/bin/bmc-index-skills --check` detected updates for existing skills, include a clear suggestion for the CBO: *"Skill updates available. Run `.bmc-stuff/bin/bmc-index-skills --update-local` to update installed skills."*
     *   Keep it minimal. Avoid recommending skills that add unnecessary complexity or noise.
-5.  **CBO Control Reminder:** Conclude the report with a clear, direct reminder: **The CBO (Human) always has the final authority to adjust, configure, or override any skill parameters to match their preferences.**
+6.  **CBO Control Reminder:** Conclude the report with a clear, direct reminder: **The CBO (Human) always has the final authority to adjust, configure, or override any skill parameters to match their preferences.**
 
 ## Output
 *   `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md` (Markdown report with skills mapping and the CBO reminder).
