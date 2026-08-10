@@ -39,13 +39,14 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
     *   *Git Worktree advisory:* When presenting the blueprint or unlocking Phase 3 execution, the SA may include an advisory note suggesting that the CBO optionally set up a git worktree (`using-git-worktrees` from `obra-superpowers`) for clean slice workspace isolation and parallel execution.
     *   *No Inferred Sign-off Rule:* Asking the SA to check recommended skills, inspect blueprint changes, or review suggestions does NOT constitute blueprint sign-off or approval. The SA MUST explicitly present the updated blueprint to the CBO and wait for explicit CBO sign-off / approval before logging `bmc-log cbo-sign` or starting Phase 3 Execution.
 8.  **Autonomous Subagent Orchestration (Phase 3 Execution):** Once the CBO approves/signs `.bmc-stuff/work/SXX-BLUEPRINT.md`:
+    *   **Git Worktree Setup (If Requested):** If the CBO requested or approved git worktree execution, the SA MUST set up and manage the worktree workspace (e.g. `git worktree add .bmc-stuff/worktrees/SXX -b feature/SXX` or `git checkout -b feature/SXX`) before spawning subagents.
     *   **Log Phase 3 Transition:**
         ```bash
         .bmc-stuff/bin/bmc-log cbo-sign [SLICE-ID]
         ```
         *(Or explicit transition: `.bmc-stuff/bin/bmc-log transition [SLICE-ID] "Phase 2: Breakdown" "Phase 3: Execution" ".bmc-stuff/work/SXX-BLUEPRINT.md signed by CBO, execution unlocked"`)*
     *   **Initialize Tasks in Database:** Run `.bmc-stuff/bin/bmc-log task [SLICE-ID] [TASK-ID] Pending 0` for all tasks in the blueprint.
-    *   **Proactive Subagent Spawning with Skill Binding:** Be proactive and autonomous. Do NOT halt or wait for manual human instructions for each task. Immediately use `invoke_subagent` to orchestrate task execution:
+    *   **Proactive Subagent Spawning with Skill Binding:** Be proactive and autonomous. Do NOT halt or wait for manual human instructions for each task. Immediately use `invoke_subagent` to orchestrate task execution. If a worktree is active, explicitly instruct subagents to execute and verify inside `.bmc-stuff/worktrees/[SLICE-ID]`:
         - For every task marked `Pending` that has no unresolved dependencies, spawn a developer subagent using `invoke_subagent` (`TypeName: "self"`, `Role: "Fullstack Developer"`). The `Prompt` MUST explicitly instruct the subagent to load and follow its skill file: *"Read and follow the skill instructions in `.agents/skills/fullstack-developer/SKILL.md` using `view_file`. Execute Task `[TASK-ID]` for Slice `[SLICE-ID]` as defined in `.bmc-stuff/work/[SLICE-ID]-BLUEPRINT.md` and log progress using `bmc-log`."*
         - Monitor background subagents. When a developer subagent finishes and sets a task to `Ready for QA`, spawn a QA subagent using `invoke_subagent` (`TypeName: "self"`, `Role: "QA Engineer"`). The `Prompt` MUST instruct the subagent: *"Read and follow the skill instructions in `.agents/skills/qa-engineer/SKILL.md` using `view_file`. Verify Task `[TASK-ID]` for Slice `[SLICE-ID]` and log progress using `bmc-log`."*
         - As tasks reach `QA Passed`, spawn developer subagents for newly unblocked dependent tasks until all tasks in the blueprint reach `QA Passed`.
@@ -59,12 +60,13 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
         - If the project uses Docker, ALL commands in `SXX-DEMO.md` must be 100% containerized (`docker compose ...`). Never mix host local execution with Docker execution.
         - Include explicit fresh build commands (`docker compose build --no-cache` or `docker compose up --build`) to guarantee newly added binaries, TUI components, or static assets are compiled into the image.
         - Verify container mount paths (e.g. `/music` vs `music`) and volume mappings against `docker-compose.yml` definitions before generating instructions.
+    *   **Git Pull Request & Worktree Handoff:** If git worktree isolation or `feature/SXX` branch was used, commit all slice changes on `feature/SXX`, push the branch (`git push -u origin feature/SXX`), and create a Pull Request (via `gh pr create` or branch PR details).
     *   **Log Phase Transition & Demo Event:** Log the validation phase start and the demo creation:
         ```bash
         .bmc-stuff/bin/bmc-log transition [SLICE-ID] "Phase 3: Execution" "Phase 4: Validation" ".bmc-stuff/work/SXX-DEMO.md generated, handoff to CBO"
         .bmc-stuff/bin/bmc-log event [SLICE-ID] SA GENERATE_DEMO ".bmc-stuff/work/SXX-DEMO.md generated for CBO manual validation"
         ```
-    *   **Clean Turn Conclusion:** Conclude the turn by clearly informing the CBO that the slice is complete and validation instructions are ready in `.bmc-stuff/work/SXX-DEMO.md`. Explicitly suggest that the CBO check the updated root documentation files (`ARCHITECTURE.md`, `DESIGN.md`, `README.md`) and consult with the Tech Guru (if needed) to ensure the stack health, then end the conversation.
+    *   **Clean Turn Conclusion:** Conclude the turn by clearly informing the CBO that the slice is complete and validation instructions are ready in `.bmc-stuff/work/SXX-DEMO.md`. If a Pull Request was created, present the PR link and branch details to the CBO. Explicitly suggest that the CBO check the updated root documentation files (`ARCHITECTURE.md`, `DESIGN.md`, `README.md`) and consult with the Tech Guru (if needed) to ensure the stack health, then end the conversation.
 
 ## Output
 *   `.bmc-stuff/work/SXX-BLUEPRINT.md` (with atomic task statuses, generated from [BLUEPRINT.md template](../../../.bmc-stuff/knowledge/templates/BLUEPRINT.md)).

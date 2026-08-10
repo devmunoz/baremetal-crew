@@ -124,7 +124,7 @@ All stage transitions are logged in the SQLite database using the command helper
 
 ### Phase 3: Blind Execution (SA Orchestration -> Dev/QA Subagents)
 *   **Trigger:** `.bmc-stuff/work/SXX-BLUEPRINT.md` signed/approved by the CBO.
-*   **Process:** The SA acts as proactive autonomous orchestrator, spawning `fullstack-developer` and `qa-engineer` subagents via `invoke_subagent` for tasks without unresolved dependencies. The SA continuously monitors and spawns subagents until all tasks reach `QA Passed`. Every status update and bug event is logged strictly via `.bmc-stuff/bin/bmc-log`:
+*   **Process:** The SA acts as proactive autonomous orchestrator, spawning `fullstack-developer` and `qa-engineer` subagents via `invoke_subagent` for tasks without unresolved dependencies. If git worktree execution was requested/approved by the CBO, the SA initializes `.bmc-stuff/worktrees/SXX` on branch `feature/SXX` and binds subagents to execute inside the worktree workspace. The SA continuously monitors and spawns subagents until all tasks reach `QA Passed`. Every status update and bug event is logged strictly via `.bmc-stuff/bin/bmc-log`:
     *   **Dev starts task:** Logs status update and start event:
         ```bash
         .bmc-stuff/bin/bmc-log task SXX SXX-01 "In Development" [CURRENT-PING-PONG]
@@ -158,7 +158,7 @@ All stage transitions are logged in the SQLite database using the command helper
 
 ### Phase 4: Validation (SA -> CBO)
 *   **Trigger:** Backlog completed and verified by the SA.
-*   **Process:** The SA updates the root technical documentation files (`ARCHITECTURE.md`, `DESIGN.md`, `README.md`) to integrate the slice changes strictly slice-agnostically (never mentioning slice IDs `SXX` in root docs or production code), logs the transition to validation, generates `.bmc-stuff/work/SXX-DEMO.md` (based on [DEMO.md template](templates/DEMO.md) with 100% container consistency, fresh build commands, and verified mount paths), suggests that the CBO check the updated docs and query the Tech Guru, and cleanly ends the conversation to allow validation at the CBO's own pace.
+*   **Process:** The SA updates the root technical documentation files (`ARCHITECTURE.md`, `DESIGN.md`, `README.md`) to integrate the slice changes strictly slice-agnostically (never mentioning slice IDs `SXX` in root docs or production code), logs the transition to validation, generates `.bmc-stuff/work/SXX-DEMO.md` (based on [DEMO.md template](templates/DEMO.md) with 100% container consistency, fresh build commands, and verified mount paths), creates a Pull Request if a worktree/feature branch was used (presenting PR link/branch details to CBO), suggests that the CBO check the updated docs and query the Tech Guru, and cleanly ends the conversation to allow validation at the CBO's own pace.
     *   **Logging validation phase start & docs update:** The SA logs the transition, the documentation update, and registers the explicit delivery event:
         ```bash
         .bmc-stuff/bin/bmc-log transition SXX "Phase 3: Execution" "Phase 4: Validation" "Backlog completed and verified by SA"
