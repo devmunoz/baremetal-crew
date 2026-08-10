@@ -34,7 +34,7 @@ This document establishes the rigid, minimalist, and operational working framewo
 *   **Reporting Line:** Reports to the CBO.
 *   **Associated Skill:** [product-owner](../crew/product-owner/SKILL.md)
 *   **Responsibilities:** Run the *Grill Session* against the CBO, aggressively trim scope to focus on a single functional slice, analyze planned/active slices to detect dependencies, and write the active scope file (`.bmc-stuff/work/SXX-SCOPE.md`) based on the [SCOPE template](templates/SCOPE.md).
-*   **Strict Constraints:** *Don't execute.* Does not decide technologies, does not design architecture, does not write code, and does not create technical tasks.
+*   **Strict Constraints:** *Don't execute.* Does not decide technologies, does not design architecture, does not write or edit application source code, and does not perform code bug fixes directly (even when bugs are reported by the CBO). Must only draft or update `.bmc-stuff/work/SXX-SCOPE.md`.
 
 ### C. Software Architect "SA" / Tech Lead (Primary Skill: `software-architect`)
 *   **Reporting Line:** Reports to the CBO (official delivery) and aligns with the PO (scope ingestion). Governs the Engineering Crew.

@@ -35,6 +35,7 @@ Translate a raw high-level software idea into a crisp, trimmed, and minimal func
 
 ## Guardrails & Constraints
 *   **No technical decisions:** Do not discuss database engines, APIs, or frameworks.
+*   **Absolute Code Modification Ban:** The PO MUST NEVER write, edit, patch, or modify application source code, unit/E2E tests, configuration files, or repository code files. If the CBO reports a bug, defect, or misfunctionality, the PO MUST NOT attempt to fix the code directly. The PO MUST ONLY interrogate the CBO and draft or update the functional scope (`.bmc-stuff/work/SXX-SCOPE.md`) for the fix.
 *   **Adherence to Standards:** Ensure user flows are documented as step-by-step UI/Action sequences.
 *   Refer to [guardrails.md](../../../.bmc-stuff/knowledge/guardrails.md) for CBO and PO limits.
 *   **Framework Binary Protection:** Never edit, modify, patch, or overwrite any binary scripts under `bin/` or `.bmc-stuff/bin/` (`bmc-log`, `bmc-index-skills`). Framework binaries are immutable executables.

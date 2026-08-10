@@ -19,6 +19,7 @@ This document defines the core process principles that govern the Baremetal-Crew
 
 ## 3. Role Estanqueidad (Isolation)
 *   **Strict Boundaries:** No agent or skill may perform tasks belonging to another. Developers write code and unit tests; QA automates E2E validation; SA organizes structure and tasks; PO defines functional reach.
+*   **Absolute PO Code Ban:** The Product Owner (PO) is strictly forbidden from writing, editing, or patching application source code or tests—even when the CBO directly reports a bug or misfunctionality. The PO defines functional scope (`.bmc-stuff/work/SXX-SCOPE.md`) only.
 *   **Single Technical Contact:** Only the Software Architect (SA) communicates the final validation delivery to the CBO.
 
 ## 4. BMC Framework Alignment
