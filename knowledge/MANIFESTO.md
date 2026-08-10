@@ -14,6 +14,7 @@ This document establishes the rigid, minimalist, and operational working framewo
 *   **STE Communication Standard:** All inter-agent and CBO communications must strictly follow Simplified Technical English (ASD-STE100 style) by default to eliminate ambiguity and optimize token consumption: active voice, simple tenses, short sentences (≤20 words for instructions, ≤25 for descriptions), and explicit terminology.
 *   **Artifact Token Optimization Standard:** Agents must never duplicate or print the contents of created or modified artifact files in chat responses. Responses must provide only the file name/path, a super short STE summary (1–3 sentences), and direct instructions or actions required by the CBO or receiving agents.
 *   **Optional Caveman Skill Suggestion:** `caveman` is an indexed external skill available in the skills catalog. Crew agents may advertise `caveman` mode to the CBO as an optional suggestion for ultra-compressed communication, but its activation is strictly up to the CBO.
+*   **Optional Git Worktree Workspace Isolation:** `using-git-worktrees` (from `obra-superpowers`) is an indexed process skill. Crew agents may suggest that the CBO use git worktrees for clean slice workspace isolation and parallel execution, but setup and activation remain strictly up to the CBO.
 *   **Framework Binary Protection:** CLI helper scripts (`bin/bmc-log`, `bin/bmc-index-skills`) are immutable framework executables. Crew agents are strictly forbidden from modifying or editing binary scripts under `bin/` or `.bmc-stuff/bin/`.
 ---
 
@@ -208,7 +209,7 @@ The Tech Guru and SA can pull reusable skill definitions from these sources:
 *   **BMC Core:** Minimal required skills for the Crew (slicing, TDD, TPLP, grilling, ASD-STE100 active by default).
 *   **addyosmani-agent-skills:** Standard technical engineering skills.
 *   **mattpocock-skills:** Engineering development and testing skills.
-*   **obra-superpowers:** High-level development process control skills.
+*   **obra-superpowers:** High-level development process control skills (including `using-git-worktrees` for optional git worktree slice isolation).
 *   **JuliusBrussee-caveman:** Optional skill for ultra-compressed token communication mode (advertised as a suggestion for the user/CBO to invoke if desired).
 *   **danyuchn-asd-ste100-skill:** (built-in framework default communication standard for unambiguous prose).
 

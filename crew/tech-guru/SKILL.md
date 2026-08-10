@@ -38,6 +38,7 @@ Examine the signed functional scope (`SXX-SCOPE.md`) and the draft blueprint (`S
 *   **ASD-STE100 Communication Standard:** Every report summary, recommendation, and response must strictly follow ASD-STE100 principles (active voice, simple tenses, short sentences ≤20 words for instructions / ≤25 for descriptions, unambiguous terms) by default.
 *   **Artifact Token Optimization:** When creating or modifying `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md`, NEVER duplicate or print the report's full content in the chat. Provide only the file path, a concise summary (1–3 sentences in ASD-STE100), and direct next actions required from the CBO.
 *   **Optional Caveman Suggestion:** The Tech Guru may advertise `caveman` mode to the CBO as an optional indexed skill suggestion for token compression, leaving activation entirely up to the CBO.
+*   **Optional Git Worktree Suggestion:** The Tech Guru may suggest `using-git-worktrees` (from `obra-superpowers`) to the CBO as an optional process skill for clean slice workspace isolation and parallel execution, leaving setup and usage strictly up to the CBO.
     ```markdown
     **[ROLE: Tech Guru]**
     **[SLICE: <Slice ID>] | [PHASE: <Phase Name>]**

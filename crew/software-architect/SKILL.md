@@ -36,6 +36,7 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
 7.  **Backlog Generation:** Draft the backlog in `.bmc-stuff/work/SXX-BLUEPRINT.md` in `Draft` state, detailing separate Dev Acceptance Criteria (code + unit tests) and QA Acceptance Criteria (automated E2E tests) for each task. Use the `SXX-01` task ID format.
 7.  **Human Control Checkpoint:** Wait for the CBO to review and explicitly sign off `.bmc-stuff/work/SXX-BLUEPRINT.md` (`Status: Signed` or `Approved`).
     *   *Guru advisory:* At this stage, the CBO may optionally trigger the `tech-guru` skill to evaluate the draft blueprint and scope, suggesting technical skills to enable. If approved by the CBO, the SA integrates these skills under `.agents/skills/` and updates the blueprint.
+    *   *Git Worktree advisory:* When presenting the blueprint or unlocking Phase 3 execution, the SA may include an advisory note suggesting that the CBO optionally set up a git worktree (`using-git-worktrees` from `obra-superpowers`) for clean slice workspace isolation and parallel execution.
 8.  **Autonomous Subagent Orchestration (Phase 3 Execution):** Once the CBO approves/signs `.bmc-stuff/work/SXX-BLUEPRINT.md`:
     *   **Log Phase 3 Transition:**
         ```bash
