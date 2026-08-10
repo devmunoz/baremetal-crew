@@ -14,6 +14,7 @@ This section provides a high-level overview of the project's directory and file 
 │   ├── knowledge/        # System knowledge base (manifesto, guardrails, tech stack)
 │   │   └── templates/    # Templates for scopes, blueprints, demos, and architecture
 │   └── work/             # Active slice artifacts (SXX-SCOPE.md, SXX-BLUEPRINT.md, SXX-DEMO.md)
+│       └── completed/    # Archived completed slice artifacts
 ├── install.sh            # Baremetal-Crew installation script
 ├── README.md             # Project overview and quick start guide
 └── ARCHITECTURE.md       # This document

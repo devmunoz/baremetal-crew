@@ -2,12 +2,13 @@
 import sys
 import os
 import sqlite3
+import shutil
 
 # Resolve DB path relative to the script location (one level up from bin/)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 BMC_STUFF_DIR = os.path.dirname(SCRIPT_DIR)
 DB_PATH = os.path.join(BMC_STUFF_DIR, "crew.db")
-
+WORK_DIR = os.path.join(BMC_STUFF_DIR, "work")
 def init_db():
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
@@ -52,6 +53,28 @@ def init_db():
     conn.commit()
     conn.close()
 
+def archive_completed_slice(slice_id):
+    if not os.path.exists(WORK_DIR):
+        return
+    
+    prefix = f"{slice_id.upper()}-"
+    matching_files = [
+        f for f in sorted(os.listdir(WORK_DIR))
+        if os.path.isfile(os.path.join(WORK_DIR, f)) and f.upper().startswith(prefix)
+    ]
+    
+    if not matching_files:
+        return
+    
+    completed_dir = os.path.join(WORK_DIR, "completed")
+    os.makedirs(completed_dir, exist_ok=True)
+    
+    for filename in matching_files:
+        file_path = os.path.join(WORK_DIR, filename)
+        dest_path = os.path.join(completed_dir, filename)
+        shutil.move(file_path, dest_path)
+        
+    print(f"[ARCHIVE] Moved {len(matching_files)} file(s) for slice {slice_id} to work/completed/")
 def log_transition(slice_id, from_phase, to_phase, details):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -62,6 +85,9 @@ def log_transition(slice_id, from_phase, to_phase, details):
     conn.commit()
     conn.close()
     print(f"[TRANSITION] {slice_id}: {from_phase} -> {to_phase} | {details}")
+    
+    if is_successful_phase(to_phase):
+        archive_completed_slice(slice_id)
 
 def log_task(slice_id, task_id, status, ping_pong_count=0):
     conn = sqlite3.connect(DB_PATH)

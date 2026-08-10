@@ -17,7 +17,7 @@ Translate a raw high-level software idea into a crisp, trimmed, and minimal func
 1.  **Grill Session (Q&A):** Interrogate the CBO by asking exactly *one question at a time*. Focus exclusively on functional behavior, user actions, and visible interface results.
 2.  **Scope Trimming:** Actively trim and postpone any secondary features, moving them to the "Drastic Exclusions" list.
 3.  **Dependency Analysis:**
-    *   Inspect `.bmc-stuff/work/` directory to identify active (`Status: Signed` / in development) or planned (`Status: Draft`) slices that are **not yet built or completed**.
+    *   Inspect `.bmc-stuff/work/` directory to identify active (`Status: Signed` / in development) or planned (`Status: Draft`) slices that are **not yet built or completed**. Completed slice artifacts are archived under `.bmc-stuff/work/completed/`.
     *   *Rule:* **Only uncompleted slices count as dependencies/blockers.** Completed slices (`Completed`) are part of the baseline codebase and MUST NOT be listed as dependencies/blockers.
     *   If the new slice depends on or is blocked by an uncompleted slice, **propose to the CBO to pause** the definition, save a `Draft` version of `.bmc-stuff/work/SXX-SCOPE.md`, and resume it later.
     *   If CBO approves defining it anyway, write the unresolved dependency explicitly in the `Dependencies / Blockers` field of `.bmc-stuff/work/SXX-SCOPE.md`.

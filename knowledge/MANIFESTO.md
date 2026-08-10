@@ -97,7 +97,7 @@ All stage transitions are logged in the SQLite database using the command helper
 *   **Process:** The PO executes the `product-owner` skill, interrogating the CBO and drafting `.bmc-stuff/work/SXX-SCOPE.md` (based on [SCOPE.md template](templates/SCOPE.md)).
 *   **Dependency Guardrail:** 
     *   The PO analyzes files in `.bmc-stuff/work/` to check for dependencies or blockers with active/planned slices.
-    *   **Only uncompleted slices count as dependencies:** Completed slices (`Completed`) are part of the baseline codebase and MUST NOT be listed as dependencies/blockers.
+    *   **Only uncompleted slices count as dependencies:** Completed slice artifacts are archived under `.bmc-stuff/work/completed/`. Only uncompleted slices directly under `.bmc-stuff/work/` count as dependencies/blockers.
     *   If an unresolved dependency is detected, the PO **must propose to the CBO** to pause the definition, save a `Draft` version of `.bmc-stuff/work/SXX-SCOPE.md`, and resume it later.
     *   If the CBO approves defining it anyway, the PO writes the unresolved dependency explicitly in the `Dependencies / Blockers` field of `.bmc-stuff/work/SXX-SCOPE.md`.
     *   **Decoupled Dependencies Rule:** The dependency is declared *only* in the blocked slice (e.g. S02 depends on S01). The blocking slice (S01) remains agnostic and does not list what it blocks.
@@ -164,7 +164,7 @@ All stage transitions are logged in the SQLite database using the command helper
         .bmc-stuff/bin/bmc-log event SXX SA GENERATE_DEMO ".bmc-stuff/work/SXX-DEMO.md generated for CBO manual validation"
         ```
 *   **Phase Sign-off:** 
-    *   *Green Light (Completed):* Cycle closed successfully and logged:
+    *   *Green Light (Completed):* Cycle closed successfully and logged (automatically moves matching `.bmc-stuff/work/SXX-*` files to `.bmc-stuff/work/completed/`):
         ```bash
         .bmc-stuff/bin/bmc-log transition SXX "Phase 4: Validation" "Completed" "Validated successfully by CBO"
         ```
