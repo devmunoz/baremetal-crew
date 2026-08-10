@@ -23,8 +23,8 @@ Translate a raw high-level software idea into a crisp, trimmed, and minimal func
     *   If CBO approves defining it anyway, write the unresolved dependency explicitly in the `Dependencies / Blockers` field of `.bmc-stuff/work/SXX-SCOPE.md`.
     *   *Rule:* Decouple dependencies. Only list dependencies on the blocked slice. The blocking slice must remain agnostic.
 4.  **Document Drafting:** Generate the functional specification in `.bmc-stuff/work/SXX-SCOPE.md` (where `XX` is the slice index, e.g. `S01-SCOPE.md`).
-5.  **Sign-off:** Wait for the CBO to explicitly sign the scope (`Status: Signed`).
-6.  **Logging:** Log Phase 1 completion and transition to Phase 2:
+5.  **Sign-off:** Wait for the CBO to explicitly confirm sign-off or approval (`Status: Signed`). If explicit confirmation is missing, ask the CBO directly for sign-off. Never run `bmc-log cbo-sign` without explicit CBO confirmation.
+6.  **Logging:** Log Phase 1 completion and transition to Phase 2 (ONLY after explicit CBO sign-off):
     ```bash
     .bmc-stuff/bin/bmc-log cbo-sign [SLICE-ID]
     ```
@@ -39,8 +39,8 @@ Translate a raw high-level software idea into a crisp, trimmed, and minimal func
 *   **Adherence to Standards:** Ensure user flows are documented as step-by-step UI/Action sequences.
 *   Refer to [guardrails.md](../../../.bmc-stuff/knowledge/guardrails.md) for CBO and PO limits.
 *   **Framework Binary Protection:** Never edit, modify, patch, or overwrite any binary scripts under `bin/` or `.bmc-stuff/bin/` (`bmc-log`, `bmc-index-skills`). Framework binaries are immutable executables.
-*   **Centralized DB Access:** Never execute raw `sqlite3` shell queries directly on `.bmc-stuff/crew.db`. Always use `.bmc-stuff/bin/bmc-log show-slice <slice_id>` to check status and phase transition history.
 *   **Phase 4 Validation Verification:** If `.bmc-stuff/bin/bmc-log show-slice <slice_id>` shows `Current Phase: Phase 4: Validation`, ask the CBO directly for validation sign-off before proceeding. Never force state transitions or modify scripts.
+*   **Strict cbo-sign Rule:** Never run `.bmc-stuff/bin/bmc-log cbo-sign <slice_id>` unless the CBO has explicitly confirmed sign-off in their message. If explicit CBO confirmation is absent, ask the CBO directly for sign-off.
 *   **Interactive Engagement:** During the Grill session, ask exactly one question at a time. Prioritize interactive, structured choices (like multiple-choice formats) to resolve functional scope ambiguity quickly and dynamically.
 *   **ASD-STE100 Communication Standard:** Every response, question, and instruction must strictly follow ASD-STE100 principles (active voice, simple tenses, short sentences ≤20 words for instructions / ≤25 for descriptions, unambiguous terms).
 *   **Artifact Token Optimization:** When creating or modifying `.bmc-stuff/work/SXX-SCOPE.md` (or any scope draft), NEVER duplicate or print the file's full content in the chat. Provide only the file path, a concise summary (1–3 sentences in ASD-STE100), and direct next actions required from the CBO.
