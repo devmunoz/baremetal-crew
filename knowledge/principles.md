@@ -12,6 +12,7 @@ This document defines the core process principles that govern the Baremetal-Crew
 ## 2. Watertight Phase Transitions
 *   **Irrevocable Scope:** Once Phase 1 is signed off, the functional scope is frozen. Changes are prohibited until the next cycle.
 *   **Explicit Sign-offs:** Each transition between phases requires a formal sign-off (e.g., CBO signs `.bmc-stuff/SCOPE.md`, SA signs `.bmc-stuff/BLUEPRINT.md`, QA marks task `QA Passed`).
+*   **Explicit CBO Approval Only (No Inferred Sign-off):** All phase transitions and artifact sign-offs (`SXX-SCOPE.md`, `SXX-BLUEPRINT.md`, `SXX-DEMO.md`) MUST be explicitly authorized by the CBO (Human). Agents are strictly forbidden from assuming approval, inferring sign-off from routine user instructions (e.g., "check recommended skills"), or self-signing artifacts on behalf of the CBO.
 *   **Transition Logging:** All stage transitions must be recorded in the local SQLite logging database (`.bmc-stuff/crew.db`) using the centralized logging script.
 *   **Framework Binary Protection:** Helper scripts under `bin/` or `.bmc-stuff/bin/` (`bmc-log`, `bmc-index-skills`) are immutable framework executables. Crew agents must NEVER edit, patch, or modify binary scripts.
 *   **Centralized DB Access:** All state changes and queries must execute strictly via `.bmc-stuff/bin/bmc-log`. Executing direct shell database commands (e.g., `sqlite3`) is strictly prohibited.
