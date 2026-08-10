@@ -3,7 +3,7 @@
 > [!IMPORTANT]
 > **Environment Requirement:** [Containerized (Docker) / Host Local]
 > If containerized, ALL execution steps below use Docker exclusively. Do NOT mix host local execution commands with container commands.
-
+> **Worktree Requirement:** If this slice was developed inside a git worktree, navigate into the worktree path (e.g. `cd .bmc-stuff/worktrees/[SLICE-ID]`) or switch to branch `feature/[SLICE-ID]` before executing the commands below.
 ## 1. Environment Preparation & Fresh Build
 Before running the verification steps, perform a fresh build to ensure all newly added binaries, dependencies, and artifacts (e.g., TUI components, compiled tools) are built into the image:
 
