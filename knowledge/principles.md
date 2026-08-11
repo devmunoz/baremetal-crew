@@ -22,6 +22,7 @@ This document defines the core process principles that govern the Baremetal-Crew
 *   **Strict Boundaries:** No agent or skill may perform tasks belonging to another. Developers write code and unit tests; QA automates E2E validation; SA organizes structure and tasks; PO defines functional reach.
 *   **Absolute PO Code Ban:** The Product Owner (PO) is strictly forbidden from writing, editing, or patching application source code or tests—even when the CBO directly reports a bug or misfunctionality. The PO defines functional scope (`.bmc-stuff/work/SXX-SCOPE.md`) only.
 *   **Single Technical Contact:** Only the Software Architect (SA) communicates the final validation delivery to the CBO.
+*   **Slice Artifact Isolation & Unique Indexing:** Slices are strictly isolated artifacts. New slices MUST always receive a unique, unused index calculated by scanning all active and completed slice files (`.bmc-stuff/work/` and `.bmc-stuff/work/completed/`). Overwriting or modifying existing slice files is strictly prohibited.
 
 ## 4. BMC Framework Alignment
 *   **Vertical Slicing:** Implement functionality vertically (database, backend, frontend, tests) task-by-task.

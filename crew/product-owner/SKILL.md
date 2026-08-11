@@ -22,7 +22,7 @@ Translate a raw high-level software idea into a crisp, trimmed, and minimal func
     *   If the new slice depends on or is blocked by an uncompleted slice, **propose to the CBO to pause** the definition, save a `Draft` version of `.bmc-stuff/work/SXX-SCOPE.md`, and resume it later.
     *   If CBO approves defining it anyway, write the unresolved dependency explicitly in the `Dependencies / Blockers` field of `.bmc-stuff/work/SXX-SCOPE.md`.
     *   *Rule:* Decouple dependencies. Only list dependencies on the blocked slice. The blocking slice must remain agnostic.
-4.  **Document Drafting:** Generate the functional specification in `.bmc-stuff/work/SXX-SCOPE.md` (where `XX` is the slice index, e.g. `S01-SCOPE.md`).
+4.  **Document Drafting & Slice Indexing:** Scan ALL existing slice files in BOTH `.bmc-stuff/work/` AND `.bmc-stuff/work/completed/` to identify all assigned slice IDs (`S01`, `S02`, `S03`, etc.). Select the next unused index `MAX(SXX) + 1` for the new slice (e.g., if `S01`, `S02`, `S03` exist anywhere in `work/` or `work/completed/`, the new slice MUST be `S04`). Generate the functional specification in `.bmc-stuff/work/SXX-SCOPE.md`. NEVER overwrite or mutate an existing slice file.
 5.  **Sign-off:** Wait for the CBO to explicitly confirm sign-off or approval (`Status: Signed`). If explicit confirmation is missing, ask the CBO directly for sign-off. Never run `bmc-log cbo-sign` without explicit CBO confirmation.
 6.  **Logging:** Log Phase 1 completion and transition to Phase 2 (ONLY after explicit CBO sign-off):
     ```bash
@@ -36,6 +36,7 @@ Translate a raw high-level software idea into a crisp, trimmed, and minimal func
 ## Guardrails & Constraints
 *   **No technical decisions:** Do not discuss database engines, APIs, or frameworks.
 *   **Absolute Code Modification Ban:** The PO MUST NEVER write, edit, patch, or modify application source code, unit/E2E tests, configuration files, or repository code files. If the CBO reports a bug, defect, or misfunctionality, the PO MUST NOT attempt to fix the code directly. The PO MUST ONLY interrogate the CBO and draft or update the functional scope (`.bmc-stuff/work/SXX-SCOPE.md`) for the fix.
+*   **No Slice Overwriting & Strict Indexing:** The PO MUST NEVER overwrite, mutate, or alter an existing slice file (`SXX-SCOPE.md`). The PO MUST scan all files in `.bmc-stuff/work/` and `.bmc-stuff/work/completed/` to calculate the next unused slice index `MAX(SXX) + 1` before drafting a new scope.
 *   **Adherence to Standards:** Ensure user flows are documented as step-by-step UI/Action sequences.
 *   Refer to [guardrails.md](../../../.bmc-stuff/knowledge/guardrails.md) for CBO and PO limits.
 *   **Framework Binary Protection:** Never edit, modify, patch, or overwrite any binary scripts under `bin/` or `.bmc-stuff/bin/` (`bmc-log`, `bmc-index-skills`). Framework binaries are immutable executables.

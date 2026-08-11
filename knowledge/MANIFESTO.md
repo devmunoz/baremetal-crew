@@ -96,6 +96,7 @@ All stage transitions are logged in the SQLite database using the command helper
 ### Phase 1: The Grill (CBO -> PO)
 *   **Trigger:** CBO introduces an initial software idea.
 *   **Process:** The PO executes the `product-owner` skill, interrogating the CBO and drafting `.bmc-stuff/work/SXX-SCOPE.md` (based on [SCOPE.md template](templates/SCOPE.md)).
+*   **Slice Indexing Rule:** The PO calculates the new slice index by scanning all existing slice files in BOTH `.bmc-stuff/work/` AND `.bmc-stuff/work/completed/` to allocate `MAX(SXX) + 1`. Existing slice artifacts must never be overwritten or mutated.
 *   **Dependency Guardrail:** 
     *   The PO analyzes files in `.bmc-stuff/work/` to check for dependencies or blockers with active/planned slices.
     *   **Only uncompleted slices count as dependencies:** Completed slice artifacts are archived under `.bmc-stuff/work/completed/`. Only uncompleted slices directly under `.bmc-stuff/work/` count as dependencies/blockers.
