@@ -193,6 +193,7 @@ cp "${SRC_DIR}/bin/bmc-log" "${TARGET_DIR}/.bmc-stuff/bin/bmc-log"
 chmod +x "${TARGET_DIR}/.bmc-stuff/bin/bmc-log"
 cp "${SRC_DIR}/bin/bmc-index-skills" "${TARGET_DIR}/.bmc-stuff/bin/bmc-index-skills"
 chmod +x "${TARGET_DIR}/.bmc-stuff/bin/bmc-index-skills"
+ln -sf .bmc-stuff/bin/bmc-log "${TARGET_DIR}/bmc-log"
 
 # 4. Copy PO, SA, Dev, QA, and Guru skills to target .agents/skills/
 echo "-> Installing primary crew skills to .agents/skills/..."
