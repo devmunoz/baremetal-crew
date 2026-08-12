@@ -5,7 +5,7 @@ import sqlite3
 import shutil
 
 # Resolve DB path relative to the script location (one level up from bin/)
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 BMC_STUFF_DIR = os.path.dirname(SCRIPT_DIR)
 DB_PATH = os.path.join(BMC_STUFF_DIR, "crew.db")
 WORK_DIR = os.path.join(BMC_STUFF_DIR, "work")
@@ -147,7 +147,7 @@ def cbo_sign(slice_id, custom_details=None):
         return
 
     if "phase 4" in p or "validation" in p:
-        from_phase = current_phase if current_phase != "Not Started" else "Phase 4: Validation"
+        from_phase = "Phase 4: Validation"
         to_phase = "Completed"
         default_details = f".bmc-stuff/work/{slice_id}-DEMO.md validated and signed off by CBO"
     elif "phase 3" in p or "execution" in p:
@@ -160,7 +160,7 @@ def cbo_sign(slice_id, custom_details=None):
         default_details = f".bmc-stuff/work/{slice_id}-BLUEPRINT.md signed by CBO"
     else:
         # Default: Not Started or Phase 1: Grill -> transition to Phase 2
-        from_phase = "Phase 1: Grill" if ("phase 1" in p or "grill" in p) else current_phase
+        from_phase = "Phase 1: Grill"
         to_phase = "Phase 2: Breakdown"
         default_details = f".bmc-stuff/work/{slice_id}-SCOPE.md signed by CBO"
         
