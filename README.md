@@ -41,7 +41,6 @@ The `install.sh` script supports the following command-line flags:
 ### Option 2: One-Command Remote Installation (Standalone)
 Use this option to install the framework directly from GitHub without cloning the repo. The installer will automatically download and unpack the latest release package.
 
-#### Public Repository Installation
 Navigate to your target project folder and run:
 
 ```bash
@@ -53,16 +52,6 @@ curl -L "https://raw.githubusercontent.com/devmunoz/baremetal-crew/master/instal
 ```bash
 curl -L "https://raw.githubusercontent.com/devmunoz/baremetal-crew/master/install.sh" | bash -s -- /path/to/target/project
 ```
-
-#### Private Repository Fallback
-If the repository is private, export your GitHub Personal Access Token (PAT) with read permissions:
-
-```bash
-export GITHUB_TOKEN="your_personal_access_token_here"
-curl -H "Authorization: token $GITHUB_TOKEN" -L \
-  "https://raw.githubusercontent.com/devmunoz/baremetal-crew/master/install.sh" | bash
-```
-
 ---
 ---
 

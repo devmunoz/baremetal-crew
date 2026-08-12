@@ -115,31 +115,11 @@ if [ "${RUNNING_STANDALONE}" = true ]; then
     echo "-> Standalone installation detected. Fetching latest release package..."
     TMP_DOWNLOAD_DIR=$(mktemp -d)
     TARBALL_PATH="${TMP_DOWNLOAD_DIR}/baremetal-crew.tar.gz"
-    REPO="devmunoz/baremetal-crew"
-
-    if [ -n "${GITHUB_TOKEN:-}" ]; then
-        echo "Using GITHUB_TOKEN for authenticated private download..."
-        # 1. Fetch latest release metadata
-        RELEASE_JSON=$(curl -s -f -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${REPO}/releases/latest")
-        # 2. Extract asset URL for baremetal-crew.tar.gz (without using jq to avoid dependencies)
-        ASSET_URL=$(echo "${RELEASE_JSON}" | grep -m 1 -o '"url": "[^"]*assets/[0-9]*"' | cut -d'"' -f4 || true)
-        
-        if [ -z "${ASSET_URL}" ]; then
-            echo "Error: Could not find 'baremetal-crew.tar.gz' asset URL in release metadata."
-            exit 1
-        fi
-        
-        echo "Downloading asset..."
-        curl -L -f -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/octet-stream" -o "${TARBALL_PATH}" "${ASSET_URL}"
-    else
-        echo "No GITHUB_TOKEN found. Attempting public download..."
-        PUBLIC_URL="https://github.com/devmunoz/baremetal-crew/releases/latest/download/baremetal-crew.tar.gz"
-        if ! curl -L -f -o "${TARBALL_PATH}" "${PUBLIC_URL}"; then
-            echo
-            echo "Error: Public download failed."
-            echo "If the repository is private, please export GITHUB_TOKEN with read permissions before running."
-            exit 1
-        fi
+    PUBLIC_URL="https://github.com/devmunoz/baremetal-crew/releases/latest/download/baremetal-crew.tar.gz"
+    if ! curl -L -f -o "${TARBALL_PATH}" "${PUBLIC_URL}"; then
+        echo
+        echo "Error: Release download failed from ${PUBLIC_URL}."
+        exit 1
     fi
 
     echo "-> Unpacking release package..."
