@@ -1,1 +1,11 @@
 .DS_Store
+.bmc-stuff/
+.env
+.env.*
+*.db
+*.sqlite
+*.sqlite3
+__pycache__/
+*.pyc
+.vscode/
+.idea/

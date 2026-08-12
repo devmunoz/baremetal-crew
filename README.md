@@ -41,29 +41,26 @@ The `install.sh` script supports the following command-line flags:
 ### Option 2: One-Command Remote Installation (Standalone)
 Use this option to install the framework directly from GitHub without cloning the repo. The installer will automatically download and unpack the latest release package.
 
-#### A. Private Repository (Current)
-Export your GitHub Personal Access Token (PAT) with read permissions, navigate to your target project folder, and run:
+#### Public Repository Installation
+Navigate to your target project folder and run:
+
+```bash
+curl -L "https://raw.githubusercontent.com/devmunoz/baremetal-crew/master/install.sh" | bash
+```
+
+*Note: To specify the target directory explicitly, pass it as a parameter using the `bash -s` syntax:*
+
+```bash
+curl -L "https://raw.githubusercontent.com/devmunoz/baremetal-crew/master/install.sh" | bash -s -- /path/to/target/project
+```
+
+#### Private Repository Fallback
+If the repository is private, export your GitHub Personal Access Token (PAT) with read permissions:
 
 ```bash
 export GITHUB_TOKEN="your_personal_access_token_here"
-
 curl -H "Authorization: token $GITHUB_TOKEN" -L \
   "https://raw.githubusercontent.com/devmunoz/baremetal-crew/master/install.sh" | bash
-```
-
-*Note: If you want to specify the target directory explicitly instead of using the current folder, pass it as a parameter using the `bash -s` syntax:*
-
-```bash
-curl -H "Authorization: token $GITHUB_TOKEN" -L \
-  "https://raw.githubusercontent.com/devmunoz/baremetal-crew/master/install.sh" | bash -s -- /path/to/target/project
-```
-
-#### B. Public URL installation (not available yet)
-Just run into your project folder:
-
-```bash
-cd /path/to/target/project
-curl -L "https://raw.githubusercontent.com/devmunoz/baremetal-crew/master/install.sh" | bash
 ```
 
 ---
