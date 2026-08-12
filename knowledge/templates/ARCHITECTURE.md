@@ -91,7 +91,7 @@ List any third-party services or external APIs the system interacts with.
 *   **Date of Last Update:** [YYYY-MM-DD]
 
 ## 11. Glossary / Acronyms
-*   **CBO:** Chief Business Officer
+*   **CBO:** Chief Baremetal Officer
 *   **PO:** Product Owner
 *   **SA:** Software Architect
 *   **QA:** QA Engineer
