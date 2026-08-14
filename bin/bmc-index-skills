@@ -63,12 +63,13 @@ def parse_yaml_frontmatter(file_path):
                     if not stripped:
                         continue
                     
-                    if ":" in line and not is_multiline:
+                    if not line.startswith((" ", "\t")) and ":" in line:
+                        if is_multiline and current_key:
+                            fm_dict[current_key] = " ".join(multiline_accumulator).strip().strip('"').strip("'")
                         parts = line.split(":", 1)
                         key = parts[0].strip().lower()
                         val = parts[1].strip()
-                        
-                        if val in (">", "|"):
+                        if val in (">", "|", ""):
                             current_key = key
                             is_multiline = True
                             multiline_accumulator = []
@@ -77,24 +78,7 @@ def parse_yaml_frontmatter(file_path):
                             current_key = None
                             is_multiline = False
                     elif is_multiline:
-                        if ":" in line and not line.startswith(" "):
-                            fm_dict[current_key] = " ".join(multiline_accumulator).strip().strip('"').strip("'")
-                            parts = line.split(":", 1)
-                            key = parts[0].strip().lower()
-                            val = parts[1].strip()
-                            if val in (">", "|"):
-                                current_key = key
-                                is_multiline = True
-                                multiline_accumulator = []
-                            else:
-                                fm_dict[key] = val.strip('"').strip("'")
-                                current_key = None
-                                is_multiline = False
-                        else:
-                            multiline_accumulator.append(stripped)
-                            
-                if is_multiline and current_key:
-                    fm_dict[current_key] = " ".join(multiline_accumulator).strip().strip('"').strip("'")
+                        multiline_accumulator.append(stripped)
                     
                 name = fm_dict.get("name")
                 description = fm_dict.get("description")

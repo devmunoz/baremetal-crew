@@ -35,6 +35,15 @@
       "selection": [
         "."
       ]
+    },
+    {
+      "name": "vercel-labs-agent-skills",
+      "url": "https://github.com/vercel-labs/agent-skills.git",
+      "selection": [
+        "skills/web-design-guidelines",
+        "skills/react-best-practices",
+        "skills/composition-patterns"
+      ]
     }
   ]
 }
