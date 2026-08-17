@@ -3,6 +3,7 @@ import sys
 import os
 import sqlite3
 import shutil
+import re
 
 # Resolve DB path relative to the script location (one level up from bin/)
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -137,6 +138,71 @@ def get_current_phase(slice_id):
 def is_successful_phase(phase):
     p = phase.lower()
     return any(w in p for w in ["completed", "closed", "aborted"])
+def update_artifact_status(slice_id, doc_type):
+    if not os.path.exists(WORK_DIR):
+        print(f"Error: Work directory not found: {WORK_DIR}")
+        sys.exit(1)
+        
+    target_filename = f"{slice_id.upper()}-{doc_type}.md"
+    file_path = os.path.join(WORK_DIR, target_filename)
+    
+    if not os.path.isfile(file_path):
+        # Case-insensitive search fallback
+        candidates = [
+            f for f in os.listdir(WORK_DIR)
+            if f.upper() == target_filename.upper() and os.path.isfile(os.path.join(WORK_DIR, f))
+        ]
+        if candidates:
+            file_path = os.path.join(WORK_DIR, candidates[0])
+        else:
+            print(f"Error: Target artifact file not found: {file_path}")
+            sys.exit(1)
+
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+    except Exception as e:
+        print(f"Error: Unable to read {file_path}: {e}")
+        sys.exit(1)
+
+    # Restrict status search to Section 1 (before Section 2 if present)
+    section_split = re.split(r'\n(?=##\s*2[\.\s])', content, maxsplit=1)
+    header_section = section_split[0]
+
+    status_match = re.search(r'^[ \t]*-[ \t]+\*\*Status:\*\*[ \t]+([^\r\n]+)', header_section, re.MULTILINE)
+    if not status_match:
+        print(f"Error: Missing '- **Status:**' row in {file_path}")
+        sys.exit(1)
+
+    raw_status = status_match.group(1).strip()
+    status_lower = raw_status.lower()
+
+    if status_lower == "draft":
+        # Replace Draft with Signed in the header section
+        updated_header = re.sub(
+            r'^([ \t]*-[ \t]+\*\*Status:\*\*[ \t]+)Draft[ \t]*$',
+            r'\g<1>Signed',
+            header_section,
+            count=1,
+            flags=re.MULTILINE | re.IGNORECASE
+        )
+        if len(section_split) > 1:
+            updated_content = updated_header + "\n" + section_split[1]
+        else:
+            updated_content = updated_header
+
+        try:
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(updated_content)
+            print(f"[CBO-SIGN] Updated status in {file_path} from Draft to Signed")
+        except Exception as e:
+            print(f"Error: Unable to write {file_path}: {e}")
+            sys.exit(1)
+    elif status_lower == "signed":
+        print(f"[CBO-SIGN] Status is already Signed in {file_path}")
+    else:
+        print(f"Error: Invalid status '{raw_status}' in {file_path}. Expected 'Draft' or 'Signed'.")
+        sys.exit(1)
 
 def cbo_sign(slice_id, custom_details=None):
     current_phase = get_current_phase(slice_id)
@@ -155,11 +221,13 @@ def cbo_sign(slice_id, custom_details=None):
         to_phase = "Completed"
         default_details = f".bmc-stuff/work/{slice_id}-DEMO.md validated by CBO"
     elif "phase 2" in p or "breakdown" in p:
+        update_artifact_status(slice_id, "BLUEPRINT")
         from_phase = "Phase 2: Breakdown"
         to_phase = "Phase 3: Execution"
         default_details = f".bmc-stuff/work/{slice_id}-BLUEPRINT.md signed by CBO"
     else:
         # Default: Not Started or Phase 1: Grill -> transition to Phase 2
+        update_artifact_status(slice_id, "SCOPE")
         from_phase = "Phase 1: Grill"
         to_phase = "Phase 2: Breakdown"
         default_details = f".bmc-stuff/work/{slice_id}-SCOPE.md signed by CBO"
