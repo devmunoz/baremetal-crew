@@ -15,7 +15,7 @@ This document establishes the rigid, minimalist, and operational working framewo
 *   **Artifact Token Optimization Standard:** Agents must never duplicate or print the contents of created or modified artifact files in chat responses. Responses must provide only the file name/path, a super short STE summary (1–3 sentences), and direct instructions or actions required by the CBO or receiving agents.
 *   **Optional Caveman Skill Suggestion:** `caveman` is an indexed external skill available in the skills catalog. Crew agents may advertise `caveman` mode to the CBO as an optional suggestion for ultra-compressed communication, but its activation is strictly up to the CBO.
 *   **Optional Git Worktree Workspace Isolation:** `using-git-worktrees` (from `obra-superpowers`) is an indexed process skill. Crew agents may suggest that the CBO use git worktrees for clean slice workspace isolation and parallel execution, but setup and activation remain strictly up to the CBO.
-*   **Framework Binary Protection:** CLI helper scripts (`bin/bmc-log`, `bin/bmc-index-skills`) are immutable framework executables. Crew agents are strictly forbidden from modifying or editing binary scripts under `bin/` or `.bmc-stuff/bin/`.
+*   **Framework Binary Protection:** CLI helper scripts (`bin/bmc-log`, `bin/bmc-config`, `bin/bmc-index-skills`) are immutable framework executables. Crew agents are strictly forbidden from modifying or editing binary scripts under `bin/` or `.bmc-stuff/bin/`.
 ---
 
 ## 2. Strict Definition of Roles and Primary Skills
@@ -188,6 +188,7 @@ The crew uses these static templates as references to generate active execution 
 *   [SCOPE.md](templates/SCOPE.md) (`scope_template`): Template format used by the PO to generate `.bmc-stuff/work/SXX-SCOPE.md`.
 *   [BLUEPRINT.md](templates/BLUEPRINT.md) (`blueprint_template`): Template format used by the SA to generate `.bmc-stuff/work/SXX-BLUEPRINT.md`.
 *   [DEMO.md](templates/DEMO.md) (`demo_template`): Template format used by the SA to generate `.bmc-stuff/work/SXX-DEMO.md` for CBO validation.
+*   [PULL_REQUEST_TEMPLATE.md](templates/PULL_REQUEST_TEMPLATE.md) (`pr_template`): Standard template used by the SA when creating Pull Requests for feature branches or worktrees.
 
 ---
 
@@ -233,3 +234,9 @@ All skills catalog indexing and local `.agents/skills/` updates are managed via 
 *   **Indexing & Cache:** Clones pre-approved skills repositories into `.bmc-stuff/skills-cache/` and builds `.bmc-stuff/skills-cache/skills-index.json`.
 *   **Local Skills Synchronization:** Automatically synchronizes matching local skills in `.agents/skills/` with fresh primary crew skills (`crew/`) and indexed cached skills.
 *   **CLI Modes & Target Scope:** Supports target path resolution (`--target <path>`), dry-run check mode (`--check`), auto-update toggles (`--update-local` / `--no-update-local`), and silent output (`--silent`).
+
+### Centralized Framework Configuration CLI Helper (`bmc-config`)
+Framework configuration is stored in `.bmc-stuff/config.json` and managed via `.bmc-stuff/bin/bmc-config`.
+*   **Inspection:** `.bmc-stuff/bin/bmc-config show` (Displays full JSON configuration) or `.bmc-stuff/bin/bmc-config get <key>` (Outputs specific setting value).
+*   **Modification:** `.bmc-stuff/bin/bmc-config set <key> <value>` (Updates setting with type validation).
+*   **Initialization:** `.bmc-stuff/bin/bmc-config init` (Creates or resets configuration with runtime, worktree, communication, and PR DEMO placement options).

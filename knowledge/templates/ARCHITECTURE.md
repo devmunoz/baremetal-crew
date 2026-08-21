@@ -10,7 +10,8 @@ This section provides a high-level overview of the project's directory and file 
 ├── .agents/              # Custom agent skills and tool specifications
 │   └── skills/           # Crew skills (e.g. product-owner, software-architect, fullstack-developer)
 ├── .bmc-stuff/           # Baremetal-Crew infrastructure, binaries, and work files
-│   ├── bin/              # Helper binaries and executables (e.g. bmc-log, bmc-index-skills)
+│   ├── bin/              # Helper binaries and executables (e.g. bmc-log, bmc-config, bmc-index-skills)
+│   ├── config.json       # Framework configuration (runtime, worktrees, communication)
 │   ├── knowledge/        # System knowledge base (manifesto, guardrails, tech stack)
 │   │   └── templates/    # Templates for scopes, blueprints, demos, and architecture
 │   └── work/             # Active slice artifacts (SXX-SCOPE.md, SXX-BLUEPRINT.md, SXX-DEMO.md)

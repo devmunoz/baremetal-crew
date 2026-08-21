@@ -15,6 +15,12 @@ TARGET_DIR="."
 INDEX_SKILLS=false
 YES_TO_ALL=false
 
+CONFIG_RUNTIME="${BMC_RUNTIME:-docker}"
+CONFIG_WORKTREES="${BMC_WORKTREES:-false}"
+CONFIG_MAX_PING_PONG="${BMC_MAX_PING_PONG:-3}"
+CONFIG_COMMUNICATION="${BMC_COMMUNICATION:-ste100}"
+CONFIG_PR_DEMO_MODE="${BMC_PR_DEMO_MODE:-reference}"
+
 # Support environment variable override
 if [ "${BMC_INDEX_SKILLS:-}" = "true" ]; then
     INDEX_SKILLS=true
@@ -27,12 +33,23 @@ print_help() {
     echo "  $0 [target_directory] [options]"
     echo
     echo "Options:"
-    echo "  -h, --help        Show this help message and exit"
-    echo "  -y, --yes         Automatic yes to prompts (non-interactive friendly)"
-    echo "  -i, --index-skills Clone and index the pre-approved skills repositories"
+    echo "  -h, --help            Show this help message and exit"
+    echo "  -y, --yes             Automatic yes to prompts (non-interactive friendly)"
+    echo "  -i, --index-skills     Clone and index the pre-approved skills repositories"
+    echo "  --runtime <docker|local>  Set target runtime environment (default: docker)"
+    echo "  --worktrees           Enable git worktree workspace isolation (default: false)"
+    echo "  --no-worktrees        Disable git worktree workspace isolation"
+    echo "  --max-ping-pong <N>   Set max ping-pong retries between Dev/QA (default: 3)"
+    echo "  --communication <ste100|caveman> Set default communication standard (default: ste100)"
+    echo "  --pr-demo-mode <reference|embed|minimal> Set DEMO placement in Pull Requests (default: reference)"
     echo
     echo "Environment Variables:"
-    echo "  BMC_INDEX_SKILLS  Set to 'true' to force skills indexing"
+    echo "  BMC_INDEX_SKILLS      Set to 'true' to force skills indexing"
+    echo "  BMC_RUNTIME           Set target runtime (docker/local)"
+    echo "  BMC_WORKTREES         Set worktrees enabled (true/false)"
+    echo "  BMC_MAX_PING_PONG     Set max ping-pong retries"
+    echo "  BMC_COMMUNICATION     Set communication mode (ste100/caveman)"
+    echo "  BMC_PR_DEMO_MODE      Set PR DEMO mode (reference/embed/minimal)"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -48,6 +65,30 @@ while [[ $# -gt 0 ]]; do
         -i|--index-skills)
             INDEX_SKILLS=true
             shift
+            ;;
+        --runtime)
+            CONFIG_RUNTIME="$2"
+            shift 2
+            ;;
+        --worktrees)
+            CONFIG_WORKTREES=true
+            shift
+            ;;
+        --no-worktrees)
+            CONFIG_WORKTREES=false
+            shift
+            ;;
+        --max-ping-pong)
+            CONFIG_MAX_PING_PONG="$2"
+            shift 2
+            ;;
+        --communication)
+            CONFIG_COMMUNICATION="$2"
+            shift 2
+            ;;
+        --pr-demo-mode)
+            CONFIG_PR_DEMO_MODE="$2"
+            shift 2
             ;;
         -*)
             echo "Error: Unknown option $1"
@@ -139,12 +180,26 @@ if [ -t 0 ] && [ "${YES_TO_ALL}" = "false" ]; then
     echo "   - Create: .bmc-stuff/ (knowledge base and CLI tools)"
     echo "   - Create: .agents/skills/ (crew role skill definitions)"
     echo "   - Initialize or update: AGENTS.md (in the repository root)"
+    echo "   - Initialize: .bmc-stuff/config.json (framework configuration)"
     echo "============================================="
     read -p "Do you want to proceed with the installation? [y/N]: " -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         echo "Installation aborted by the user."
         exit 0
+    fi
+
+    read -p "Runtime environment [docker/local] (default: ${CONFIG_RUNTIME}): " -r input_runtime
+    if [ -n "${input_runtime}" ]; then
+        CONFIG_RUNTIME="${input_runtime}"
+    fi
+
+    read -p "Enable git worktree workspace isolation? [y/N] (default: ${CONFIG_WORKTREES}): " -n 1 -r input_wt
+    echo
+    if [[ $input_wt =~ ^[Yy]$ ]]; then
+        CONFIG_WORKTREES=true
+    elif [[ $input_wt =~ ^[Nn]$ ]]; then
+        CONFIG_WORKTREES=false
     fi
 fi
 
@@ -173,9 +228,21 @@ cp "${SRC_DIR}/bin/bmc-log" "${TARGET_DIR}/.bmc-stuff/bin/bmc-log"
 chmod +x "${TARGET_DIR}/.bmc-stuff/bin/bmc-log"
 cp "${SRC_DIR}/bin/bmc-index-skills" "${TARGET_DIR}/.bmc-stuff/bin/bmc-index-skills"
 chmod +x "${TARGET_DIR}/.bmc-stuff/bin/bmc-index-skills"
+cp "${SRC_DIR}/bin/bmc-config" "${TARGET_DIR}/.bmc-stuff/bin/bmc-config"
+chmod +x "${TARGET_DIR}/.bmc-stuff/bin/bmc-config"
 ln -sf .bmc-stuff/bin/bmc-log "${TARGET_DIR}/bmc-log"
+ln -sf .bmc-stuff/bin/bmc-config "${TARGET_DIR}/bmc-config"
 
-# 4. Copy PO, SA, Dev, QA, and Guru skills to target .agents/skills/
+# 4. Initialize Framework Configuration (.bmc-stuff/config.json)
+echo "-> Initializing framework configuration..."
+"${TARGET_DIR}/.bmc-stuff/bin/bmc-config" init \
+    --runtime "${CONFIG_RUNTIME}" \
+    $([ "${CONFIG_WORKTREES}" = "true" ] && echo "--worktrees" || echo "--no-worktrees") \
+    --max-ping-pong "${CONFIG_MAX_PING_PONG}" \
+    --communication "${CONFIG_COMMUNICATION}" \
+    --pr-demo-mode "${CONFIG_PR_DEMO_MODE}"
+
+# 5. Copy PO, SA, Dev, QA, and Guru skills to target .agents/skills/
 echo "-> Installing primary crew skills to .agents/skills/..."
 # We recreate the folder structure for each crew skill to ensure SKILL.md is in the right place
 for crew_dir in "${SRC_DIR}/crew/"*; do
@@ -186,7 +253,7 @@ for crew_dir in "${SRC_DIR}/crew/"*; do
     fi
 done
 
-# 5. Initialize or Merge AGENTS.md in the target root
+# 6. Initialize or Merge AGENTS.md in the target root
 if [ ! -f "${TARGET_DIR}/AGENTS.md" ]; then
     echo "-> Initializing AGENTS.md in target project root..."
     cp "${SRC_DIR}/knowledge/templates/AGENTS.md" "${TARGET_DIR}/AGENTS.md"
@@ -200,7 +267,7 @@ else
     fi
 fi
 
-# 6. Optional indexing of skills
+# 7. Optional indexing of skills
 echo
 if [ "${INDEX_SKILLS}" = "true" ]; then
     echo "-> Executing pre-approved skills indexing and updating existing .agents/skills..."

@@ -1,21 +1,22 @@
 # Repository Guidelines
 
 ## Project Overview
-This repository contains the source code, CLI utilities, core knowledge base, and primary skill definitions for the **Baremetal-Crew (BMC) framework**. The purpose of this repository is to develop, test, and maintain the framework itself—including the installer (`install.sh`), CLI binaries (`bin/bmc-log`, `bin/bmc-index-skills`), primary crew role skills (`crew/`), and governance standards (`knowledge/`).
+This repository contains the source code, CLI utilities, core knowledge base, and primary skill definitions for the **Baremetal-Crew (BMC) framework**. The purpose of this repository is to develop, test, and maintain the framework itself—including the installer (`install.sh`), CLI binaries (`bin/bmc-log`, `bin/bmc-config`, `bin/bmc-index-skills`), primary crew role skills (`crew/`), and governance standards (`knowledge/`).
 
 ---
 
 ## Architecture & Data Flow
 The framework codebase consists of four major functional components:
-1. **Installer Engine (`install.sh`)**: Deploys the framework sandbox (`.bmc-stuff/`) and skill directories (`.agents/skills/`) to target project repositories. Supports flags (`-i`, `-y`, `-h`), environment overrides (`BMC_INDEX_SKILLS`), standalone tarball retrieval, and automated AGENTS.md merging.
+1. **Installer Engine (`install.sh`)**: Deploys the framework sandbox (`.bmc-stuff/`) and skill directories (`.agents/skills/`) to target project repositories. Supports flags (`-i`, `-y`, `-h`, `--runtime`, `--worktrees`, `--max-ping-pong`, `--communication`), environment overrides (`BMC_INDEX_SKILLS`, `BMC_RUNTIME`), standalone tarball retrieval, configuration initialization (`.bmc-stuff/config.json`), and automated AGENTS.md merging.
 2. **Centralized Database CLI Helper (`bin/bmc-log`)**: A lightweight Python 3 script that manages `.bmc-stuff/crew.db` (tables: `transitions`, `tasks`, `events`). Acts as the single authorized database interface.
-3. **Skills Indexer & Local Synchronizer (`bin/bmc-index-skills`)**: A Python 3 script that reads `knowledge/skills-catalog.json`, clones pre-approved external repositories into `.bmc-stuff/skills-cache/`, builds `skills-index.json`, and synchronizes matching skills into `.agents/skills/`.
-4. **Knowledge Base & Primary Crew Skills (`knowledge/`, `crew/`)**: Centralized specifications (`MANIFESTO.md`, `guardrails.md`, `principles.md`, `tech.md`, `templates/`) and primary role skills (`product-owner`, `software-architect`, `fullstack-developer`, `qa-engineer`, `tech-guru`).
+3. **Framework Configuration CLI Helper (`bin/bmc-config`)**: A Python 3 script that manages `.bmc-stuff/config.json` (subcommands: `get`, `set`, `show`, `init`). Provides typed access to runtime, worktree, and communication settings.
+4. **Skills Indexer & Local Synchronizer (`bin/bmc-index-skills`)**: A Python 3 script that reads `knowledge/skills-catalog.json`, clones pre-approved external repositories into `.bmc-stuff/skills-cache/`, builds `skills-index.json`, and synchronizes matching skills into `.agents/skills/`.
+5. **Knowledge Base & Primary Crew Skills (`knowledge/`, `crew/`)**: Centralized specifications (`MANIFESTO.md`, `guardrails.md`, `principles.md`, `tech.md`, `templates/`) and primary role skills (`product-owner`, `software-architect`, `fullstack-developer`, `qa-engineer`, `tech-guru`).
 
 ---
 
 ## Key Directories
-- `bin/`: Executable CLI tools (`bmc-log`, `bmc-index-skills`).
+- `bin/`: Executable CLI tools (`bmc-log`, `bmc-config`, `bmc-index-skills`).
 - `crew/`: Primary crew role skill definitions (`product-owner`, `software-architect`, `fullstack-developer`, `qa-engineer`, `tech-guru`).
 - `knowledge/`: Core framework knowledge base, system guardrails, principles, technology standards, pre-approved skills catalog (`skills-catalog.json`), and reference templates (`templates/`).
 - `.agents/skills/`: Local skill definitions installed in this workspace.
@@ -26,7 +27,7 @@ The framework codebase consists of four major functional components:
 ## Development & Testing Commands
 
 ### Testing Framework Changes
-When testing changes to `install.sh`, `bmc-log`, or `bmc-index-skills`, agents **MUST** execute test runs inside a temporary directory (e.g. `/tmp/bmc-test-env`) to prevent dirtying the repository root:
+When testing changes to `install.sh`, `bmc-log`, `bmc-config`, or `bmc-index-skills`, agents **MUST** execute test runs inside a temporary directory (e.g. `/tmp/bmc-test-env`) to prevent dirtying the repository root:
 
 ```bash
 # 1. Create a clean temporary directory and run the installer
@@ -37,6 +38,7 @@ cd /tmp/bmc-test-env
 ./.bmc-stuff/bin/bmc-log cbo-sign S01
 ./.bmc-stuff/bin/bmc-log show-slice S01
 ./.bmc-stuff/bin/bmc-log active
+./.bmc-stuff/bin/bmc-config show
 
 # 3. Clean up the temporary directory after verification
 rm -rf /tmp/bmc-test-env
@@ -86,7 +88,7 @@ Commits must follow Conventional Commits: `<type>[optional scope]: <description>
 - Output ONLY: (1) exact file path, (2) 1–3 sentence ASD-STE100 summary, and (3) direct next actions or instructions.
 
 ### Framework Binary Protection
-- Helper scripts under `bin/` or `.bmc-stuff/bin/` (`bmc-log`, `bmc-index-skills`) are immutable framework executables.
+- Helper scripts under `bin/` or `.bmc-stuff/bin/` (`bmc-log`, `bmc-config`, `bmc-index-skills`) are immutable framework executables.
 - Agents must never modify binary scripts to bypass governance or fake behavior.
 
 ### Centralized DB Access Only
@@ -101,6 +103,7 @@ Commits must follow Conventional Commits: `<type>[optional scope]: <description>
 ## Important Files
 - `install.sh`: Framework installation and deployment script.
 - `bin/bmc-log`: SQLite database helper CLI executable.
+- `bin/bmc-config`: Framework configuration manager CLI executable.
 - `bin/bmc-index-skills`: Skills catalog indexer and local synchronizer CLI executable.
 - `knowledge/MANIFESTO.md`: Core framework manifesto and specifications.
 - `knowledge/guardrails.md`: System execution limits, security rules, and dangerous commands catalog.
