@@ -12,6 +12,7 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
 *   `.bmc-stuff/work/SXX-SCOPE.md` (signed and frozen, generated from [SCOPE.md template](../../../.bmc-stuff/knowledge/templates/SCOPE.md)).
 *   SQLite database `.bmc-stuff/crew.db` (to inspect blocker slice completion status).
 *   Active knowledge files: [tech.md](../../../.bmc-stuff/knowledge/tech.md) and [guardrails.md](../../../.bmc-stuff/knowledge/guardrails.md).
+*   Framework configuration `.bmc-stuff/config.json` (queried via `.bmc-stuff/bin/bmc-config get <key>` or `bmc-config show`).
 *   Local repository state (active directory structures, existing base code, `.agents/skills/` folder).
 
 ## Workflow
@@ -25,21 +26,22 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
     *   Read the `Dependencies / Blockers` field from `.bmc-stuff/work/SXX-SCOPE.md`.
     *   Query `.bmc-stuff/crew.db` by running `.bmc-stuff/bin/bmc-log check-dependency <dependency_slice_id>` for each blocker.
     *   **Block Execution if Unresolved:** If dependencies are unresolved, halt progress. Do not publish the backlog to the Engineering Crew until the blockers are resolved in the database.
-4.  **Infrastructure & Host Capability Audit:**
-    *   **Verify Environment Capabilities:** Check host system capabilities prior to finalizing architectural plans.
-    *   **Docker Verification:** Verify if Docker is installed and running (e.g., execute `docker info` or `docker --version` safely). For database engines (like PostgreSQL) or tools that require host services, ensure they are designed to run containerized via `docker-compose.yml`.
-    *   **Identify Host Binaries:** Check if the slice requires system utilities (e.g., `ffmpeg`, `imagemagick`). Audit if they are currently present in the system path.
-    *   **Escalate Missing Infra:** If any required host dependency or Docker itself is missing/not running, **halt execution immediately**. Present a clear multiple-choice question or clarification to the CBO (Human) requesting manual installation of the required software on the host, or discuss architectural fallbacks (e.g., SQLite instead of PostgreSQL). Never create tasks that try to install OS packages.
+4.  **Configuration Ingestion & Environment Audit:**
+    *   **Query Framework Configuration:** Query settings using `.bmc-stuff/bin/bmc-config show` (inspect `runtime`, `worktrees`, `max_ping_pong`, and `pr_demo_mode`).
+    *   **Runtime Capability Audit:** Check host system capabilities matching the configured runtime (`bmc-config get runtime`).
+    *   **Docker Verification:** If runtime is `docker`, verify Docker is running (`docker info` or `docker --version`). Ensure database engines (e.g. PostgreSQL) and tools run containerized via `docker-compose.yml`.
+    *   **Identify Host Binaries:** Check if the slice requires system utilities (e.g. `ffmpeg`, `imagemagick`). Audit their presence in the system path.
+    *   **Escalate Missing Infra:** If any required host dependency or Docker itself is missing/not running, **halt execution immediately**. Present a clear multiple-choice question to the CBO (Human) requesting manual installation, or discuss architectural fallbacks (e.g. SQLite instead of PostgreSQL). Never create tasks that try to install OS packages.
 5.  **Metadata Initialization:**
     *   Inspect `AGENTS.md` in the repository root. If it doesn't exist, initialize it from [AGENTS.md template](../../../.bmc-stuff/knowledge/templates/AGENTS.md). If it already exists, verify that the "Baremetal-Crew (BMC) Integration" section is correctly present; if not, append it at the end of the file including the CBO check warning note. Update and align the specific Setup, Build, and Testing instructions to match this repository's structure. Do not create or edit the root `DESIGN.md` file.
 6.  **Architectural Design:** Design database schema changes, directory layouts, and server endpoints. Map any required technical packages from the local `.agents/skills/` directory. Document all architectural/UI design proposals for the active slice inside `.bmc-stuff/work/SXX-BLUEPRINT.md` (or as draft files under `.bmc-stuff/work/`). Leave root `DESIGN.md` and `ARCHITECTURE.md` untouched during this phase.
 7.  **Backlog Generation:** Draft the backlog in `.bmc-stuff/work/SXX-BLUEPRINT.md` in `Draft` state, detailing separate Dev Acceptance Criteria (code + unit tests) and QA Acceptance Criteria (automated E2E tests) for each task. Use the `SXX-01` task ID format.
 7.  **Human Control Checkpoint:** Wait for the CBO to review and explicitly sign off `.bmc-stuff/work/SXX-BLUEPRINT.md` (`Status: Signed` or `Approved`).
     *   *Guru advisory:* At this stage, the CBO may optionally trigger the `tech-guru` skill to evaluate the draft blueprint and scope, suggesting technical skills to enable. If approved by the CBO, the SA integrates these skills under `.agents/skills/` and updates the blueprint.
-    *   *Git Worktree advisory:* When presenting the blueprint or unlocking Phase 3 execution, the SA may include an advisory note suggesting that the CBO optionally set up a git worktree (`using-git-worktrees` from `obra-superpowers`) for clean slice workspace isolation and parallel execution.
+    *   *Git Worktree Status:* The SA checks `.bmc-stuff/bin/bmc-config get worktrees`. If enabled (`true`), the SA notes in the blueprint presentation that Phase 3 execution will automatically run in an isolated worktree (`.bmc-stuff/worktrees/SXX`). If disabled (`false`), the SA notes that execution will run in the root workspace unless requested otherwise.
     *   *No Inferred Sign-off Rule:* Asking the SA to check recommended skills, inspect blueprint changes, or review suggestions does NOT constitute blueprint sign-off or approval. The SA MUST explicitly present the updated blueprint to the CBO and wait for explicit CBO sign-off / approval before logging `bmc-log cbo-sign` or starting Phase 3 Execution.
 8.  **Autonomous Subagent Orchestration (Phase 3 Execution):** Once the CBO approves/signs `.bmc-stuff/work/SXX-BLUEPRINT.md`:
-    *   **Git Worktree Setup (If Requested):** If the CBO requested or approved git worktree execution, the SA MUST set up and manage the worktree workspace (e.g. `git worktree add .bmc-stuff/worktrees/SXX -b feature/SXX` or `git checkout -b feature/SXX`) before spawning subagents.
+    *   **Git Worktree Isolation Setup:** Run `.bmc-stuff/bin/bmc-config get worktrees`. If the output is `true` OR if the CBO explicitly requested worktrees in their prompt: the SA MUST automatically set up the worktree workspace (`git worktree add .bmc-stuff/worktrees/SXX -b feature/SXX` or switch to branch `feature/SXX`) BEFORE spawning subagents. If `false`, execute directly in the base repository workspace.
     *   **Log Phase 3 Transition:**
         ```bash
         .bmc-stuff/bin/bmc-log cbo-sign [SLICE-ID]
@@ -88,6 +90,7 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
 *   **Commit Convention:** Stage specific changes and commit them following the Conventional Commits format: `<type>[optional scope]: <description> \n [optional body] \n [optional footer(s)]` (e.g. `feat(arch): initialize blueprint`).
 *   **Interactive Engagement Standard:** Prioritize using interactive question tools (`ask`, `ask_question`, `ask_user`, `AskFollowupQuestion`) or structured Markdown rounds for design decisions, ambiguities, or architectural choices to align quickly with the CBO.
 *   **Framework Binary Protection:** Never edit, modify, patch, or overwrite any binary scripts under `bin/` or `.bmc-stuff/bin/` (`bmc-log`, `bmc-config`, `bmc-index-skills`). Framework binaries are immutable executables.
+*   **Framework Configuration Enforcement:** The SA must inspect `.bmc-stuff/config.json` via `bmc-config` at the start of Phase 2 and Phase 3. The SA must strictly obey the configured settings (`runtime`, `worktrees`, `max_ping_pong`, `pr_demo_mode`) without requiring manual human prompts.
 *   **Centralized DB Access:** Never execute raw `sqlite3` shell queries directly on `.bmc-stuff/crew.db`. Always use `.bmc-stuff/bin/bmc-log show-slice <slice_id>` to check status and phase transition history.
 *   **Phase 4 Validation Handoff Protocol:** In Phase 4, generate `.bmc-stuff/work/SXX-DEMO.md` and hand off to the CBO. Use `.bmc-stuff/bin/bmc-log show-slice <slice_id>` to check status. Never attempt to modify scripts or bypass CBO sign-off.
 *   **ASD-STE100 Communication Standard:** All responses, subagent prompts, handoffs, and instructions generated by the SA must strictly follow ASD-STE100 principles (active voice, simple tenses, short sentences ≤20 words for instructions / ≤25 for descriptions, unambiguous terms).

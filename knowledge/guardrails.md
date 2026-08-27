@@ -95,6 +95,11 @@ This document defines the strict guardrails and execution limits for the Baremet
 *   **Target Workspace Scope:** All execution of `.bmc-stuff/bin/bmc-index-skills` during installation or maintenance must explicitly specify `--target <path>` to prevent misdirected file reads or updates outside the target project root.
 *   **Skill Synchronization Discipline:** Automatically updating local skills (`--update-local`) must only overwrite matching skill definitions in `.agents/skills/` from authoritative primary crew skills (`crew/`) or verified cached skills (`.bmc-stuff/skills-cache/`), while excluding `.git` metadata folders. Agents may use `--check` to verify available updates without modifying disk state.
 
+## 14. Framework Configuration & Worktree Enforcement Guardrails
+*   **Automatic Configuration Ingestion:** Crew agents must inspect `.bmc-stuff/config.json` via `.bmc-stuff/bin/bmc-config` at phase boundaries.
+*   **Worktree Execution Invariant:** When `worktrees` is set to `true` in configuration (or requested by the CBO), the SA MUST automatically create the git worktree (`.bmc-stuff/worktrees/SXX`) on branch `feature/SXX` before spawning subagents, and bind all subagents to execute inside that workspace.
+*   **Runtime Invariant:** When `runtime` is set to `docker`, all execution and DEMO instructions must be containerized. When set to `local`, instructions must use local runtime commands.
+
 
 
 
