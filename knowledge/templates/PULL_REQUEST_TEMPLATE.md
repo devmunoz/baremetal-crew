@@ -1,3 +1,4 @@
+<!-- Baremetal-Crew (BMC) Pull Request Template -->
 # Pull Request: [Slice Name / Feature Title]
 
 ## 1. Summary
@@ -13,16 +14,21 @@
 
 ## 3. Verification & Validation
 <!--
-Select the section matching your configured `pr_demo_mode` in `.bmc-stuff/config.json`:
-- Mode 'reference': Keep the file reference and summarize test outcome (Default).
-- Mode 'embed': Paste the full verification checklist from `.bmc-stuff/work/SXX-DEMO.md`.
-- Mode 'minimal': Keep only automated test status.
+Format this section based on `pr_demo_mode` in `.bmc-stuff/config.json`:
+- Mode 'embed' (Default): Embed the manual verification checklist from `.bmc-stuff/work/SXX-DEMO.md` below.
+- Mode 'reference': Replace the checklist below with: "- **Demo Guide:** See `.bmc-stuff/work/[SLICE-ID]-DEMO.md`".
+- Mode 'minimal': Omit the manual checklist and keep only automated test status.
 -->
 
-### Validation Details
-- **Demo Guide:** See `.bmc-stuff/work/[SLICE-ID]-DEMO.md` for full manual and container validation instructions.
-- **Automated Tests:** All unit, integration, and E2E tests passed (100%).
+### Automated Test Status
+- All unit, integration, and E2E tests passed (100%).
 
+### Manual Verification Checklist (CBO)
+<!-- Step-by-step instructions from .bmc-stuff/work/[SLICE-ID]-DEMO.md -->
+- [ ] **Step 1 (Environment Setup & Fresh Build):** Run clean build command (e.g. `docker compose build --no-cache && docker compose up -d`).
+- [ ] **Step 2 (Feature Execution):** Run the verification command (e.g. `docker compose exec app ...`).
+- [ ] **Step 3 (Outcome Verification):** Confirm expected output, API response, or UI view.
+- [ ] **Step 4 (Cleanup):** Run cleanup command (e.g. `docker compose down`).
 ## 4. Governance & Quality Checklist
 - [ ] Automated unit and integration tests pass cleanly.
 - [ ] E2E acceptance tests pass with 0 ping-pong blocks.

@@ -19,7 +19,7 @@ CONFIG_RUNTIME="${BMC_RUNTIME:-docker}"
 CONFIG_WORKTREES="${BMC_WORKTREES:-false}"
 CONFIG_MAX_PING_PONG="${BMC_MAX_PING_PONG:-3}"
 CONFIG_COMMUNICATION="${BMC_COMMUNICATION:-ste100}"
-CONFIG_PR_DEMO_MODE="${BMC_PR_DEMO_MODE:-reference}"
+CONFIG_PR_DEMO_MODE="${BMC_PR_DEMO_MODE:-embed}"
 
 # Support environment variable override
 if [ "${BMC_INDEX_SKILLS:-}" = "true" ]; then
@@ -41,7 +41,7 @@ print_help() {
     echo "  --no-worktrees        Disable git worktree workspace isolation"
     echo "  --max-ping-pong <N>   Set max ping-pong retries between Dev/QA (default: 3)"
     echo "  --communication <ste100|caveman> Set default communication standard (default: ste100)"
-    echo "  --pr-demo-mode <reference|embed|minimal> Set DEMO placement in Pull Requests (default: reference)"
+    echo "  --pr-demo-mode <embed|reference|minimal> Set DEMO placement in Pull Requests (default: embed)"
     echo
     echo "Environment Variables:"
     echo "  BMC_INDEX_SKILLS      Set to 'true' to force skills indexing"
@@ -181,6 +181,7 @@ if [ -t 0 ] && [ "${YES_TO_ALL}" = "false" ]; then
     echo "   - Create: .agents/skills/ (crew role skill definitions)"
     echo "   - Initialize or update: AGENTS.md (in the repository root)"
     echo "   - Initialize: .bmc-stuff/config.json (framework configuration)"
+    echo "   - Initialize: .github/pull_request_template.md (if no PR template exists)"
     echo "============================================="
     read -p "Do you want to proceed with the installation? [y/N]: " -n 1 -r
     echo
@@ -267,7 +268,41 @@ else
     fi
 fi
 
-# 7. Optional indexing of skills
+# 7. Initialize or preserve Pull Request template in target root
+EXISTING_PR_TEMPLATE=""
+for tmpl_candidate in \
+    "${TARGET_DIR}/.github/pull_request_template.md" \
+    "${TARGET_DIR}/.github/PULL_REQUEST_TEMPLATE.md" \
+    "${TARGET_DIR}/pull_request_template.md" \
+    "${TARGET_DIR}/PULL_REQUEST_TEMPLATE.md" \
+    "${TARGET_DIR}/docs/pull_request_template.md" \
+    "${TARGET_DIR}/docs/PULL_REQUEST_TEMPLATE.md"; do
+    if [ -f "${tmpl_candidate}" ]; then
+        EXISTING_PR_TEMPLATE="${tmpl_candidate}"
+        break
+    fi
+done
+
+if [ -z "${EXISTING_PR_TEMPLATE}" ] && [ -d "${TARGET_DIR}/.github/PULL_REQUEST_TEMPLATE" ]; then
+    EXISTING_PR_TEMPLATE="${TARGET_DIR}/.github/PULL_REQUEST_TEMPLATE"
+fi
+
+if [ -z "${EXISTING_PR_TEMPLATE}" ]; then
+    echo "-> Initializing .github/pull_request_template.md in target project..."
+    mkdir -p "${TARGET_DIR}/.github"
+    cp "${SRC_DIR}/knowledge/templates/PULL_REQUEST_TEMPLATE.md" "${TARGET_DIR}/.github/pull_request_template.md"
+else
+    echo "-> Existing pull request template found at ${EXISTING_PR_TEMPLATE}."
+    if [ -f "${EXISTING_PR_TEMPLATE}" ] && grep -q "Baremetal-Crew" "${EXISTING_PR_TEMPLATE}"; then
+        echo "   Baremetal-Crew template already present. Skipping overwrite."
+        echo "   Warning: Inspect .bmc-stuff/knowledge/templates/PULL_REQUEST_TEMPLATE.md to update your template manually."
+    else
+        echo "   Custom pull request template preserved. Skipping overwrite."
+        echo "   Warning: Inspect .bmc-stuff/knowledge/templates/PULL_REQUEST_TEMPLATE.md to integrate BMC validation sections."
+    fi
+fi
+
+# 8. Optional indexing of skills
 echo
 if [ "${INDEX_SKILLS}" = "true" ]; then
     echo "-> Executing pre-approved skills indexing and updating existing .agents/skills..."

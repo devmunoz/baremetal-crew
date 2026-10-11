@@ -64,8 +64,8 @@ Ingest the signed functional scope, evaluate technical feasibility against tech 
         - Verify container mount paths (e.g. `/music` vs `music`) and volume mappings against `docker-compose.yml` definitions before generating instructions.
         - **Worktree Path Awareness:** If the slice was developed inside a git worktree (e.g. `.bmc-stuff/worktrees/SXX`), ALL execution steps in `SXX-DEMO.md` MUST specify navigating to the worktree workspace (`cd .bmc-stuff/worktrees/SXX`) or switching to branch `feature/SXX` before executing setup, build, or test commands.
     *   **Git Pull Request & Worktree Handoff (No Premature Merging):** If git worktree isolation or `feature/SXX` branch was used, commit all slice changes on `feature/SXX`, push the branch (`git push -u origin feature/SXX`), and create a Pull Request (via `gh pr create` or branch PR details). Format the PR body based on the [PULL_REQUEST_TEMPLATE.md template](../../../.bmc-stuff/knowledge/templates/PULL_REQUEST_TEMPLATE.md). Inspect the configured mode via `.bmc-stuff/bin/bmc-config get pr_demo_mode`:
-        - **`embed`**: Paste the full verification checklist from `.bmc-stuff/work/SXX-DEMO.md` into the PR body.
-        - **`reference`** (default): Reference `.bmc-stuff/work/SXX-DEMO.md` in the PR body and summarize automated test outcomes.
+        - **`embed`** (default): Paste the full verification checklist from `.bmc-stuff/work/SXX-DEMO.md` into the PR body.
+        - **`reference`**: Reference `.bmc-stuff/work/SXX-DEMO.md` in the PR body and summarize automated test outcomes.
         - **`minimal`**: Provide only concise automated test status.
         **Absolute Ban on Premature Merging:** The SA MUST NEVER merge `feature/SXX` into `main` or `master` prior to explicit CBO validation sign-off (`Completed`). The branch must remain isolated for CBO validation.
     *   **Log Phase Transition & Demo Event:** Log the validation phase start and the demo creation:

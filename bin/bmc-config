@@ -15,7 +15,7 @@ DEFAULT_CONFIG = {
     "worktrees": False,
     "max_ping_pong": 3,
     "communication_mode": "ste100",
-    "pr_demo_mode": "reference"
+    "pr_demo_mode": "embed"
 }
 
 VALID_RUNTIMES = ["docker", "local"]
