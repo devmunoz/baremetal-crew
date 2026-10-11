@@ -15,11 +15,11 @@ TARGET_DIR="."
 INDEX_SKILLS=false
 YES_TO_ALL=false
 
-CONFIG_RUNTIME="${BMC_RUNTIME:-docker}"
-CONFIG_WORKTREES="${BMC_WORKTREES:-false}"
-CONFIG_MAX_PING_PONG="${BMC_MAX_PING_PONG:-3}"
-CONFIG_COMMUNICATION="${BMC_COMMUNICATION:-ste100}"
-CONFIG_PR_DEMO_MODE="${BMC_PR_DEMO_MODE:-embed}"
+CONFIG_RUNTIME="${BMC_RUNTIME:-}"
+CONFIG_WORKTREES="${BMC_WORKTREES:-}"
+CONFIG_MAX_PING_PONG="${BMC_MAX_PING_PONG:-}"
+CONFIG_COMMUNICATION="${BMC_COMMUNICATION:-}"
+CONFIG_PR_DEMO_MODE="${BMC_PR_DEMO_MODE:-}"
 
 # Support environment variable override
 if [ "${BMC_INDEX_SKILLS:-}" = "true" ]; then
@@ -180,7 +180,11 @@ if [ -t 0 ] && [ "${YES_TO_ALL}" = "false" ]; then
     echo "   - Create: .bmc-stuff/ (knowledge base and CLI tools)"
     echo "   - Create: .agents/skills/ (crew role skill definitions)"
     echo "   - Initialize or update: AGENTS.md (in the repository root)"
-    echo "   - Initialize: .bmc-stuff/config.json (framework configuration)"
+    if [ -f "${TARGET_DIR}/.bmc-stuff/config.json" ]; then
+        echo "   - Preserve: .bmc-stuff/config.json (existing framework configuration)"
+    else
+        echo "   - Initialize: .bmc-stuff/config.json (framework configuration)"
+    fi
     echo "   - Initialize: .github/pull_request_template.md (if no PR template exists)"
     echo "============================================="
     read -p "Do you want to proceed with the installation? [y/N]: " -n 1 -r
@@ -190,17 +194,19 @@ if [ -t 0 ] && [ "${YES_TO_ALL}" = "false" ]; then
         exit 0
     fi
 
-    read -p "Runtime environment [docker/local] (default: ${CONFIG_RUNTIME}): " -r input_runtime
-    if [ -n "${input_runtime}" ]; then
-        CONFIG_RUNTIME="${input_runtime}"
-    fi
+    if [ ! -f "${TARGET_DIR}/.bmc-stuff/config.json" ]; then
+        read -p "Runtime environment [docker/local] (default: ${CONFIG_RUNTIME:-docker}): " -r input_runtime
+        if [ -n "${input_runtime}" ]; then
+            CONFIG_RUNTIME="${input_runtime}"
+        fi
 
-    read -p "Enable git worktree workspace isolation? [y/N] (default: ${CONFIG_WORKTREES}): " -n 1 -r input_wt
-    echo
-    if [[ $input_wt =~ ^[Yy]$ ]]; then
-        CONFIG_WORKTREES=true
-    elif [[ $input_wt =~ ^[Nn]$ ]]; then
-        CONFIG_WORKTREES=false
+        read -p "Enable git worktree workspace isolation? [y/N] (default: ${CONFIG_WORKTREES:-false}): " -n 1 -r input_wt
+        echo
+        if [[ $input_wt =~ ^[Yy]$ ]]; then
+            CONFIG_WORKTREES=true
+        elif [[ $input_wt =~ ^[Nn]$ ]]; then
+            CONFIG_WORKTREES=false
+        fi
     fi
 fi
 
@@ -234,15 +240,35 @@ chmod +x "${TARGET_DIR}/.bmc-stuff/bin/bmc-config"
 ln -sf .bmc-stuff/bin/bmc-log "${TARGET_DIR}/bmc-log"
 ln -sf .bmc-stuff/bin/bmc-config "${TARGET_DIR}/bmc-config"
 
-# 4. Initialize Framework Configuration (.bmc-stuff/config.json)
-echo "-> Initializing framework configuration..."
-"${TARGET_DIR}/.bmc-stuff/bin/bmc-config" init \
-    --runtime "${CONFIG_RUNTIME}" \
-    $([ "${CONFIG_WORKTREES}" = "true" ] && echo "--worktrees" || echo "--no-worktrees") \
-    --max-ping-pong "${CONFIG_MAX_PING_PONG}" \
-    --communication "${CONFIG_COMMUNICATION}" \
-    --pr-demo-mode "${CONFIG_PR_DEMO_MODE}"
+# 4. Initialize or preserve Framework Configuration (.bmc-stuff/config.json)
+INIT_ARGS=()
+[ -n "${CONFIG_RUNTIME}" ] && INIT_ARGS+=(--runtime "${CONFIG_RUNTIME}")
+if [ "${CONFIG_WORKTREES}" = "true" ]; then
+    INIT_ARGS+=(--worktrees)
+elif [ "${CONFIG_WORKTREES}" = "false" ]; then
+    INIT_ARGS+=(--no-worktrees)
+fi
+[ -n "${CONFIG_MAX_PING_PONG}" ] && INIT_ARGS+=(--max-ping-pong "${CONFIG_MAX_PING_PONG}")
+[ -n "${CONFIG_COMMUNICATION}" ] && INIT_ARGS+=(--communication "${CONFIG_COMMUNICATION}")
+[ -n "${CONFIG_PR_DEMO_MODE}" ] && INIT_ARGS+=(--pr-demo-mode "${CONFIG_PR_DEMO_MODE}")
 
+if [ ! -f "${TARGET_DIR}/.bmc-stuff/config.json" ]; then
+    echo "-> Initializing framework configuration..."
+    "${TARGET_DIR}/.bmc-stuff/bin/bmc-config" init \
+        --runtime "${CONFIG_RUNTIME:-docker}" \
+        $([ "${CONFIG_WORKTREES:-false}" = "true" ] && echo "--worktrees" || echo "--no-worktrees") \
+        --max-ping-pong "${CONFIG_MAX_PING_PONG:-3}" \
+        --communication "${CONFIG_COMMUNICATION:-ste100}" \
+        --pr-demo-mode "${CONFIG_PR_DEMO_MODE:-embed}"
+else
+    echo "-> Existing framework configuration found at .bmc-stuff/config.json."
+    if [ ${#INIT_ARGS[@]} -gt 0 ]; then
+        echo "   Applying explicit configuration overrides..."
+        "${TARGET_DIR}/.bmc-stuff/bin/bmc-config" init "${INIT_ARGS[@]}"
+    else
+        echo "   Skipping overwrite to preserve existing settings."
+    fi
+fi
 # 5. Copy PO, SA, Dev, QA, and Guru skills to target .agents/skills/
 echo "-> Installing primary crew skills to .agents/skills/..."
 # We recreate the folder structure for each crew skill to ensure SKILL.md is in the right place
