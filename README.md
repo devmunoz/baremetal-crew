@@ -88,3 +88,4 @@ The primary crew skills and advisory skills indexing catalogs are inspired by an
 *   [mattpocock/skills](https://github.com/mattpocock/skills) – Engineering triage, domain modeling, and testing skills.
 *   [obra/superpowers](https://github.com/obra/superpowers) – Adversarial and verification skills.
 *   [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman) – Ultra-compressed token communication mode.
+*   [danyuchn/asd-ste100-skill](https://github.com/danyuchn/asd-ste100-skill) – Simplified Technical English (ASD-STE100) communication standard.

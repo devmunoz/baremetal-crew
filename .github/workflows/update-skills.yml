@@ -1,0 +1,50 @@
+name: Sync and Update Skills
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync-skills:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run skills synchronizer
+        run: |
+          chmod +x bin/bmc-index-skills
+          ./bin/bmc-index-skills --update-local
+
+      - name: Check for modified skills
+        id: git_status
+        run: |
+          if [ -n "$(git status --porcelain .agents/skills/)" ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Pull Request
+        if: steps.git_status.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(skills): sync local skills with upstream catalogs"
+          title: "chore(skills): sync local skills with upstream catalogs"
+          body: |
+            Automated weekly synchronization of `.agents/skills/` from pre-approved upstream catalogs.
+
+            Generated automatically by `.github/workflows/update-skills.yml`.
+          branch: auto-update-skills
+          delete-branch: true
