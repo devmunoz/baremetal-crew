@@ -6,7 +6,7 @@ description: Analyze functional scope and suggest minimal technical skills from 
 # tech-guru (Advisory Guru Skill)
 
 ## Purpose
-Examine the signed functional scope (`SXX-SCOPE.md`) and the draft blueprint (`SXX-BLUEPRINT.md`), query the indexed pre-approved skills catalogs, and recommend specific technical skills to be installed in `.agents/skills/` for the Engineering Crew.
+Examine the signed functional scope (`SXX-SCOPE.md`) and the draft blueprint (`SXX-BLUEPRINT.md`), query the indexed pre-approved skills catalogs, and recommend specific technical skills to be installed in `.agents/skills/` for the Engineering Crew. Invocation occurs manually via the CBO or automatically via the SA when `tg_auto_check_blueprint` is enabled.
 
 ## Inputs
 *   `.bmc-stuff/work/SXX-SCOPE.md` (signed functional scope).
@@ -43,6 +43,7 @@ Examine the signed functional scope (`SXX-SCOPE.md`) and the draft blueprint (`S
 *   **Artifact Token Optimization:** When creating or modifying `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md`, NEVER duplicate or print the report's full content in the chat. Provide only the file path, a concise summary (1–3 sentences in ASD-STE100), and direct next actions required from the CBO.
 *   **Optional Caveman Suggestion:** The Tech Guru may advertise `caveman` mode to the CBO as an optional indexed skill suggestion for token compression, leaving activation entirely up to the CBO.
 *   **Optional Git Worktree Suggestion:** The Tech Guru may suggest `using-git-worktrees` (from `obra-superpowers`) to the CBO as an optional process skill for clean slice workspace isolation and parallel execution, leaving setup and usage strictly up to the CBO.
+*   **Invocation Modes:** The Tech Guru runs either by direct CBO request or automatically during Phase 2 if `tg_auto_check_blueprint` is true. In all cases, the output is strictly advisory (`.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md`). The skill never installs packages or modifies source code directly.
     ```markdown
     **[ROLE: Tech Guru]**
     **[SLICE: <Slice ID>] | [PHASE: <Phase Name>]**

@@ -20,6 +20,7 @@ CONFIG_WORKTREES="${BMC_WORKTREES:-}"
 CONFIG_MAX_PING_PONG="${BMC_MAX_PING_PONG:-}"
 CONFIG_COMMUNICATION="${BMC_COMMUNICATION:-}"
 CONFIG_PR_DEMO_MODE="${BMC_PR_DEMO_MODE:-}"
+CONFIG_TG_AUTO_CHECK_BLUEPRINT="${BMC_TG_AUTO_CHECK_BLUEPRINT:-}"
 
 # Support environment variable override
 if [ "${BMC_INDEX_SKILLS:-}" = "true" ]; then
@@ -42,6 +43,8 @@ print_help() {
     echo "  --max-ping-pong <N>   Set max ping-pong retries between Dev/QA (default: 3)"
     echo "  --communication <ste100|caveman> Set default communication standard (default: ste100)"
     echo "  --pr-demo-mode <embed|reference|minimal> Set DEMO placement in Pull Requests (default: embed)"
+    echo "  --tg-auto-check-blueprint Enable automatic Tech Guru audit on blueprint draft (default: false)"
+    echo "  --no-tg-auto-check-blueprint Disable automatic Tech Guru audit on blueprint draft"
     echo
     echo "Environment Variables:"
     echo "  BMC_INDEX_SKILLS      Set to 'true' to force skills indexing"
@@ -50,6 +53,7 @@ print_help() {
     echo "  BMC_MAX_PING_PONG     Set max ping-pong retries"
     echo "  BMC_COMMUNICATION     Set communication mode (ste100/caveman)"
     echo "  BMC_PR_DEMO_MODE      Set PR DEMO mode (reference/embed/minimal)"
+    echo "  BMC_TG_AUTO_CHECK_BLUEPRINT Set automatic Tech Guru audit (true/false)"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -89,6 +93,14 @@ while [[ $# -gt 0 ]]; do
         --pr-demo-mode)
             CONFIG_PR_DEMO_MODE="$2"
             shift 2
+            ;;
+        --tg-auto-check-blueprint)
+            CONFIG_TG_AUTO_CHECK_BLUEPRINT=true
+            shift
+            ;;
+        --no-tg-auto-check-blueprint)
+            CONFIG_TG_AUTO_CHECK_BLUEPRINT=false
+            shift
             ;;
         -*)
             echo "Error: Unknown option $1"
@@ -251,6 +263,11 @@ fi
 [ -n "${CONFIG_MAX_PING_PONG}" ] && INIT_ARGS+=(--max-ping-pong "${CONFIG_MAX_PING_PONG}")
 [ -n "${CONFIG_COMMUNICATION}" ] && INIT_ARGS+=(--communication "${CONFIG_COMMUNICATION}")
 [ -n "${CONFIG_PR_DEMO_MODE}" ] && INIT_ARGS+=(--pr-demo-mode "${CONFIG_PR_DEMO_MODE}")
+if [ "${CONFIG_TG_AUTO_CHECK_BLUEPRINT}" = "true" ]; then
+    INIT_ARGS+=(--tg-auto-check-blueprint)
+elif [ "${CONFIG_TG_AUTO_CHECK_BLUEPRINT}" = "false" ]; then
+    INIT_ARGS+=(--no-tg-auto-check-blueprint)
+fi
 
 if [ ! -f "${TARGET_DIR}/.bmc-stuff/config.json" ]; then
     echo "-> Initializing framework configuration..."
@@ -259,7 +276,8 @@ if [ ! -f "${TARGET_DIR}/.bmc-stuff/config.json" ]; then
         $([ "${CONFIG_WORKTREES:-false}" = "true" ] && echo "--worktrees" || echo "--no-worktrees") \
         --max-ping-pong "${CONFIG_MAX_PING_PONG:-3}" \
         --communication "${CONFIG_COMMUNICATION:-ste100}" \
-        --pr-demo-mode "${CONFIG_PR_DEMO_MODE:-embed}"
+        --pr-demo-mode "${CONFIG_PR_DEMO_MODE:-embed}" \
+        $([ "${CONFIG_TG_AUTO_CHECK_BLUEPRINT:-false}" = "true" ] && echo "--tg-auto-check-blueprint" || echo "--no-tg-auto-check-blueprint")
 else
     echo "-> Existing framework configuration found at .bmc-stuff/config.json."
     if [ ${#INIT_ARGS[@]} -gt 0 ]; then

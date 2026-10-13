@@ -71,7 +71,7 @@ This document establishes the rigid, minimalist, and operational working framewo
     *   **Absolute Host Installation Ban:** Under no circumstances execute commands that download or install system-level packages, libraries, or binaries directly onto the host machine. Curl/wget commands must target local ports only. If testing requires dependencies, they must be containerized or flagged to the CBO/SA. Respect the dangerous commands catalog in [guardrails.md](guardrails.md).
 
 ### E. Tech Guru (Primary Guru Skill - Optional)
-*   **Reporting Line:** Invoked manually by the CBO for consulting.
+*   **Reporting Line:** Invoked manually by the CBO for consulting, or executed automatically by the SA upon drafting the blueprint when `tg_auto_check_blueprint` is enabled in `.bmc-stuff/config.json`.
 *   **Associated Skill:** [tech-guru](../crew/tech-guru/SKILL.md)
 *   **Responsibilities:** Analyze the signed functional scope (`.bmc-stuff/work/SXX-SCOPE.md`), search pre-approved skills libraries, recommend specific technical skills to install in `.agents/skills/` to improve slice quality, audit `AGENTS.md` for drift, and write `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md`.
 *   **Strict Constraints:** *Advisory only.* Does not write business logic or create backlog tasks. Must explicitly remind the CBO that they have the final authority to adjust, configure, or override any skill configuration.
@@ -117,6 +117,7 @@ All stage transitions are logged in the SQLite database using the command helper
 *   **Trigger:** `.bmc-stuff/work/SXX-SCOPE.md` signed by the CBO.
 *   **Process:** The SA executes the `software-architect` skill, focusing strictly on this single active slice. The SA clarifies requirements, validates stack feasibility, audits host capabilities (ensures Docker is running and required binaries are present, otherwise halting and coordinating with CBO), updates `AGENTS.md` (merging BMC reference block if existing, documenting setup/build/test), and drafts `.bmc-stuff/work/SXX-BLUEPRINT.md` (based on [BLUEPRINT.md template](templates/BLUEPRINT.md)) specifying all architectural/UI design proposals inside it. The root `DESIGN.md` and `ARCHITECTURE.md` are left untouched.
 *   **Execution Block Rule:** If `.bmc-stuff/work/SXX-BLUEPRINT.md` contains unresolved dependencies on slices that are not yet marked closed/successful in the database, the SA **must block the execution**. Phase 3 cannot start for this slice until the blocking slices are completed.
+*   **Automated Tech Guru Audit Option (`tg_auto_check_blueprint`):** If enabled in `.bmc-stuff/config.json` (`bmc-config get tg_auto_check_blueprint` returns `true`), the SA automatically executes the `tech-guru` audit immediately upon drafting `.bmc-stuff/work/SXX-BLUEPRINT.md`. The Tech Guru generates `.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md`. The SA delivers both the blueprint and the recommendations report to the CBO in a single unified review turn. If disabled (`false`, default), Tech Guru invocation remains manual.
 *   **Explicit CBO Approval Gate:** Phase 3 (Blind Execution) can ONLY be unlocked when the CBO (Human) explicitly approves and signs off `.bmc-stuff/work/SXX-BLUEPRINT.md`. The SA is strictly forbidden from inferring sign-off from routine user commands (such as "check the recommended skills" or "review blueprint"). The SA must wait for explicit CBO sign-off before logging `bmc-log cbo-sign SXX` or spawning subagents.
 *   **Phase Sign-off:** The SA logs the transition and publishes the sequential backlog:
     ```bash
@@ -239,4 +240,4 @@ All skills catalog indexing and local `.agents/skills/` updates are managed via 
 Framework configuration is stored in `.bmc-stuff/config.json` and managed via `.bmc-stuff/bin/bmc-config`.
 *   **Inspection:** `.bmc-stuff/bin/bmc-config show` (Displays full JSON configuration) or `.bmc-stuff/bin/bmc-config get <key>` (Outputs specific setting value).
 *   **Modification:** `.bmc-stuff/bin/bmc-config set <key> <value>` (Updates setting with type validation).
-*   **Initialization:** `.bmc-stuff/bin/bmc-config init` (Creates or resets configuration with runtime, worktree, communication, and PR DEMO placement options).
+*   **Initialization:** `.bmc-stuff/bin/bmc-config init` (Creates or resets configuration with runtime, worktree, communication, PR DEMO placement, and automated Tech Guru audit options).

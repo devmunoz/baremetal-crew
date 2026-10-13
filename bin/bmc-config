@@ -15,9 +15,9 @@ DEFAULT_CONFIG = {
     "worktrees": False,
     "max_ping_pong": 3,
     "communication_mode": "ste100",
-    "pr_demo_mode": "embed"
+    "pr_demo_mode": "embed",
+    "tg_auto_check_blueprint": False
 }
-
 VALID_RUNTIMES = ["docker", "local"]
 VALID_COMMS = ["ste100", "caveman"]
 VALID_PR_DEMO_MODES = ["reference", "embed", "minimal"]
@@ -53,6 +53,14 @@ def parse_typed_value(key, value_str):
             return "worktrees", True
         elif v.lower() in ["false", "0", "no", "n", "disable", "disabled"]:
             return "worktrees", False
+        else:
+            print(f"Error: Invalid boolean value '{value_str}' for key '{key}'. Use true/false.")
+            sys.exit(1)
+    elif k in ["tg_auto_check_blueprint", "tg-auto-check-blueprint", "auto_guru", "tg_auto_check"]:
+        if v.lower() in ["true", "1", "yes", "y", "enable", "enabled"]:
+            return "tg_auto_check_blueprint", True
+        elif v.lower() in ["false", "0", "no", "n", "disable", "disabled"]:
+            return "tg_auto_check_blueprint", False
         else:
             print(f"Error: Invalid boolean value '{value_str}' for key '{key}'. Use true/false.")
             sys.exit(1)
@@ -104,7 +112,10 @@ def cmd_get(key):
         "comms": "communication_mode",
         "pr_demo": "pr_demo_mode",
         "pr_mode": "pr_demo_mode",
-        "pr-demo-mode": "pr_demo_mode"
+        "pr-demo-mode": "pr_demo_mode",
+        "auto_guru": "tg_auto_check_blueprint",
+        "tg-auto-check-blueprint": "tg_auto_check_blueprint",
+        "tg_auto_check": "tg_auto_check_blueprint"
     }
     target_key = alias_map.get(normalized_key, normalized_key)
     
@@ -125,7 +136,7 @@ def cmd_set(key, value_str):
     save_config(config)
     print(f"[CONFIG] Set '{norm_key}' = {parsed_value}")
 
-def cmd_init(runtime=None, worktrees=None, max_ping_pong=None, communication_mode=None, pr_demo_mode=None):
+def cmd_init(runtime=None, worktrees=None, max_ping_pong=None, communication_mode=None, pr_demo_mode=None, tg_auto_check_blueprint=None):
     config = DEFAULT_CONFIG.copy()
     if os.path.exists(CONFIG_PATH):
         config = load_config()
@@ -156,6 +167,8 @@ def cmd_init(runtime=None, worktrees=None, max_ping_pong=None, communication_mod
             print(f"Error: Invalid pr_demo_mode '{pr_demo_mode}'. Allowed: {', '.join(VALID_PR_DEMO_MODES)}.")
             sys.exit(1)
         config["pr_demo_mode"] = pr_demo_mode.lower()
+    if tg_auto_check_blueprint is not None:
+        config["tg_auto_check_blueprint"] = bool(tg_auto_check_blueprint)
     save_config(config)
     print(f"[CONFIG] Initialized configuration at {CONFIG_PATH}")
     print(json.dumps(config, indent=2))
@@ -165,7 +178,7 @@ def print_usage():
     print("  bmc-config show")
     print("  bmc-config get <key>")
     print("  bmc-config set <key> <value>")
-    print("  bmc-config init [--runtime docker|local] [--worktrees] [--no-worktrees] [--max-ping-pong N] [--communication ste100|caveman] [--pr-demo-mode reference|embed|minimal]")
+    print("  bmc-config init [--runtime docker|local] [--worktrees] [--no-worktrees] [--max-ping-pong N] [--communication ste100|caveman] [--pr-demo-mode reference|embed|minimal] [--tg-auto-check-blueprint] [--no-tg-auto-check-blueprint]")
 
 def main():
     if len(sys.argv) < 2:
@@ -196,13 +209,16 @@ def main():
         parser.add_argument("--max-ping-pong", type=int)
         parser.add_argument("--communication", choices=VALID_COMMS)
         parser.add_argument("--pr-demo-mode", choices=VALID_PR_DEMO_MODES)
+        parser.add_argument("--tg-auto-check-blueprint", dest="tg_auto_check_blueprint", action="store_true", default=None)
+        parser.add_argument("--no-tg-auto-check-blueprint", dest="tg_auto_check_blueprint", action="store_false")
         args = parser.parse_args(sys.argv[2:])
         cmd_init(
             runtime=args.runtime,
             worktrees=args.worktrees,
             max_ping_pong=args.max_ping_pong,
             communication_mode=args.communication,
-            pr_demo_mode=args.pr_demo_mode
+            pr_demo_mode=args.pr_demo_mode,
+            tg_auto_check_blueprint=args.tg_auto_check_blueprint
         )
     elif action in ["-h", "--help", "help"]:
         print_usage()
