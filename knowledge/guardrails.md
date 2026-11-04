@@ -93,7 +93,7 @@ This document defines the strict guardrails and execution limits for the Baremet
 
 ## 13. Skills Indexing & Local Synchronization Guardrails
 *   **Target Workspace Scope:** All execution of `.bmc-stuff/bin/bmc-index-skills` during installation or maintenance must explicitly specify `--target <path>` to prevent misdirected file reads or updates outside the target project root.
-*   **Skill Synchronization Discipline:** Automatically updating local skills (`--update-local`) must only overwrite matching skill definitions in `.agents/skills/` from authoritative primary crew skills (`crew/`) or verified cached skills (`.bmc-stuff/skills-cache/`), while excluding `.git` metadata folders. Agents may use `--check` to verify available updates without modifying disk state.
+*   **Skill Synchronization Discipline:** Automatically updating local skills (`--update-local`) must only overwrite matching skill definitions in `.agents/skills/` from authoritative primary crew skills (`crew/`) or verified cached skills (`.bmc-stuff/skills-cache/`). The process must omit non-skill files, hidden directories, and proprietary assistant or editor files. Agents may use `--check` to verify available updates without modifying disk state.
 
 ## 14. Framework Configuration & Worktree Enforcement Guardrails
 *   **Automatic Configuration Ingestion:** Crew agents must inspect `.bmc-stuff/config.json` via `.bmc-stuff/bin/bmc-config` at phase boundaries.

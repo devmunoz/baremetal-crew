@@ -86,6 +86,18 @@ def parse_yaml_frontmatter(file_path):
         pass
     return name, description
 
+def is_ignored_skill_item(name):
+    lower = name.lower()
+    if name.startswith("."):
+        return True
+    if "claude" in lower:
+        return True
+    if lower in ("copilot-instructions.md", "package-lock.json", "yarn.lock", "pnpm-lock.yaml"):
+        return True
+    return False
+
+def copytree_ignore(dir_path, names):
+    return [name for name in names if is_ignored_skill_item(name)]
 def index_skills(paths, silent=False):
     catalog_path = paths["catalog_path"]
     cache_dir = paths["cache_dir"]
@@ -127,6 +139,7 @@ def index_skills(paths, silent=False):
                     continue
                 
                 for root, dirs, files in os.walk(sel_path):
+                    dirs[:] = [d for d in dirs if not is_ignored_skill_item(d)]
                     if "SKILL.md" in files:
                         skill_file = os.path.join(root, "SKILL.md")
                         skill_name, skill_desc = parse_yaml_frontmatter(skill_file)
@@ -137,14 +150,14 @@ def index_skills(paths, silent=False):
                         os.makedirs(dest_skill_dir, exist_ok=True)
                         
                         for item in os.listdir(root):
+                            if is_ignored_skill_item(item):
+                                continue
                             s_item = os.path.join(root, item)
                             d_item = os.path.join(dest_skill_dir, item)
                             if os.path.isdir(s_item):
-                                if item != ".git":
-                                    shutil.copytree(s_item, d_item, dirs_exist_ok=True)
+                                shutil.copytree(s_item, d_item, dirs_exist_ok=True, ignore=copytree_ignore)
                             else:
                                 shutil.copy2(s_item, d_item)
-                                
                         skills_index.append({
                             "name": skill_name,
                             "description": skill_desc or "No description provided.",
@@ -226,12 +239,21 @@ def update_local_skills(paths, skills_index, check_only=False, silent=False):
                 updated_count += 1
             else:
                 try:
+                    for existing_item in os.listdir(target_skill_dir):
+                        if is_ignored_skill_item(existing_item):
+                            ign_path = os.path.join(target_skill_dir, existing_item)
+                            if os.path.isdir(ign_path):
+                                shutil.rmtree(ign_path)
+                            else:
+                                os.remove(ign_path)
+
                     for s_item in os.listdir(source_path):
+                        if is_ignored_skill_item(s_item):
+                            continue
                         s_sub = os.path.join(source_path, s_item)
                         d_sub = os.path.join(target_skill_dir, s_item)
                         if os.path.isdir(s_sub):
-                            if s_item != ".git":
-                                shutil.copytree(s_sub, d_sub, dirs_exist_ok=True)
+                            shutil.copytree(s_sub, d_sub, dirs_exist_ok=True, ignore=copytree_ignore)
                         else:
                             shutil.copy2(s_sub, d_sub)
                     updated_count += 1
