@@ -92,7 +92,7 @@ def is_ignored_skill_item(name):
         return True
     if "claude" in lower:
         return True
-    if lower in ("copilot-instructions.md", "package-lock.json", "yarn.lock", "pnpm-lock.yaml"):
+    if lower in ("readme.md", "readme.txt", "readme", "copilot-instructions.md", "package-lock.json", "yarn.lock", "pnpm-lock.yaml"):
         return True
     return False
 
