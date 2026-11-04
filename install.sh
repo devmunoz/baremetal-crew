@@ -239,7 +239,7 @@ fi
 echo "-> Copying Knowledge Base and templates..."
 cp -R "${SRC_DIR}/knowledge" "${TARGET_DIR}/.bmc-stuff/"
 update_manifesto_title "${TARGET_DIR}/.bmc-stuff/knowledge/MANIFESTO.md" "${VERSION}"
-rm -f "${TARGET_DIR}/.bmc-stuff/knowledge/VERSION"
+echo "${VERSION}" > "${TARGET_DIR}/.bmc-stuff/knowledge/VERSION"
 
 # 3. Copy CLI helpers directly into .bmc-stuff/bin/
 echo "-> Copying CLI helpers..."
@@ -272,6 +272,7 @@ fi
 if [ ! -f "${TARGET_DIR}/.bmc-stuff/config.json" ]; then
     echo "-> Initializing framework configuration..."
     "${TARGET_DIR}/.bmc-stuff/bin/bmc-config" init \
+        --version "${VERSION}" \
         --runtime "${CONFIG_RUNTIME:-docker}" \
         $([ "${CONFIG_WORKTREES:-false}" = "true" ] && echo "--worktrees" || echo "--no-worktrees") \
         --max-ping-pong "${CONFIG_MAX_PING_PONG:-3}" \
@@ -280,6 +281,7 @@ if [ ! -f "${TARGET_DIR}/.bmc-stuff/config.json" ]; then
         $([ "${CONFIG_TG_AUTO_CHECK_BLUEPRINT:-false}" = "true" ] && echo "--tg-auto-check-blueprint" || echo "--no-tg-auto-check-blueprint")
 else
     echo "-> Existing framework configuration found at .bmc-stuff/config.json."
+    "${TARGET_DIR}/.bmc-stuff/bin/bmc-config" set version "${VERSION}" > /dev/null
     if [ ${#INIT_ARGS[@]} -gt 0 ]; then
         echo "   Applying explicit configuration overrides..."
         "${TARGET_DIR}/.bmc-stuff/bin/bmc-config" init "${INIT_ARGS[@]}"
