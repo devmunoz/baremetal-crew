@@ -3,14 +3,39 @@ import sys
 import os
 import json
 import argparse
-
+import subprocess
 # Resolve config path relative to the script location (one level up from bin/)
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 BMC_STUFF_DIR = os.path.dirname(SCRIPT_DIR)
 CONFIG_PATH = os.path.join(BMC_STUFF_DIR, "config.json")
 
+def get_current_framework_version():
+    candidates = [
+        os.path.join(BMC_STUFF_DIR, "knowledge", "VERSION"),
+        os.path.join(os.path.dirname(SCRIPT_DIR), "knowledge", "VERSION"),
+    ]
+    for path in candidates:
+        if os.path.exists(path):
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    v = f.read().strip()
+                    if v:
+                        return v
+            except Exception:
+                pass
+    try:
+        res = subprocess.run(
+            ["git", "-C", SCRIPT_DIR, "describe", "--tags", "--abbrev=0"],
+            capture_output=True, text=True, check=False
+        )
+        if res.returncode == 0 and res.stdout.strip():
+            return res.stdout.strip()
+    except Exception:
+        pass
+    return "unknown"
+
 DEFAULT_CONFIG = {
-    "version": "1.1.0",
+    "version": get_current_framework_version(),
     "runtime": "docker",
     "worktrees": False,
     "max_ping_pong": 3,
@@ -80,6 +105,8 @@ def parse_typed_value(key, value_str):
             print(f"Error: Invalid runtime '{value_str}'. Allowed: {', '.join(VALID_RUNTIMES)}.")
             sys.exit(1)
         return "runtime", v.lower()
+    elif k in ["version", "ver", "v"]:
+        return "version", v
 
     elif k in ["communication_mode", "communication", "comms"]:
         if v.lower() not in VALID_COMMS:
@@ -136,11 +163,15 @@ def cmd_set(key, value_str):
     save_config(config)
     print(f"[CONFIG] Set '{norm_key}' = {parsed_value}")
 
-def cmd_init(runtime=None, worktrees=None, max_ping_pong=None, communication_mode=None, pr_demo_mode=None, tg_auto_check_blueprint=None):
+def cmd_init(version=None, runtime=None, worktrees=None, max_ping_pong=None, communication_mode=None, pr_demo_mode=None, tg_auto_check_blueprint=None):
     config = DEFAULT_CONFIG.copy()
     if os.path.exists(CONFIG_PATH):
         config = load_config()
 
+    if version is not None:
+        config["version"] = version.strip()
+    elif "version" not in config or config["version"] in ["1.1.0", "unknown"]:
+        config["version"] = get_current_framework_version()
     if runtime is not None:
         if runtime.lower() not in VALID_RUNTIMES:
             print(f"Error: Invalid runtime '{runtime}'. Allowed: {', '.join(VALID_RUNTIMES)}.")
@@ -178,7 +209,7 @@ def print_usage():
     print("  bmc-config show")
     print("  bmc-config get <key>")
     print("  bmc-config set <key> <value>")
-    print("  bmc-config init [--runtime docker|local] [--worktrees] [--no-worktrees] [--max-ping-pong N] [--communication ste100|caveman] [--pr-demo-mode reference|embed|minimal] [--tg-auto-check-blueprint] [--no-tg-auto-check-blueprint]")
+    print("  bmc-config init [--version V] [--runtime docker|local] [--worktrees] [--no-worktrees] [--max-ping-pong N] [--communication ste100|caveman] [--pr-demo-mode reference|embed|minimal] [--tg-auto-check-blueprint] [--no-tg-auto-check-blueprint]")
 
 def main():
     if len(sys.argv) < 2:
@@ -203,6 +234,7 @@ def main():
         cmd_set(sys.argv[2], sys.argv[3])
     elif action == "init":
         parser = argparse.ArgumentParser(prog="bmc-config init")
+        parser.add_argument("--version")
         parser.add_argument("--runtime", choices=VALID_RUNTIMES)
         parser.add_argument("--worktrees", dest="worktrees", action="store_true", default=None)
         parser.add_argument("--no-worktrees", dest="worktrees", action="store_false")
@@ -213,6 +245,7 @@ def main():
         parser.add_argument("--no-tg-auto-check-blueprint", dest="tg_auto_check_blueprint", action="store_false")
         args = parser.parse_args(sys.argv[2:])
         cmd_init(
+            version=args.version,
             runtime=args.runtime,
             worktrees=args.worktrees,
             max_ping_pong=args.max_ping_pong,
