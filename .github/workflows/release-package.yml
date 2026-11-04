@@ -2,9 +2,16 @@ name: Build and attach release package
 
 on:
   push:
+    branches:
+      - master
+    paths:
+      - 'bin/**'
+      - 'crew/**'
+      - 'knowledge/**'
+      - 'install.sh'
     tags:
       - 'v*'
-
+  workflow_dispatch:
 permissions:
   contents: write
 
@@ -14,15 +21,65 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine SemVer version tag
+        id: semver
+        run: |
+          python3 -c '
+          import re, subprocess, os
+
+          if os.environ.get("GITHUB_REF_TYPE") == "tag":
+              tag = os.environ.get("GITHUB_REF_NAME")
+          else:
+              latest = subprocess.run(
+                  ["git", "describe", "--tags", "--abbrev=0"],
+                  capture_output=True, text=True
+              ).stdout.strip() or "v0.0.0"
+
+              commits = [
+                  c.strip() for c in subprocess.run(
+                      ["git", "log", f"{latest}..HEAD", "--pretty=format:%B---COMMIT---"],
+                      capture_output=True, text=True
+                  ).stdout.split("---COMMIT---") if c.strip()
+              ]
+
+              parts = [int(p) for p in latest.lstrip("v").split(".")]
+              major, minor, patch = (parts + [0, 0, 0])[:3]
+
+              has_breaking = any(
+                  "BREAKING CHANGE" in c or re.search(r"^[a-zA-Z]+(?:\([^)]+\))?!:", c)
+                  for c in commits
+              )
+              has_feat = any(
+                  re.search(r"^feat(?:\([^)]+\))?:", c)
+                  for c in commits
+              )
+
+              if has_breaking:
+                  tag = f"v{major + 1}.0.0"
+              elif has_feat:
+                  tag = f"v{major}.{minor + 1}.0"
+              else:
+                  tag = f"v{major}.{minor}.{patch + 1}"
+
+          print(f"Release version tag: {tag}")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"tag={tag}\n")
+          '
 
       - name: Build release package
         run: |
-          echo "${{ github.ref_name }}" > knowledge/VERSION
+          echo "${{ steps.semver.outputs.tag }}" > knowledge/VERSION
           tar -czf baremetal-crew.tar.gz bin/ knowledge/ crew/
 
       - name: Create Release and Upload Asset
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.semver.outputs.tag }}
+          name: ${{ steps.semver.outputs.tag }}
+          generate_release_notes: true
           files: baremetal-crew.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

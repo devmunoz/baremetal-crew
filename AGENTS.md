@@ -54,7 +54,7 @@ rm -rf /tmp/bmc-test-env
 ```
 
 ### Framework Release Packaging
-Releases are automated via GitHub Actions (`.github/workflows/release-package.yml`). Pushing a git tag matching `v*` (e.g. `v0.1.0`) triggers a workflow that packages `bin/`, `knowledge/`, `crew/`, and `install.sh` into `baremetal-crew.tar.gz` and publishes a GitHub Release.
+Releases are automated via GitHub Actions (`.github/workflows/release-package.yml`). Merging changes to `master` affecting `bin/`, `knowledge/`, `crew/`, or `install.sh` automatically computes the next SemVer version, creates the tag, packages `baremetal-crew.tar.gz`, and publishes a GitHub Release. Pushing manual `v*` tags also remains supported.
 
 ---
 
