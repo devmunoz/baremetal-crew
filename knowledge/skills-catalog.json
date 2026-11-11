@@ -12,7 +12,8 @@
       "url": "https://github.com/mattpocock/skills.git",
       "selection": [
         "skills/engineering",
-        "skills/productivity"
+        "skills/productivity",
+        "skills/misc/setup-pre-commit"
       ]
     },
     {
@@ -26,7 +27,12 @@
       "name": "JuliusBrussee-caveman",
       "url": "https://github.com/JuliusBrussee/caveman.git",
       "selection": [
-        "skills/caveman"
+        "skills/caveman",
+        "skills/investigate-first",
+        "skills/lean-build",
+        "skills/surgical-patch",
+        "skills/verify-and-stop",
+        "skills/safe-refactor"
       ]
     },
     {
@@ -42,7 +48,15 @@
       "selection": [
         "skills/web-design-guidelines",
         "skills/react-best-practices",
-        "skills/composition-patterns"
+        "skills/composition-patterns",
+        "skills/react-view-transitions"
+      ]
+    },
+    {
+      "name": "googlechrome-modern-web-guidance",
+      "url": "https://github.com/GoogleChrome/modern-web-guidance.git",
+      "selection": [
+        "skills/modern-web-guidance"
       ]
     }
   ]

@@ -79,6 +79,9 @@ def parse_yaml_frontmatter(file_path):
                             is_multiline = False
                     elif is_multiline:
                         multiline_accumulator.append(stripped)
+                
+                if is_multiline and current_key:
+                    fm_dict[current_key] = " ".join(multiline_accumulator).strip().strip('"').strip("'")
                     
                 name = fm_dict.get("name")
                 description = fm_dict.get("description")

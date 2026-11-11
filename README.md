@@ -89,3 +89,5 @@ The primary crew skills and advisory skills indexing catalogs are inspired by an
 *   [obra/superpowers](https://github.com/obra/superpowers) – Adversarial and verification skills.
 *   [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman) – Ultra-compressed token communication mode.
 *   [danyuchn/asd-ste100-skill](https://github.com/danyuchn/asd-ste100-skill) – Simplified Technical English (ASD-STE100) communication standard.
+*   [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) – Web design guidelines, React best practices, and component patterns.
+*   [GoogleChrome/modern-web-guidance](https://github.com/GoogleChrome/modern-web-guidance) – Modern web platform best practices, native APIs, and browser compatibility guidance.
