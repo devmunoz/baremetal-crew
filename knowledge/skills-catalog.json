@@ -44,6 +44,13 @@
         "skills/react-best-practices",
         "skills/composition-patterns"
       ]
+    },
+    {
+      "name": "googlechrome-modern-web-guidance",
+      "url": "https://github.com/GoogleChrome/modern-web-guidance.git",
+      "selection": [
+        "skills/modern-web-guidance"
+      ]
     }
   ]
 }

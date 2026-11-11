@@ -216,6 +216,7 @@ The Tech Guru and SA can pull reusable skill definitions from these sources:
 *   **obra-superpowers:** High-level development process control skills (including `using-git-worktrees` for optional git worktree slice isolation).
 *   **JuliusBrussee-caveman:** Optional skill for ultra-compressed token communication mode (advertised as a suggestion for the user/CBO to invoke if desired).
 *   **danyuchn-asd-ste100-skill:** (built-in framework default communication standard for unambiguous prose).
+*   **googlechrome-modern-web-guidance:** Modern web development best practices, native APIs, and browser compatibility guidance.
 
 ### Centralized SQLite Database CLI Helper & Binary Protection (`bmc-log`)
 All database operations on `.bmc-stuff/crew.db` must strictly use the CLI database script helper (`.bmc-stuff/bin/bmc-log`). Direct shell database queries (e.g. `sqlite3`) and modifying binary helper scripts are strictly forbidden.
