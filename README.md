@@ -59,7 +59,7 @@ curl -L "https://raw.githubusercontent.com/devmunoz/baremetal-crew/master/instal
 
 Baremetal-Crew provides centralized CLI utilities under `.bmc-stuff/bin/`:
 
-*   **`.bmc-stuff/bin/bmc-log`**: Manages execution state, phase transitions, and task logs in `.bmc-stuff/crew.db`.
+*   **`.bmc-stuff/bin/bmc-log`**: Manages execution state, phase transitions, task logs, and command error audits in `.bmc-stuff/crew.db`.
 *   **`.bmc-stuff/bin/bmc-index-skills`**: Clones and indexes pre-approved skills repositories into `.bmc-stuff/skills-cache/` and synchronizes matching skills under `.agents/skills/`.
 
 ### Skills Indexer & Updater CLI Options (`bmc-index-skills`)

@@ -230,7 +230,7 @@ All database operations on `.bmc-stuff/crew.db` must strictly use the CLI databa
 *   `.bmc-stuff/bin/bmc-log active` (Lists all active/incomplete slice IDs)
 *   `.bmc-stuff/bin/bmc-log show-slice <slice_id>` (Displays current phase, tasks list, and recent events for a slice)
 *   `.bmc-stuff/bin/bmc-log check-dependency <slice_id>` (Checks if a dependency slice is completed; returns exit code 0 if resolved, 1 otherwise)
-
+*   `.bmc-stuff/bin/bmc-log audit [limit]` (Displays the command audit log of invalid actions and malformed invocations)
 ### Centralized Skills Indexer & Updater CLI Helper (`bmc-index-skills`)
 All skills catalog indexing and local `.agents/skills/` updates are managed via `.bmc-stuff/bin/bmc-index-skills`.
 *   **Indexing & Cache:** Clones pre-approved skills repositories into `.bmc-stuff/skills-cache/` and builds `.bmc-stuff/skills-cache/skills-index.json`.
