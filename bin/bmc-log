@@ -51,6 +51,16 @@ def init_db():
     );
     """)
     
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS command_audit (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        raw_command TEXT NOT NULL,
+        action TEXT NOT NULL,
+        error_reason TEXT NOT NULL,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    """)
+    
     conn.commit()
     conn.close()
 
@@ -123,6 +133,39 @@ def log_event(slice_id, agent_role, event_type, message):
     conn.commit()
     conn.close()
     print(f"[EVENT] {slice_id} | {agent_role} | {event_type} | {message}")
+
+def log_command_error(action, error_reason):
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        raw_cmd = " ".join(sys.argv)
+        cursor.execute(
+            "INSERT INTO command_audit (raw_command, action, error_reason) VALUES (?, ?, ?)",
+            (raw_cmd, str(action), str(error_reason))
+        )
+        conn.commit()
+        conn.close()
+    except Exception:
+        pass
+
+def show_audit(limit=50):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT timestamp, action, raw_command, error_reason FROM command_audit ORDER BY id DESC LIMIT ?",
+        (limit,)
+    )
+    rows = cursor.fetchall()
+    conn.close()
+    print("Command Audit Log (Invalid / Erroneous Invocations):")
+    print("-" * 75)
+    if rows:
+        for r in rows:
+            print(f"[{r[0]}] Action: '{r[1]}' | Error: {r[3]}")
+            print(f"  Command: {r[2]}")
+    else:
+        print("  No command errors recorded in audit log.")
+    print("-" * 75)
 
 def get_current_phase(slice_id):
     conn = sqlite3.connect(DB_PATH)
@@ -325,6 +368,7 @@ def print_usage():
     print("  bmc-log active")
     print("  bmc-log show-slice <slice_id>")
     print("  bmc-log check-dependency <slice_id>")
+    print("  bmc-log audit [limit]")
 def main():
     if len(sys.argv) < 2:
         print_usage()
@@ -336,13 +380,17 @@ def main():
     try:
         if action == "transition":
             if len(sys.argv) < 6:
-                print("Error: Missing arguments for transition log.")
+                err = "Missing arguments for transition log."
+                log_command_error(action, err)
+                print(f"Error: {err}")
                 print("Usage: bmc-log transition <slice_id> <from_phase> <to_phase> <details>")
                 sys.exit(1)
             log_transition(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
         elif action == "cbo-sign":
             if len(sys.argv) < 3:
-                print("Error: Missing slice_id.")
+                err = "Missing slice_id."
+                log_command_error(action, err)
+                print(f"Error: {err}")
                 print("Usage: bmc-log cbo-sign <slice_id> [details]")
                 sys.exit(1)
             details = sys.argv[3] if len(sys.argv) > 3 else None
@@ -350,7 +398,9 @@ def main():
             
         elif action == "task":
             if len(sys.argv) < 5:
-                print("Error: Missing arguments for task log.")
+                err = "Missing arguments for task log."
+                log_command_error(action, err)
+                print(f"Error: {err}")
                 print("Usage: bmc-log task <slice_id> <task_id> <status> [ping_pong_count]")
                 sys.exit(1)
             ping_pong = int(sys.argv[5]) if len(sys.argv) > 5 else 0
@@ -358,7 +408,9 @@ def main():
             
         elif action == "event":
             if len(sys.argv) < 6:
-                print("Error: Missing arguments for event log.")
+                err = "Missing arguments for event log."
+                log_command_error(action, err)
+                print(f"Error: {err}")
                 print("Usage: bmc-log event <slice_id> <agent_role> <event_type> <message>")
                 sys.exit(1)
             log_event(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
@@ -368,20 +420,30 @@ def main():
             
         elif action == "show-slice":
             if len(sys.argv) < 3:
-                print("Error: Missing slice_id.")
+                err = "Missing slice_id."
+                log_command_error(action, err)
+                print(f"Error: {err}")
                 print("Usage: bmc-log show-slice <slice_id>")
                 sys.exit(1)
             show_slice(sys.argv[2])
             
         elif action == "check-dependency":
             if len(sys.argv) < 3:
-                print("Error: Missing slice_id.")
+                err = "Missing slice_id."
+                log_command_error(action, err)
+                print(f"Error: {err}")
                 print("Usage: bmc-log check-dependency <slice_id>")
                 sys.exit(1)
             check_dependency(sys.argv[2])
+
+        elif action == "audit":
+            limit = int(sys.argv[2]) if len(sys.argv) > 2 else 50
+            show_audit(limit)
             
         else:
-            print(f"Unknown action: {action}")
+            err = f"Unknown action: {action}"
+            log_command_error(action, err)
+            print(err)
             print_usage()
             sys.exit(1)
     except Exception as e:
