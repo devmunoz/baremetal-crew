@@ -92,6 +92,24 @@ All stage transitions are logged in the SQLite database using the command helper
    |
 [Phase 4: Validation] (.bmc-stuff/work/SXX-DEMO.md) --> [CBO] (Green Light / Abort Cycle)
 ```
+```text
+│ I. Phase 1: The Grill (Product Owner & CBO)
+│   ├─ Interrogate CBO on requirements, constraints, and edge cases
+│   ├─ Draft functional scope (.bmc-stuff/work/SXX-SCOPE.md)
+│   └─ Await CBO review and sign-off on SXX-SCOPE.md
+│ II. Phase 2: The Breakdown (Software Architect)
+│   ├─ Draft technical blueprint (.bmc-stuff/work/SXX-BLUEPRINT.md) and atomic tasks
+│   ├─ (Optional) Run Tech Guru audit & recommend skills (.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md)
+│   └─ Await CBO review and sign-off on SXX-BLUEPRINT.md
+│ III. Phase 3: Blind Execution (Dev & QA Subagents)
+│   ├─ Implement tasks and unit tests blindly (Fullstack Dev)
+│   ├─ Automate integration/E2E tests and enforce ping-pong limit (QA Engineer)
+│   └─ Verify all tasks reach "QA Passed"
+│ IV. Phase 4: Validation (Software Architect & CBO)
+│   ├─ Update root living documentation (ARCHITECTURE.md, DESIGN.md, README.md)
+│   ├─ Generate manual verification guide (.bmc-stuff/work/SXX-DEMO.md)
+│   └─ Await CBO validation sign-off (Green Light -> Completed / Abort)
+```
 
 ### Phase 1: The Grill (CBO -> PO)
 *   **Trigger:** CBO introduces an initial software idea.
