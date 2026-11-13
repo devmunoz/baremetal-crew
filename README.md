@@ -14,6 +14,74 @@ Baremetal-Crew enforces a linear, watertight workflow between a Human (**CBO**, 
 
 For detailed information on the philosophy, roles, and the 4 inviolable phases, read the [Baremetal-Crew Manifesto](knowledge/MANIFESTO.md).
 
+### 🔄 Slice Execution Lifecycle
+
+Every development cycle operates as an isolated slice (`SXX`, e.g., `S01`, `S02`) that progresses sequentially through 4 phases:
+```mermaid
+sequenceDiagram
+    autonumber
+    actor CBO as 👤 CBO (Human)
+    participant PO as 🎯 Product Owner
+    participant TG as 🧙 Tech Guru
+    participant SA as 📐 Software Architect
+    participant Dev as 💻 Fullstack Dev
+    participant QA as 🧪 QA Engineer
+
+    Note over CBO,PO: Phase 1: The Grill
+    CBO->>PO: 1. Feature Idea & Edge Cases
+    PO->>CBO: 2. SXX-SCOPE.md
+    CBO->>PO: 3. Sign-off (bmc-log cbo-sign SXX)
+
+    Note over PO,SA: Phase 2: The Breakdown
+    PO->>SA: 4. Signed Scope Hand-off
+    opt Skills Advisory
+        SA->>TG: Consult Catalog
+        TG-->>SA: SXX-SKILLS-RECOMMENDED.md
+    end
+    SA->>CBO: 5. SXX-BLUEPRINT.md
+    CBO->>SA: 6. Approval Gate (bmc-log cbo-sign SXX)
+
+    Note over SA,QA: Phase 3: Blind Execution
+    SA->>Dev: 7. Orchestrate Atomic Task
+    loop Ping-Pong (max 3 attempts)
+        Dev->>QA: Ready for QA (Code + Unit Tests)
+        alt Tests Pass
+            QA-->>Dev: QA Passed
+        else Tests Fail
+            QA-->>Dev: Pending Correction (Bug Report)
+        end
+    end
+    QA->>SA: 8. All Tasks QA Passed
+
+    Note over CBO,SA: Phase 4: Validation
+    SA->>SA: Update Living Docs (ARCHITECTURE.md, DESIGN.md)
+    SA->>CBO: 9. SXX-DEMO.md
+    alt CBO Green Light
+        CBO->>SA: Validated & Completed (Archived)
+    else CBO Rejection
+        CBO->>SA: Bug Fixes Needed (Revert to Phase 3)
+    end
+```
+
+```text
+│ I. Phase 1: The Grill (Product Owner & CBO)
+│   ├─ Interrogate CBO on requirements, constraints, and edge cases
+│   ├─ Draft functional scope (.bmc-stuff/work/SXX-SCOPE.md)
+│   └─ Await CBO review and sign-off on SXX-SCOPE.md
+│ II. Phase 2: The Breakdown (Software Architect)
+│   ├─ Draft technical blueprint (.bmc-stuff/work/SXX-BLUEPRINT.md) and atomic tasks
+│   ├─ (Optional) Run Tech Guru audit & recommend skills (.bmc-stuff/work/SXX-SKILLS-RECOMMENDED.md)
+│   └─ Await CBO review and sign-off on SXX-BLUEPRINT.md
+│ III. Phase 3: Blind Execution (Dev & QA Subagents)
+│   ├─ Implement tasks and unit tests blindly (Fullstack Dev)
+│   ├─ Automate integration/E2E tests and enforce ping-pong limit (QA Engineer)
+│   └─ Verify all tasks reach "QA Passed"
+│ IV. Phase 4: Validation (Software Architect & CBO)
+│   ├─ Update root living documentation (ARCHITECTURE.md, DESIGN.md, README.md)
+│   ├─ Generate manual verification guide (.bmc-stuff/work/SXX-DEMO.md)
+│   └─ Await CBO validation sign-off (Green Light -> Completed / Abort)
+```
+
 ---
 
 ## 🚀 Installation & Setup
