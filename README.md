@@ -18,54 +18,49 @@ For detailed information on the philosophy, roles, and the 4 inviolable phases, 
 
 Every development cycle operates as an isolated slice (`SXX`, e.g., `S01`, `S02`) that progresses sequentially through 4 phases:
 ```mermaid
-flowchart TD
-    CBO(["👤 Chief Baremetal Officer (Human)"])
-    
-    subgraph P1 ["Phase 1: The Grill"]
-        PO["🎯 Product Owner"]
-        Scope["📄 .bmc-stuff/work/SXX-SCOPE.md"]
-        PO --> Scope
+sequenceDiagram
+    autonumber
+    actor CBO as 👤 CBO (Human)
+    participant PO as 🎯 Product Owner
+    participant TG as 🧙 Tech Guru
+    participant SA as 📐 Software Architect
+    participant Dev as 💻 Fullstack Dev
+    participant QA as 🧪 QA Engineer
+
+    Note over CBO,PO: Phase 1: The Grill
+    CBO->>PO: 1. Feature Idea & Edge Cases
+    PO->>CBO: 2. SXX-SCOPE.md
+    CBO->>PO: 3. Sign-off (bmc-log cbo-sign SXX)
+
+    Note over PO,SA: Phase 2: The Breakdown
+    PO->>SA: 4. Signed Scope Hand-off
+    opt Skills Advisory
+        SA->>TG: Consult Catalog
+        TG-->>SA: SXX-SKILLS-RECOMMENDED.md
     end
+    SA->>CBO: 5. SXX-BLUEPRINT.md
+    CBO->>SA: 6. Approval Gate (bmc-log cbo-sign SXX)
 
-    Gate1{"✍️ CBO Scope Sign-off<br/>(bmc-log cbo-sign)"}
-
-    subgraph P2 ["Phase 2: The Breakdown"]
-        SA["📐 Software Architect"]
-        TG["🧙 Tech Guru (Optional)"]
-        Skills["📦 SXX-SKILLS-RECOMMENDED.md"]
-        Blueprint["📋 .bmc-stuff/work/SXX-BLUEPRINT.md"]
-        SA -.-> TG -.-> Skills -.-> SA
-        SA --> Blueprint
+    Note over SA,QA: Phase 3: Blind Execution
+    SA->>Dev: 7. Orchestrate Atomic Task
+    loop Ping-Pong (max 3 attempts)
+        Dev->>QA: Ready for QA (Code + Unit Tests)
+        alt Tests Pass
+            QA-->>Dev: QA Passed
+        else Tests Fail
+            QA-->>Dev: Pending Correction (Bug Report)
+        end
     end
+    QA->>SA: 8. All Tasks QA Passed
 
-    Gate2{"✍️ CBO Blueprint Approval Gate<br/>(bmc-log cbo-sign)"}
-
-    subgraph P3 ["Phase 3: Blind Execution"]
-        direction TB
-        Dev["💻 Fullstack Dev<br/>(Task Code & Unit Tests)"]
-        QA["🧪 QA Engineer<br/>(Automated E2E Tests)"]
-        Dev -->|Ready for QA| QA
-        QA -->|Reject - Ping-Pong max 3| Dev
+    Note over CBO,SA: Phase 4: Validation
+    SA->>SA: Update Living Docs (ARCHITECTURE.md, DESIGN.md)
+    SA->>CBO: 9. SXX-DEMO.md
+    alt CBO Green Light
+        CBO->>SA: Validated & Completed (Archived)
+    else CBO Rejection
+        CBO->>SA: Bug Fixes Needed (Revert to Phase 3)
     end
-
-    subgraph P4 ["Phase 4: Validation"]
-        Docs["📚 Update Living Docs<br/>(ARCHITECTURE.md, DESIGN.md)"]
-        Demo["🎬 .bmc-stuff/work/SXX-DEMO.md"]
-        Gate3{"👤 CBO Validation"}
-        Done(["🏁 Slice Completed<br/>(Archived to completed/)"])
-        Bug(["🔄 Reverted on Bug<br/>(Back to Phase 3)"])
-        Docs --> Demo --> Gate3
-        Gate3 -->|Green Light| Done
-        Gate3 -->|Bug Found| Bug
-    end
-
-    CBO -->|1. Idea| PO
-    Scope --> Gate1
-    Gate1 -->|2. Approved| SA
-    Blueprint --> Gate2
-    Gate2 -->|3. Approved| Dev
-    QA -->|All Tasks Passed| Docs
-    Bug --> Dev
 ```
 
 ```text
