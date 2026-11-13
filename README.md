@@ -45,7 +45,7 @@ flowchart TD
         Dev["💻 Fullstack Dev<br/>(Task Code & Unit Tests)"]
         QA["🧪 QA Engineer<br/>(Automated E2E Tests)"]
         Dev -->|Ready for QA| QA
-        QA -->|Reject (Ping-Pong up to 3)| Dev
+        QA -->|Reject - Ping-Pong max 3| Dev
     end
 
     subgraph P4 ["Phase 4: Validation"]
