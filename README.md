@@ -17,6 +17,56 @@ For detailed information on the philosophy, roles, and the 4 inviolable phases, 
 ### 🔄 Slice Execution Lifecycle
 
 Every development cycle operates as an isolated slice (`SXX`, e.g., `S01`, `S02`) that progresses sequentially through 4 phases:
+```mermaid
+flowchart TD
+    CBO(["👤 Chief Baremetal Officer (Human)"])
+    
+    subgraph P1 ["Phase 1: The Grill"]
+        PO["🎯 Product Owner"]
+        Scope["📄 .bmc-stuff/work/SXX-SCOPE.md"]
+        PO --> Scope
+    end
+
+    Gate1{"✍️ CBO Scope Sign-off<br/>(bmc-log cbo-sign)"}
+
+    subgraph P2 ["Phase 2: The Breakdown"]
+        SA["📐 Software Architect"]
+        TG["🧙 Tech Guru (Optional)"]
+        Skills["📦 SXX-SKILLS-RECOMMENDED.md"]
+        Blueprint["📋 .bmc-stuff/work/SXX-BLUEPRINT.md"]
+        SA -.-> TG -.-> Skills -.-> SA
+        SA --> Blueprint
+    end
+
+    Gate2{"✍️ CBO Blueprint Approval Gate<br/>(bmc-log cbo-sign)"}
+
+    subgraph P3 ["Phase 3: Blind Execution"]
+        direction TB
+        Dev["💻 Fullstack Dev<br/>(Task Code & Unit Tests)"]
+        QA["🧪 QA Engineer<br/>(Automated E2E Tests)"]
+        Dev -->|Ready for QA| QA
+        QA -->|Reject (Ping-Pong <= 3)| Dev
+    end
+
+    subgraph P4 ["Phase 4: Validation"]
+        Docs["📚 Update Living Docs<br/>(ARCHITECTURE.md, DESIGN.md)"]
+        Demo["🎬 .bmc-stuff/work/SXX-DEMO.md"]
+        Gate3{"👤 CBO Validation"}
+        Done(["🏁 Slice Completed<br/>(Archived to completed/)"])
+        Bug(["🔄 Reverted on Bug<br/>(Back to Phase 3)"])
+        Docs --> Demo --> Gate3
+        Gate3 -->|Green Light| Done
+        Gate3 -->|Bug Found| Bug
+    end
+
+    CBO -->|1. Idea| PO
+    Scope --> Gate1
+    Gate1 -->|2. Approved| SA
+    Blueprint --> Gate2
+    Gate2 -->|3. Approved| Dev
+    QA -->|All Tasks Passed| Docs
+    Bug --> Dev
+```
 
 ```text
 │ I. Phase 1: The Grill (Product Owner & CBO)
