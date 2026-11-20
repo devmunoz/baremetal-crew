@@ -58,6 +58,16 @@
       "selection": [
         "skills/modern-web-guidance"
       ]
+    },
+    {
+      "name": "anthropics-skills",
+      "url": "https://github.com/anthropics/skills.git",
+      "selection": [
+        "skills/frontend-design",
+        "skills/mcp-builder",
+        "skills/skill-creator",
+        "skills/webapp-testing"
+      ]
     }
   ]
 }
